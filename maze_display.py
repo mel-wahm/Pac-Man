@@ -3,7 +3,7 @@ import arcade
 from math import sin
 
 height = 13
-width = 21
+width = 15
 
 maze = MazeGenerator(size=(width, height)).maze
 
@@ -33,6 +33,30 @@ class Render(arcade.Window):
         self.cell_size = min(
             (self.width - 100) / self.cols, (self.height - 100) / self.rows
         )
+        self.forty_two_coords = []
+        if self.rows >= 10 and self.cols >= 14:
+            posx = (self.cols - 7) // 2
+            posy = (self.rows - 5) // 2
+            self.forty_two_coords = [
+                (posx + 0, posy + 0),
+                (posx + 4, posy + 0),
+                (posx + 5, posy + 0),
+                (posx + 6, posy + 0),
+                (posx + 0, posy + 1),
+                (posx + 6, posy + 1),
+                (posx + 0, posy + 2),
+                (posx + 1, posy + 2),
+                (posx + 2, posy + 2),
+                (posx + 4, posy + 2),
+                (posx + 5, posy + 2),
+                (posx + 6, posy + 2),
+                (posx + 2, posy + 3),
+                (posx + 4, posy + 3),
+                (posx + 2, posy + 4),
+                (posx + 4, posy + 4),
+                (posx + 5, posy + 4),
+                (posx + 6, posy + 4),
+            ]
 
     def on_key_press(self, symbol, modifiers):
         if symbol == arcade.key.LEFT:
@@ -211,7 +235,16 @@ class Render(arcade.Window):
                         self.draw_monster(sx, sy, arcade.color.PURPLE)
                     elif c == self.cols - 1 and r == self.rows - 1:
                         self.draw_monster(sx, sy, arcade.color.ORANGE)
-                    if (c, r) not in pacman.path:
+
+                    if (c, r) in self.forty_two_coords:
+                        sqr = arcade.rect.XYWH(
+                            sx,
+                            sy,
+                            self.cell_size * 0.5,
+                            self.cell_size * 0.5,
+                        )
+                        arcade.draw_rect_filled(sqr, arcade.color.RED)
+                    elif (c, r) not in pacman.path:
                         arcade.draw_circle_filled(
                             sx, sy, dot_radius, arcade.color.WHITE
                         )
