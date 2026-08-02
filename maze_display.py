@@ -1,7 +1,8 @@
 from mazegenerator import MazeGenerator
-from game_logic import neighbor_coordinates
+from game_logic import neighbor_coordinates, center_coordinates
 import arcade
 from math import sin
+import random
 
 height = 9
 width = 21
@@ -22,26 +23,93 @@ class Pacman:
     def neighbors(self):
         return neighbor_coordinates(self.x, self.y, maze)
 
+    def draw(self, renderer):
+        cx, cy = renderer.center_coordinates(self.x, self.y)
+        arcade.draw_arc_filled(
+            cx,
+            cy,
+            15 * 0.025 * renderer.cell_size,
+            15 * 0.025 * renderer.cell_size,
+            arcade.color.YELLOW,
+            30 + self.angle + 15 * sin(renderer.progress),
+            330 + self.angle - 15 * sin(renderer.progress),
+        )
+
 
 class Ghost:
-    def __init__(self, maze, renderer):
-        self.x, self.y = renderer.center_coordinates(0, 0)
-        self.color = arcade.color.WHITE
-        self.renderer = renderer
+    def __init__(self, real_cords, draw_cords, color, c_size):
+        self.c_size = c_size
+        self.color = color
+        self.real_cords = real_cords
+        self.draw_cords = draw_cords
 
-    @property
-    def draw(self):
-        self.renderer.draw_monster(self.x, self.y, self.color)
+    def draw_monster(self):
+        cx, cy = self.draw_cords
+        s = 0.002 * self.c_size
+        arcade.draw_arc_filled(
+            cx, cy + 15 * s, 240 * s, 240 * s, self.color, 0, 180
+        )
+        rect = arcade.rect.XYWH(cx, cy - 30 * s, 240 * s, 90 * s)
+        arcade.draw_rect_filled(rect, self.color)
+        arcade.draw_arc_filled(
+            cx, cy - 75 * s, 80 * s, 80 * s, self.color, 180, 360
+        )
+        arcade.draw_arc_filled(
+            cx - 80 * s, cy - 75 * s, 80 * s, 80 * s, self.color, 180, 360
+        )
+        arcade.draw_arc_filled(
+            cx + 80 * s, cy - 75 * s, 80 * s, 80 * s, self.color, 180, 360
+        )
+        arcade.draw_circle_filled(
+            cx - 35 * s,
+            cy + 15 * s,
+            30 * s,
+            arcade.color.WHITE,
+            num_segments=32,
+        )
+        arcade.draw_circle_filled(
+            cx - 35 * s,
+            cy + 15 * s,
+            20 * s,
+            arcade.color.BLACK,
+            num_segments=32,
+        )
+        arcade.draw_circle_filled(
+            cx - 35 * s,
+            cy + 19 * s,
+            3 * s,
+            arcade.color.WHEAT,
+            num_segments=32,
+        )
+        arcade.draw_circle_filled(
+            cx + 35 * s,
+            cy + 15 * s,
+            30 * s,
+            arcade.color.WHITE,
+            num_segments=32,
+        )
+        arcade.draw_circle_filled(
+            cx + 35 * s,
+            cy + 15 * s,
+            20 * s,
+            arcade.color.BLACK,
+            num_segments=32,
+        )
+        arcade.draw_circle_filled(
+            cx + 35 * s,
+            cy + 19 * s,
+            3 * s,
+            arcade.color.WHEAT,
+            num_segments=32,
+        )
 
 
 class Render(arcade.Window):
-    def __init__(self, maze: list,
-                 pacman: Pacman
-                 ghost: Ghost):
+    def __init__(self, maze: list):
         super().__init__(1980, 1080, "PACMAN", True, True, vsync=True)
         self.background_color = (15, 15, 25)
         self.maze = maze
-        self.pacman = pacman
+        self.pacman = Pacman(maze)
         self.total_w = (len(self.maze[0]) - 1) / 2
         self.total_h = (len(self.maze) - 1) / 2
         self.drag_x = 0
@@ -49,6 +117,8 @@ class Render(arcade.Window):
         self.cols = len(self.maze[0])
         self.rows = len(self.maze)
         self.progress = 0
+        self.sec = 0
+        self.seconds = 0
         self.cell_size = min(
             (self.width - 100) / self.cols, (self.height - 100) / self.rows
         )
@@ -58,29 +128,55 @@ class Render(arcade.Window):
             (0, self.rows - 1),
             (self.cols - 1, self.rows - 1),
         }
+        self.ghosts = {
+            Ghost(
+                (0, 0),
+                self.center_coordinates(0, 0),
+                arcade.color.GREEN,
+                self.cell_size,
+            ),
+            Ghost(
+                (self.cols - 1, 0),
+                self.center_coordinates(self.cols - 1, 0),
+                arcade.color.PURPLE,
+                self.cell_size,
+            ),
+            Ghost(
+                (0, self.rows - 1),
+                self.center_coordinates(0, self.rows - 1),
+                arcade.color.ORANGE,
+                self.cell_size,
+            ),
+            Ghost(
+                (self.cols - 1, self.rows - 1),
+                self.center_coordinates(self.cols - 1, self.rows - 1),
+                arcade.color.YELLOW,
+                self.cell_size,
+            ),
+        }
         self.forty_two_coords = set()
         if self.rows >= 10 and self.cols >= 14:
-            posx = (self.cols - 7) // 2
-            posy = (self.rows - 5) // 2
+            poreal_x = (self.cols - 7) // 2
+            poreal_y = (self.rows - 5) // 2
             self.forty_two_coords = {
-                (posx + 0, posy + 0),
-                (posx + 4, posy + 0),
-                (posx + 5, posy + 0),
-                (posx + 6, posy + 0),
-                (posx + 0, posy + 1),
-                (posx + 6, posy + 1),
-                (posx + 0, posy + 2),
-                (posx + 1, posy + 2),
-                (posx + 2, posy + 2),
-                (posx + 4, posy + 2),
-                (posx + 5, posy + 2),
-                (posx + 6, posy + 2),
-                (posx + 2, posy + 3),
-                (posx + 4, posy + 3),
-                (posx + 2, posy + 4),
-                (posx + 4, posy + 4),
-                (posx + 5, posy + 4),
-                (posx + 6, posy + 4),
+                (poreal_x + 0, poreal_y + 0),
+                (poreal_x + 4, poreal_y + 0),
+                (poreal_x + 5, poreal_y + 0),
+                (poreal_x + 6, poreal_y + 0),
+                (poreal_x + 0, poreal_y + 1),
+                (poreal_x + 6, poreal_y + 1),
+                (poreal_x + 0, poreal_y + 2),
+                (poreal_x + 1, poreal_y + 2),
+                (poreal_x + 2, poreal_y + 2),
+                (poreal_x + 4, poreal_y + 2),
+                (poreal_x + 5, poreal_y + 2),
+                (poreal_x + 6, poreal_y + 2),
+                (poreal_x + 2, poreal_y + 3),
+                (poreal_x + 4, poreal_y + 3),
+                (poreal_x + 2, poreal_y + 4),
+                (poreal_x + 4, poreal_y + 4),
+                (poreal_x + 5, poreal_y + 4),
+                (poreal_x + 6, poreal_y + 4),
             }
 
     def on_key_press(self, symbol, modifiers):
@@ -115,90 +211,31 @@ class Render(arcade.Window):
             exit(0)
 
     def center_coordinates(self, x, y):
-        nx = self.width / 2 + (x - self.total_w) * self.cell_size
-        ny = self.height / 2 - (y - self.total_h) * self.cell_size
-        return (nx, ny)
+        return center_coordinates(
+            x,
+            y,
+            self.width,
+            self.height,
+            self.total_w,
+            self.total_h,
+            self.cell_size,
+        )
 
     def on_update(self, delta_time):
         self.progress += 6 * delta_time
-
-    def draw_pacman(self):
-        cx, cy = self.center_coordinates(self.pacman.x, self.pacman.y)
-        arcade.draw_arc_filled(
-            cx,
-            cy,
-            15 * 0.025 * self.cell_size,
-            15 * 0.025 * self.cell_size,
-            arcade.color.YELLOW,
-            30 + self.pacman.angle + 15 * sin(self.progress),
-            330 + self.pacman.angle - 15 * sin(self.progress),
-        )
-        """arcade.draw_circle_filled(
-            cx + 2 * self.pacman.xeye,
-            cy + 15 * self.pacman.yeye,
-            1 * 0.025 * self.cell_size,
-            arcade.color.BLACK,
-            num_segments=100,
-        )"""
-
-    def draw_monster(self, cx, cy, color):
-        s = 0.002 * self.cell_size
-        arcade.draw_arc_filled(
-            cx, cy + 15 * s, 240 * s, 240 * s, color, 0, 180
-        )
-        rect = arcade.rect.XYWH(cx, cy - 30 * s, 240 * s, 90 * s)
-        arcade.draw_rect_filled(rect, color)
-        arcade.draw_arc_filled(
-            cx, cy - 75 * s, 80 * s, 80 * s, color, 180, 360
-        )
-        arcade.draw_arc_filled(
-            cx - 80 * s, cy - 75 * s, 80 * s, 80 * s, color, 180, 360
-        )
-        arcade.draw_arc_filled(
-            cx + 80 * s, cy - 75 * s, 80 * s, 80 * s, color, 180, 360
-        )
-        arcade.draw_circle_filled(
-            cx - 35 * s,
-            cy + 15 * s,
-            30 * s,
-            arcade.color.WHITE,
-            num_segments=32,
-        )
-        arcade.draw_circle_filled(
-            cx - 35 * s,
-            cy + 15 * s,
-            20 * s,
-            arcade.color.BLACK,
-            num_segments=32,
-        )
-        arcade.draw_circle_filled(
-            cx - 35 * s + 5 * s * sin(self.progress),
-            cy + 19 * s,
-            3 * s,
-            arcade.color.WHEAT,
-            num_segments=32,
-        )
-        arcade.draw_circle_filled(
-            cx + 35 * s,
-            cy + 15 * s,
-            30 * s,
-            arcade.color.WHITE,
-            num_segments=32,
-        )
-        arcade.draw_circle_filled(
-            cx + 35 * s,
-            cy + 15 * s,
-            20 * s,
-            arcade.color.BLACK,
-            num_segments=32,
-        )
-        arcade.draw_circle_filled(
-            cx + 35 * s + 5 * s * sin(self.progress),
-            cy + 19 * s,
-            3 * s,
-            arcade.color.WHEAT,
-            num_segments=32,
-        )
+        self.sec += delta_time
+        if self.sec > 0.5:
+            self.sec = 0
+            self.seconds += 1
+            for ghost in self.ghosts:
+                ghost.real_cords = random.choice(
+                    neighbor_coordinates(
+                        ghost.real_cords[0], ghost.real_cords[1], self.maze
+                    )
+                )
+                ghost.draw_cords = self.center_coordinates(
+                    ghost.real_cords[0], ghost.real_cords[1]
+                )
 
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         self.drag_x += dx
@@ -208,60 +245,61 @@ class Render(arcade.Window):
         self.clear()
         wall_thickness = max(1, int(self.cell_size * 0.05))
         dot_radius = max(1, self.cell_size * 0.05)
+        pacman_neighbors = self.pacman.neighbors
         for r in range(len(maze)):
             for c in range(len(maze[r])):
-                sx, sy = self.center_coordinates(c, r)
+                real_x, real_y = self.center_coordinates(c, r)
                 half = self.cell_size / 2
                 cell_val = maze[r][c]
                 if cell_val & 1:
                     arcade.draw_line(
-                        sx - half,
-                        sy + half,
-                        sx + half,
-                        sy + half,
+                        real_x - half,
+                        real_y + half,
+                        real_x + half,
+                        real_y + half,
                         arcade.color.DARK_BLUE,
                         wall_thickness,
                     )
                 if cell_val & 2:
                     arcade.draw_line(
-                        sx + half,
-                        sy + half,
-                        sx + half,
-                        sy - half,
+                        real_x + half,
+                        real_y + half,
+                        real_x + half,
+                        real_y - half,
                         arcade.color.DARK_BLUE,
                         wall_thickness,
                     )
                 if cell_val & 4:
                     arcade.draw_line(
-                        sx - half,
-                        sy - half,
-                        sx + half,
-                        sy - half,
+                        real_x - half,
+                        real_y - half,
+                        real_x + half,
+                        real_y - half,
                         arcade.color.DARK_BLUE,
                         wall_thickness,
                     )
                 if cell_val & 8:
                     arcade.draw_line(
-                        sx - half,
-                        sy + half,
-                        sx - half,
-                        sy - half,
+                        real_x - half,
+                        real_y + half,
+                        real_x - half,
+                        real_y - half,
                         arcade.color.DARK_BLUE,
                         wall_thickness,
                     )
                 if (c, r) in self.forty_two_coords:
                     sqr = arcade.rect.XYWH(
-                        sx,
-                        sy,
+                        real_x,
+                        real_y,
                         self.cell_size * 0.5,
                         self.cell_size * 0.5,
                     )
                     arcade.draw_rect_filled(sqr, arcade.color.RED)
 
-                elif (c, r) in self.pacman.neighbors:
+                elif (c, r) in pacman_neighbors:
                     arcade.draw_circle_filled(
-                        sx,
-                        sy,
+                        real_x,
+                        real_y,
                         dot_radius * 1.5,
                         arcade.color.RED,
                         num_segments=32,
@@ -269,34 +307,42 @@ class Render(arcade.Window):
                 elif (c, r) not in self.pacman.path:
                     if (c, r) in self.corners:
                         arcade.draw_circle_filled(
-                            sx,
-                            sy,
+                            real_x,
+                            real_y,
                             dot_radius * 2.5,
                             arcade.color.WHITE,
                             num_segments=32,
                         )
                     else:
                         arcade.draw_circle_filled(
-                            sx,
-                            sy,
+                            real_x,
+                            real_y,
                             dot_radius,
                             arcade.color.WHITE,
                             num_segments=32,
                         )
 
                 if c == self.pacman.x and r == self.pacman.y:
-                    self.draw_pacman()
-                elif c == 0 and r == 0:
-                    self.draw_monster(sx, sy, arcade.color.YELLOW)
-                elif c == 0 and r == self.rows - 1:
-                    self.draw_monster(sx, sy, arcade.color.GREEN)
-                elif c == self.cols - 1 and r == 0:
-                    self.draw_monster(sx, sy, arcade.color.PURPLE)
-                elif c == self.cols - 1 and r == self.rows - 1:
-                    self.draw_monster(sx, sy, arcade.color.ORANGE)
+                    self.pacman.draw(self)
+                # elif c == 0 and r == 0:
+                #     self.ghost.draw_monster(
+                #         self, 0, real_y, arcade.color.YELLOW
+                #     )
+                # elif c == 0 and r == self.rows - 1:
+                #     self.ghost.draw_monster(
+                #         self, real_x, real_y, arcade.color.GREEN
+                #     )
+                # elif c == self.cols - 1 and r == 0:
+                #     self.ghost.draw_monster(
+                #         self, real_x, real_y, arcade.color.PURPLE
+                #     )
+                # elif c == self.cols - 1 and r == self.rows - 1:
+                #     self.ghost.draw_monster(
+                #         self, real_x, real_y, arcade.color.ORANGE
+                #     )
+        for ghost in self.ghosts:
+            ghost.draw_monster()
 
 
-pacman = Pacman(maze)
-Render(maze, pacman)
-ghost = Ghost(maze)
+Render(maze)
 arcade.run()
