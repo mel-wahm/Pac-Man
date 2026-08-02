@@ -4,8 +4,8 @@ import arcade
 from math import sin
 import random
 
-height = 9
-width = 21
+height = 13
+width = 23
 
 maze = MazeGenerator(size=(width, height)).maze
 
@@ -296,14 +296,6 @@ class Render(arcade.Window):
                     )
                     arcade.draw_rect_filled(sqr, arcade.color.RED)
 
-                elif (c, r) in pacman_neighbors:
-                    arcade.draw_circle_filled(
-                        real_x,
-                        real_y,
-                        dot_radius * 1.5,
-                        arcade.color.RED,
-                        num_segments=32,
-                    )
                 elif (c, r) not in self.pacman.path:
                     if (c, r) in self.corners:
                         arcade.draw_circle_filled(
