@@ -1,9 +1,10 @@
 from mazegenerator import MazeGenerator
+from game_logic import neighbor_coordinates
 import arcade
 from math import sin
 
-height = 13
-width = 15
+height = 9
+width = 21
 
 maze = MazeGenerator(size=(width, height)).maze
 
@@ -15,14 +16,32 @@ class Pacman:
         self.angle = 0
         self.xeye = 1
         self.yeye = 1
-        self.path = set()
+        self.path = {(self.x, self.y)}
+
+    @property
+    def neighbors(self):
+        return neighbor_coordinates(self.x, self.y, maze)
+
+
+class Ghost:
+    def __init__(self, maze, renderer):
+        self.x, self.y = renderer.center_coordinates(0, 0)
+        self.color = arcade.color.WHITE
+        self.renderer = renderer
+
+    @property
+    def draw(self):
+        self.renderer.draw_monster(self.x, self.y, self.color)
 
 
 class Render(arcade.Window):
-    def __init__(self, maze: list, pacman: Pacman):
+    def __init__(self, maze: list,
+                 pacman: Pacman
+                 ghost: Ghost):
         super().__init__(1980, 1080, "PACMAN", True, True, vsync=True)
         self.background_color = (15, 15, 25)
         self.maze = maze
+        self.pacman = pacman
         self.total_w = (len(self.maze[0]) - 1) / 2
         self.total_h = (len(self.maze) - 1) / 2
         self.drag_x = 0
@@ -33,11 +52,17 @@ class Render(arcade.Window):
         self.cell_size = min(
             (self.width - 100) / self.cols, (self.height - 100) / self.rows
         )
-        self.forty_two_coords = []
+        self.corners = {
+            (0, 0),
+            (self.cols - 1, 0),
+            (0, self.rows - 1),
+            (self.cols - 1, self.rows - 1),
+        }
+        self.forty_two_coords = set()
         if self.rows >= 10 and self.cols >= 14:
             posx = (self.cols - 7) // 2
             posy = (self.rows - 5) // 2
-            self.forty_two_coords = [
+            self.forty_two_coords = {
                 (posx + 0, posy + 0),
                 (posx + 4, posy + 0),
                 (posx + 5, posy + 0),
@@ -56,90 +81,65 @@ class Render(arcade.Window):
                 (posx + 4, posy + 4),
                 (posx + 5, posy + 4),
                 (posx + 6, posy + 4),
-            ]
+            }
 
     def on_key_press(self, symbol, modifiers):
         if symbol == arcade.key.LEFT:
-            if not self.maze[pacman.y][pacman.x] & 8:
-                pacman.x = max(pacman.x - 1, 0)
-            pacman.angle = 180
-            pacman.xeye = -1
-            pacman.yeye = 1
+            if not self.maze[self.pacman.y][self.pacman.x] & 8:
+                self.pacman.x = max(self.pacman.x - 1, 0)
+            self.pacman.angle = 180
+            self.pacman.xeye = -1
+            self.pacman.yeye = 1
         if symbol == arcade.key.RIGHT:
-            if not self.maze[pacman.y][pacman.x] & 2:
-                pacman.x = min(pacman.x + 1, self.cols - 1)
-            pacman.angle = 0
-            pacman.xeye = 1
-            pacman.yeye = 1
+            if not self.maze[self.pacman.y][self.pacman.x] & 2:
+                self.pacman.x = min(self.pacman.x + 1, self.cols - 1)
+            self.pacman.angle = 0
+            self.pacman.xeye = 1
+            self.pacman.yeye = 1
         if symbol == arcade.key.UP:
-            if not self.maze[pacman.y][pacman.x] & 1:
-                pacman.y = max(pacman.y - 1, 0)
-            pacman.angle = 90
-            pacman.xeye = 1
-            pacman.yeye = -1
+            if not self.maze[self.pacman.y][self.pacman.x] & 1:
+                self.pacman.y = max(self.pacman.y - 1, 0)
+            self.pacman.angle = 90
+            self.pacman.xeye = 1
+            self.pacman.yeye = -1
         if symbol == arcade.key.DOWN:
-            if not self.maze[pacman.y][pacman.x] & 4:
-                pacman.y = min(pacman.y + 1, self.rows - 1)
-            pacman.angle = 270
-            pacman.xeye = -1
-            pacman.yeye = 1
+            if not self.maze[self.pacman.y][self.pacman.x] & 4:
+                self.pacman.y = min(self.pacman.y + 1, self.rows - 1)
+            self.pacman.angle = 270
+            self.pacman.xeye = -1
+            self.pacman.yeye = 1
+        self.pacman.path.add((self.pacman.x, self.pacman.y))
         if symbol == arcade.key.F:
             self.set_fullscreen(not self.fullscreen)
         if symbol == arcade.key.Q:
             exit(0)
 
     def center_coordinates(self, x, y):
-        middle_collumn = (len(self.maze[0]) - 1) / 2
-        middle_row = (len(self.maze) - 1) / 2
-        nx = self.width / 2 + (x - middle_collumn) * self.cell_size
-        ny = self.height / 2 - (y - middle_row) * self.cell_size
+        nx = self.width / 2 + (x - self.total_w) * self.cell_size
+        ny = self.height / 2 - (y - self.total_h) * self.cell_size
         return (nx, ny)
 
     def on_update(self, delta_time):
         self.progress += 6 * delta_time
 
-    def get_lines(self, cords: tuple[int, int]):
-        x, y = cords
-        s = self.cell_size
-        half = s / 2
-        center_x, center_y = self.center_coordinates(x, y)
-        return {
-            1: [
-                (center_x - half, center_y + half),
-                (center_x + half, center_y + half),
-            ],
-            2: [
-                (center_x + half, center_y + half),
-                (center_x + half, center_y - half),
-            ],
-            4: [
-                (center_x - half, center_y - half),
-                (center_x + half, center_y - half),
-            ],
-            8: [
-                (center_x - half, center_y + half),
-                (center_x - half, center_y - half),
-            ],
-        }
-
-    def draw_pacman(self, pacman):
-        cx, cy = self.center_coordinates(pacman.x, pacman.y)
+    def draw_pacman(self):
+        cx, cy = self.center_coordinates(self.pacman.x, self.pacman.y)
         arcade.draw_arc_filled(
             cx,
             cy,
             15 * 0.025 * self.cell_size,
             15 * 0.025 * self.cell_size,
             arcade.color.YELLOW,
-            30 + pacman.angle + 15 * sin(self.progress),
-            330 + pacman.angle - 15 * sin(self.progress),
+            30 + self.pacman.angle + 15 * sin(self.progress),
+            330 + self.pacman.angle - 15 * sin(self.progress),
         )
-        arcade.draw_circle_filled(
-            cx + 2 * pacman.xeye,
-            cy + 15 * pacman.yeye,
+        """arcade.draw_circle_filled(
+            cx + 2 * self.pacman.xeye,
+            cy + 15 * self.pacman.yeye,
             1 * 0.025 * self.cell_size,
             arcade.color.BLACK,
             num_segments=100,
-        )
+        )"""
 
     def draw_monster(self, cx, cy, color):
         s = 0.002 * self.cell_size
@@ -162,42 +162,42 @@ class Render(arcade.Window):
             cy + 15 * s,
             30 * s,
             arcade.color.WHITE,
-            num_segments=150,
+            num_segments=32,
         )
         arcade.draw_circle_filled(
             cx - 35 * s,
             cy + 15 * s,
             20 * s,
             arcade.color.BLACK,
-            num_segments=150,
+            num_segments=32,
         )
         arcade.draw_circle_filled(
             cx - 35 * s + 5 * s * sin(self.progress),
             cy + 19 * s,
             3 * s,
             arcade.color.WHEAT,
-            num_segments=150,
+            num_segments=32,
         )
         arcade.draw_circle_filled(
             cx + 35 * s,
             cy + 15 * s,
             30 * s,
             arcade.color.WHITE,
-            num_segments=150,
+            num_segments=32,
         )
         arcade.draw_circle_filled(
             cx + 35 * s,
             cy + 15 * s,
             20 * s,
             arcade.color.BLACK,
-            num_segments=150,
+            num_segments=32,
         )
         arcade.draw_circle_filled(
             cx + 35 * s + 5 * s * sin(self.progress),
             cy + 19 * s,
             3 * s,
             arcade.color.WHEAT,
-            num_segments=150,
+            num_segments=32,
         )
 
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
@@ -210,48 +210,93 @@ class Render(arcade.Window):
         dot_radius = max(1, self.cell_size * 0.05)
         for r in range(len(maze)):
             for c in range(len(maze[r])):
-                lines = self.get_lines((c, r))
-                for flag, square in lines.items():
-                    x, y = square
-                    if maze[r][c] & flag:
-                        arcade.draw_line(
-                            x[0],
-                            x[1],
-                            y[0],
-                            y[1],
-                            arcade.color.DARK_BLUE,
-                            wall_thickness,
-                        )
-                    sx, sy = self.center_coordinates(c, r)
-                    pacman.path.add((pacman.x, pacman.y))
-                    # print(pacman.path)
-                    if c == pacman.x and r == pacman.y:
-                        self.draw_pacman(pacman)
-                    elif c == 0 and r == 0:
-                        self.draw_monster(sx, sy, arcade.color.YELLOW)
-                    elif c == 0 and r == self.rows - 1:
-                        self.draw_monster(sx, sy, arcade.color.GREEN)
-                    elif c == self.cols - 1 and r == 0:
-                        self.draw_monster(sx, sy, arcade.color.PURPLE)
-                    elif c == self.cols - 1 and r == self.rows - 1:
-                        self.draw_monster(sx, sy, arcade.color.ORANGE)
+                sx, sy = self.center_coordinates(c, r)
+                half = self.cell_size / 2
+                cell_val = maze[r][c]
+                if cell_val & 1:
+                    arcade.draw_line(
+                        sx - half,
+                        sy + half,
+                        sx + half,
+                        sy + half,
+                        arcade.color.DARK_BLUE,
+                        wall_thickness,
+                    )
+                if cell_val & 2:
+                    arcade.draw_line(
+                        sx + half,
+                        sy + half,
+                        sx + half,
+                        sy - half,
+                        arcade.color.DARK_BLUE,
+                        wall_thickness,
+                    )
+                if cell_val & 4:
+                    arcade.draw_line(
+                        sx - half,
+                        sy - half,
+                        sx + half,
+                        sy - half,
+                        arcade.color.DARK_BLUE,
+                        wall_thickness,
+                    )
+                if cell_val & 8:
+                    arcade.draw_line(
+                        sx - half,
+                        sy + half,
+                        sx - half,
+                        sy - half,
+                        arcade.color.DARK_BLUE,
+                        wall_thickness,
+                    )
+                if (c, r) in self.forty_two_coords:
+                    sqr = arcade.rect.XYWH(
+                        sx,
+                        sy,
+                        self.cell_size * 0.5,
+                        self.cell_size * 0.5,
+                    )
+                    arcade.draw_rect_filled(sqr, arcade.color.RED)
 
-                    if (c, r) in self.forty_two_coords:
-                        sqr = arcade.rect.XYWH(
+                elif (c, r) in self.pacman.neighbors:
+                    arcade.draw_circle_filled(
+                        sx,
+                        sy,
+                        dot_radius * 1.5,
+                        arcade.color.RED,
+                        num_segments=32,
+                    )
+                elif (c, r) not in self.pacman.path:
+                    if (c, r) in self.corners:
+                        arcade.draw_circle_filled(
                             sx,
                             sy,
-                            self.cell_size * 0.5,
-                            self.cell_size * 0.5,
+                            dot_radius * 2.5,
+                            arcade.color.WHITE,
+                            num_segments=32,
                         )
-                        arcade.draw_rect_filled(sqr, arcade.color.RED)
-                    elif (c, r) not in pacman.path:
+                    else:
                         arcade.draw_circle_filled(
-                            sx, sy, dot_radius, arcade.color.WHITE
+                            sx,
+                            sy,
+                            dot_radius,
+                            arcade.color.WHITE,
+                            num_segments=32,
                         )
+
+                if c == self.pacman.x and r == self.pacman.y:
+                    self.draw_pacman()
+                elif c == 0 and r == 0:
+                    self.draw_monster(sx, sy, arcade.color.YELLOW)
+                elif c == 0 and r == self.rows - 1:
+                    self.draw_monster(sx, sy, arcade.color.GREEN)
+                elif c == self.cols - 1 and r == 0:
+                    self.draw_monster(sx, sy, arcade.color.PURPLE)
+                elif c == self.cols - 1 and r == self.rows - 1:
+                    self.draw_monster(sx, sy, arcade.color.ORANGE)
 
 
 pacman = Pacman(maze)
-# print(pacman.x, pacman.y)
-# exit()
 Render(maze, pacman)
+ghost = Ghost(maze)
 arcade.run()
