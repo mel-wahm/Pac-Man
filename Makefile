@@ -1,4 +1,4 @@
 run:
-	@python3 maze_display.py
+	@python3 main.py
 it: run
 	@clear
