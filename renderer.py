@@ -3,6 +3,7 @@ import arcade
 from game_logic import center_coordinates
 from ghost import Ghost
 from pacman import Directions, Pacman
+from math import hypot
 
 
 class Render(arcade.Window):
@@ -22,8 +23,9 @@ class Render(arcade.Window):
         self.ghost_speed = 0
         self.pacman_speed = 0
         self.seconds = 0
+        self.pause = 0
         self.cell_size = min(
-            (self.width - 100) / self.cols, (self.height - 100) / self.rows
+            (self.width - 150) / self.cols, (self.height - 150) / self.rows
         )
         self.corners = {
             (0, 0),
@@ -97,6 +99,8 @@ class Render(arcade.Window):
             self.pacman.next_direction = Directions.DOWN
         if symbol == arcade.key.F:
             self.set_fullscreen(not self.fullscreen)
+        if symbol == arcade.key.SPACE:
+            self.pause = not(self.pause)
         if symbol == arcade.key.Q:
             exit(0)
 
@@ -112,25 +116,44 @@ class Render(arcade.Window):
         )
 
     def on_update(self, delta_time):
-        self.sec += delta_time
-        self.progress += 6 * delta_time
-        self.ghost_speed += delta_time
-        self.pacman_speed += delta_time
-
-
-        if self.ghost_speed > 0.45:
-            self.ghost_speed = 0
-            for ghost in self.ghosts:
-                ghost.choose_target()
-
         for ghost in self.ghosts:
-            ghost.update(7, delta_time)
-            ghost.draw_cords = self.cc(ghost.smooth_x, ghost.smooth_y)
+            if hypot(
+                (ghost.smooth_x - self.pacman.smooth_x),
+                (ghost.smooth_y - self.pacman.smooth_y)
+			) < 0.5:
+            # if (ghost.r_c[0], ghost.r_c[1]) == (self.pacman.prev_x,
+            #                                     self.pacman.prev_y):
+                # self.pause = 1
+                self.pacman.x = self.pacman.init_x
+                self.pacman.smooth_x = self.pacman.init_x
+                self.pacman.y = self.pacman.init_y
+                self.pacman.smooth_y = self.pacman.init_y
+                self.pacman.prev_x = self.pacman.init_x
+                self.pacman.prev_y = self.pacman.init_y
+                self.pacman.direction = Directions.DOWN
+                self.pacman.next_direction = Directions.DOWN
 
-        if self.pacman_speed > 0.15:
-            self.pacman_speed = 0
-            self.pacman.update()
-        self.pacman.smooth_animation(28, delta_time)
+        if not self.pause:
+            self.sec += delta_time
+            self.progress += 6 * delta_time
+            self.ghost_speed += delta_time
+            self.pacman_speed += delta_time
+
+
+            speed = 7
+            if self.ghost_speed > 2.5 / speed:
+                self.ghost_speed = 0
+                for ghost in self.ghosts:
+                    ghost.choose_target()
+    
+            for ghost in self.ghosts:
+                ghost.update(speed, delta_time)
+                ghost.draw_cords = self.cc(ghost.smooth_x, ghost.smooth_y)
+            duration = 0.15
+            if self.pacman_speed > duration:
+                self.pacman_speed = 0
+                self.pacman.update()
+            self.pacman.smooth_animation(delta_time, duration)
 
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         self.drag_x += dx
@@ -138,31 +161,37 @@ class Render(arcade.Window):
 
     def on_draw(self):
         self.clear()
-        wall_thickness = max(1, int(self.cell_size * 0.05))
+        wall_thickness = max(1, int(self.cell_size * 0.03))
         dot_radius = max(1, self.cell_size * 0.05)
         for r in range(len(self.maze)):
             for c in range(len(self.maze[r])):
                 real_x, real_y = self.cc(c, r)
                 half = self.cell_size / 2
                 cell_val = self.maze[r][c]
+                wall_color = (33, 33, 255)
+                w_thick = wall_thickness
                 if cell_val & 1:
                     arcade.draw_line(
                         real_x - half,
                         real_y + half,
                         real_x + half,
                         real_y + half,
-                        (33, 33, 255),
-                        wall_thickness * 2,
+                        wall_color,
+                        w_thick,
                     )
+                    arcade.draw_circle_filled(real_x - half, real_y + half, wall_thickness, wall_color)
+                    arcade.draw_circle_filled(real_x + half, real_y + half, wall_thickness, wall_color)
                 if cell_val & 2:
                     arcade.draw_line(
                         real_x + half,
                         real_y + half,
                         real_x + half,
                         real_y - half,
-                        (33, 33, 255),
-                        wall_thickness * 2,
+                        wall_color,
+                        w_thick,
                     )
+                    arcade.draw_circle_filled(real_x + half, real_y + half, wall_thickness, wall_color)
+                    arcade.draw_circle_filled(real_x + half, real_y - half, wall_thickness, wall_color)
 
                 if cell_val & 4:
                     arcade.draw_line(
@@ -170,9 +199,11 @@ class Render(arcade.Window):
                         real_y - half,
                         real_x + half,
                         real_y - half,
-                        (33, 33, 255),
-                        wall_thickness * 2,
+                        wall_color,
+                        w_thick,
                     )
+                    arcade.draw_circle_filled(real_x - half, real_y - half, wall_thickness, wall_color)
+                    arcade.draw_circle_filled(real_x + half, real_y - half, wall_thickness, wall_color)
 
                 if cell_val & 8:
                     arcade.draw_line(
@@ -180,9 +211,11 @@ class Render(arcade.Window):
                         real_y + half,
                         real_x - half,
                         real_y - half,
-                        (33, 33, 255),
-                        wall_thickness * 2,
+                        wall_color,
+                        w_thick,
                     )
+                    arcade.draw_circle_filled(real_x - half, real_y + half, wall_thickness, wall_color)
+                    arcade.draw_circle_filled(real_x - half, real_y - half, wall_thickness, wall_color)
 
                 if (c, r) in self.forty_two_coords:
                     sqr = arcade.rect.XYWH(

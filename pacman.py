@@ -15,10 +15,15 @@ class Directions(Enum):
 
 class Pacman:
     def __init__(self, maze):
-        self.x = (len(maze[0]) - 1) // 2
-        self.y = (len(maze) - 1) // 2
-        self.smooth_x = (len(maze[0]) - 1) // 2
-        self.smooth_y = (len(maze) - 1) // 2
+        self.init_x = (len(maze[0]) - 1) // 2
+        self.x = self.init_x
+        self.init_y = (len(maze) - 1) // 2
+        self.y = self.init_y
+        self.prev_x = float(self.x)
+        self.prev_y = float(self.y)
+        self.smooth_x = float(self.x)
+        self.smooth_y = float(self.y)
+        self.step_time = 0.0
         self.angle = 0
         self.path = {(self.x, self.y)}
         self.direction = Directions.DOWN
@@ -37,6 +42,10 @@ class Pacman:
         return False
 
     def update(self):
+        self.prev_x = self.smooth_x
+        self.prev_y = self.smooth_y
+        self.step_time = 0.0
+
         cols = len(self.maze[0])
         rows = len(self.maze)
         self.path.add((self.x, self.y))
@@ -58,9 +67,12 @@ class Pacman:
             if not self.maze[self.y][self.x] & 4:
                 self.y = min(self.y + 1, rows - 1)
             self.angle = 270
-    def	smooth_animation(self, speed, delta_time):
-        self.smooth_x += (self.x - self.smooth_x) * speed * delta_time
-        self.smooth_y += (self.y - self.smooth_y) * speed * delta_time
+
+    def smooth_animation(self, delta_time, duration=0.3):
+        self.step_time += delta_time
+        progress = min(1.0, self.step_time / duration)
+        self.smooth_x = self.prev_x + (self.x - self.prev_x) * progress
+        self.smooth_y = self.prev_y + (self.y - self.prev_y) * progress
 
     @property
     def neighbors(self):
