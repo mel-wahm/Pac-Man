@@ -25,6 +25,38 @@ class Render(arcade.Window):
         self.pacman_speed = 0
         self.seconds = 0
         self.pause = 0
+        cx = self.width / 2
+        cy = self.height / 2
+        self.pause_text = arcade.Text(
+            "PAUSE",
+            cx,
+            cy,
+            (200, 200, 200),
+            font_size=60,
+            anchor_x="center",
+            anchor_y="center",
+            bold=True,
+        )
+        self.died_text = arcade.Text(
+            "YOU DIED",
+            cx,
+            cy,
+            (180, 15, 15),
+            font_size=80,
+            anchor_x="center",
+            anchor_y="center",
+            bold=True,
+        )
+        self.won_text = arcade.Text(
+            "YOU WON",
+            cx,
+            cy,
+            (255, 200, 0),
+            font_size=80,
+            anchor_x="center",
+            anchor_y="center",
+            bold=True,
+        )
         self.cell_size = min(
             (self.width - 150) / self.cols, (self.height - 150) / self.rows
         )
@@ -101,7 +133,7 @@ class Render(arcade.Window):
         if symbol == arcade.key.F:
             self.set_fullscreen(not self.fullscreen)
         if symbol == arcade.key.SPACE:
-            self.state = 3
+            self.state = 2
             self.pause = not (self.pause)
         if symbol == arcade.key.Q:
             exit(0)
@@ -121,34 +153,34 @@ class Render(arcade.Window):
         if len(self.pacman.path) == len(self.maze) * len(self.maze[0]):
             self.pause = 1
             self.state = 3
-        # for ghost in self.ghosts:
-        #     if (
-        #         hypot(
-        #             (ghost.smooth_x - self.pacman.smooth_x),
-        #             (ghost.smooth_y - self.pacman.smooth_y),
-        #         )
-        #         < 0.5
-        #     ):
-        #         # if (ghost.r_c[0], ghost.r_c[1]) == (self.pacman.prev_x,
-        #         #                                     self.pacman.prev_y):
-        #         # self.pause = 1
-        #         self.pacman.death += 1
-        #         self.pacman.x = self.pacman.init_x
-        #         self.pacman.smooth_x = self.pacman.init_x
-        #         self.pacman.y = self.pacman.init_y
-        #         self.pacman.smooth_y = self.pacman.init_y
-        #         self.pacman.prev_x = self.pacman.init_x
-        #         self.pacman.prev_y = self.pacman.init_y
-        #         self.pacman.direction = Directions.DOWN
-        #         self.pacman.next_direction = Directions.DOWN
-        #         for g in self.ghosts:
-        #             g.r_c = g.default
-        #         if self.pacman.death == 3:
-        #             self.state = 1
-        #             self.pause = 1
-        #             self.pacman.death = 0
-        #             self.pacman.path = {(self.pacman.x, self.pacman.y)}
-        #
+        for ghost in self.ghosts:
+            if (
+                hypot(
+                    (ghost.smooth_x - self.pacman.smooth_x),
+                    (ghost.smooth_y - self.pacman.smooth_y),
+                )
+                < 0.5
+            ):
+                # if (ghost.r_c[0], ghost.r_c[1]) == (self.pacman.prev_x,
+                #                                     self.pacman.prev_y):
+                # self.pause = 1
+                self.pacman.death += 1
+                self.pacman.x = self.pacman.init_x
+                self.pacman.smooth_x = self.pacman.init_x
+                self.pacman.y = self.pacman.init_y
+                self.pacman.smooth_y = self.pacman.init_y
+                self.pacman.prev_x = self.pacman.init_x
+                self.pacman.prev_y = self.pacman.init_y
+                self.pacman.direction = Directions.DOWN
+                self.pacman.next_direction = Directions.DOWN
+                for g in self.ghosts:
+                    g.r_c = g.default
+                if self.pacman.death == 3:
+                    self.state = 1
+                    self.pause = 1
+                    self.pacman.death = 0
+                    self.pacman.path = {(self.pacman.x, self.pacman.y)}
+
         if not self.pause:
             self.sec += delta_time
             self.progress += 6 * delta_time
@@ -307,45 +339,13 @@ class Render(arcade.Window):
         for ghost in self.ghosts:
             ghost.draw()
         if self.pause:
+            cx = self.width / 2
+            cy = self.height / 2
+            shade = arcade.rect.XYWH(cx, cy, self.width, self.height)
+            arcade.draw_rect_filled(shade, (10, 10, 10, 170))
             if self.state == 1:
-                dead = arcade.rect.XYWH(
-                    self.width / 2, self.height / 2 - 100, 400, 80
-                )
-                arcade.draw_rect_filled(dead, arcade.color.WHITE)
-                arcade.draw_text(
-                    "YOU DIED",
-                    self.width / 2,
-                    self.height / 2 - 100,
-                    arcade.color.BLACK,
-                    font_size=40,
-                    anchor_x="center",
-                    anchor_y="center",
-                )
+                self.died_text.draw()
             if self.state == 2:
-                pause = arcade.rect.XYWH(
-                    self.width / 2, self.height / 2 - 100, 400, 80
-                )
-                arcade.draw_rect_filled(pause, arcade.color.WHITE)
-                arcade.draw_text(
-                    "PAUSE",
-                    self.width / 2,
-                    self.height / 2 - 100,
-                    arcade.color.BLACK,
-                    font_size=40,
-                    anchor_x="center",
-                    anchor_y="center",
-                )
+                self.pause_text.draw()
             if self.state == 3:
-                win = arcade.rect.XYWH(
-                    self.width / 2, self.height / 2 - 100, 400, 80
-                )
-                arcade.draw_rect_filled(win, arcade.color.WHITE)
-                arcade.draw_text(
-                    "YOU WON",
-                    self.width / 2,
-                    self.height / 2 - 100,
-                    arcade.color.BLACK,
-                    font_size=40,
-                    anchor_x="center",
-                    anchor_y="center",
-                )
+                self.won_text.draw()
