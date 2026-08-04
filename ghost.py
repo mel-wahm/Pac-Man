@@ -1,6 +1,6 @@
 import random
 import arcade
-from game_logic import neighbor_coordinates
+from game_logic import neighbor_coordinates, shortest_path, construct_path
 
 
 class Ghost:
@@ -12,15 +12,19 @@ class Ghost:
         self.maze = maze
         self.color = color
         self.c_size = c_size
+        self.path = []
 
     def choose_target(self):
-        self.r_c = random.choice(
-            neighbor_coordinates(self.r_c[0], self.r_c[1], self.maze)
-        )
+        if len(self.path) > 1:
+              self.r_c = self.path[1]
 
-    def update(self, speed, delta_time):
+    def update(self, speed, delta_time, pacman):
         self.smooth_x += (self.r_c[0] - self.smooth_x) * speed * delta_time
         self.smooth_y += (self.r_c[1] - self.smooth_y) * speed * delta_time
+        pac = (pacman.x, pacman.y)
+        self.path = construct_path(pac, self.r_c,
+                    shortest_path(self.r_c, pac, self.maze))
+        print(self.path)
 
     def draw(self):
         cx, cy = self.draw_cords

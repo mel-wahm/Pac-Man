@@ -147,14 +147,14 @@ class Render(arcade.Window):
                     ghost.choose_target()
     
             for ghost in self.ghosts:
-                ghost.update(speed, delta_time)
+                ghost.update(speed, delta_time, self.pacman)
                 ghost.draw_cords = self.cc(ghost.smooth_x, ghost.smooth_y)
             duration = 0.15
             if self.pacman_speed > duration:
                 self.pacman_speed = 0
                 self.pacman.update()
             self.pacman.smooth_animation(delta_time, duration)
-
+        pass
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         self.drag_x += dx
         self.drag_y += dy

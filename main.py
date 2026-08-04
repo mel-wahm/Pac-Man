@@ -2,7 +2,7 @@ import arcade
 
 from mazegenerator import MazeGenerator
 from renderer import Render
-from game_logic import shortest_path
+from game_logic import shortest_path, construct_path
 width = 19
 height = 7
 maze = MazeGenerator(size=(width, height)).maze
@@ -10,13 +10,9 @@ maze = MazeGenerator(size=(width, height)).maze
 Render(maze)
 arcade.run()
 # path = shortest_path((0, 0), (5, 5), maze)
+# print(path)
 
-
-import heapq
-
-lista = [1, 2, 3]
-
-print(heapq.heappop(lista))
-print(heapq.heappop(lista))
-print(heapq.heappop(lista))
-print(heapq.heappop(lista))
+s = (0, 0)
+e = (5, 5)
+print(construct_path(e, s, shortest_path(s, e, maze)))
+# print(shortest_path(s, e, maze))
