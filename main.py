@@ -3,8 +3,8 @@ import arcade
 from mazegenerator import MazeGenerator
 from renderer import Render
 
-width = 19
-height = 9
+width = 11
+height = 5
 maze = MazeGenerator(size=(width, height)).maze
 # print(hasattr(arcade, "color"))
 Render(maze)
