@@ -29,6 +29,7 @@ class Pacman:
         self.direction = Directions.DOWN
         self.next_direction = Directions.DOWN
         self.maze = maze
+        self.death = 0
 
     def can_turn(self, x, y, direction):
         if direction == Directions.UP:

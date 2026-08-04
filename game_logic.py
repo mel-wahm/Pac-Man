@@ -1,5 +1,6 @@
 from collections import deque
 
+
 def neighbor_coordinates(x, y, maze):
     neighbors = []
     c = len(maze[0]) - 1
@@ -21,7 +22,7 @@ def center_coordinates(x, y, width, height, total_w, total_h, cell_size):
     return (nx, ny)
 
 
-def	shortest_path(start, end, maze):
+def shortest_path(start, end, maze):
     px, py = start
     ex, ey = end
     final_path = {}
@@ -39,9 +40,11 @@ def	shortest_path(start, end, maze):
             final_path[(nx, ny)] = (cx, cy)
             if (nx, ny) == (ex, ey):
                 return final_path
-            
+
 
 from time import sleep
+
+
 def construct_path(end, start, final):
     ex, ey = end
     sx, sy = start
@@ -51,4 +54,3 @@ def construct_path(end, start, final):
         ex, ey = final[(ex, ey)]
         final_path.append((ex, ey))
     return final_path[::-1]
-
