@@ -127,6 +127,7 @@ class Render(arcade.Window):
                 # if (ghost.r_c[0], ghost.r_c[1]) == (self.pacman.prev_x,
                 #                                     self.pacman.prev_y):
                 # self.pause = 1
+                self.pacman.death += 1
                 self.pacman.x = self.pacman.init_x
                 self.pacman.smooth_x = self.pacman.init_x
                 self.pacman.y = self.pacman.init_y
@@ -135,11 +136,12 @@ class Render(arcade.Window):
                 self.pacman.prev_y = self.pacman.init_y
                 self.pacman.direction = Directions.DOWN
                 self.pacman.next_direction = Directions.DOWN
-                if self.pacman.death == 2:
+                for g in self.ghosts:
+                    g.r_c = g.default
+                if self.pacman.death == 3:
                     self.pause = 1
+                    self.death = 0
                     self.pacman.path = {(self.pacman.x, self.pacman.y)}
-                self.pacman.death = (self.pacman.death + 1) % 3
-                ghost.r_c = ghost.default
 
         if not self.pause:
             self.sec += delta_time

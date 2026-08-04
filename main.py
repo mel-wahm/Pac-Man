@@ -2,7 +2,6 @@ import arcade
 
 from mazegenerator import MazeGenerator
 from renderer import Render
-from game_logic import shortest_path, construct_path
 
 width = 19
 height = 9

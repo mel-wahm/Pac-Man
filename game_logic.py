@@ -42,9 +42,6 @@ def shortest_path(start, end, maze):
                 return final_path
 
 
-from time import sleep
-
-
 def construct_path(end, start, final):
     ex, ey = end
     sx, sy = start
