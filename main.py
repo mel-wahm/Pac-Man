@@ -1,10 +1,10 @@
 import arcade
 
 from mazegenerator import MazeGenerator
-from renderer import Render
+from game import Game
 
 width = 19
 height = 7
 maze = MazeGenerator(size=(width, height)).maze
-Render(maze)
+Game(maze)
 arcade.run()

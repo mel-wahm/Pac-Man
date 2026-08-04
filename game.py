@@ -6,7 +6,7 @@ from pacman import Directions, Pacman
 from math import hypot
 
 
-class Render(arcade.Window):
+class Game(arcade.Window):
     def __init__(self, maze: list):
         super().__init__(1980, 1080, "PACMAN", True, True, vsync=True)
         self.background_color = (10, 10, 30)
