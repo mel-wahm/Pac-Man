@@ -3,8 +3,13 @@ import arcade
 from mazegenerator import MazeGenerator
 from game import Game
 
-width = 9
-height = 15
+
+width = 21
+height = 13
 maze = MazeGenerator(size=(width, height)).maze
 Game(maze)
-arcade.run()
+
+try:
+	arcade.run()
+except KeyboardInterrupt:
+	exit()
