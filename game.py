@@ -243,6 +243,9 @@ class Game(arcade.Window):
                 for g in self.ghosts:
                     g.r_c = g.default
                     g.path = []
+                    g.smooth_x = float(g.default[0])
+                    g.smooth_y = float(g.default[1])
+                    g.draw_cords = self.cc(g.smooth_x, g.smooth_y)
                 if self.pacman.death == 3:
                     self.reset_game()
                     self.state = 1

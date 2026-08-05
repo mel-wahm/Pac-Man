@@ -35,14 +35,12 @@ class Ghost:
         cx, cy = self.draw_cords
         s = 0.002 * self.c_size
 
-        # Head & Body
         arcade.draw_arc_filled(
             cx, cy + 15 * s, 240 * s, 240 * s, self.color, 0, 180
         )
         rect = arcade.rect.XYWH(cx, cy - 30 * s, 240 * s, 90 * s)
         arcade.draw_rect_filled(rect, self.color)
 
-        # Skirt waves
         arcade.draw_arc_filled(
             cx, cy - 75 * s, 80 * s, 80 * s, self.color, 180, 360
         )
@@ -53,7 +51,6 @@ class Ghost:
             cx + 80 * s, cy - 75 * s, 80 * s, 80 * s, self.color, 180, 360
         )
 
-        # Eyes (Left & Right)
         for eye_x in (cx - 35 * s, cx + 35 * s):
             arcade.draw_circle_filled(
                 eye_x, cy + 15 * s, 30 * s, arcade.color.WHITE, num_segments=32
