@@ -13,6 +13,14 @@ class Directions(Enum):
     DOWN = "down"
 
 
+DIR_DATA = {
+    Directions.UP: (1, 0, -1, 90),
+    Directions.RIGHT: (2, 1, 0, 0),
+    Directions.DOWN: (4, 0, 1, 270),
+    Directions.LEFT: (8, -1, 0, 180),
+}
+
+
 class Pacman:
     def __init__(self, maze):
         self.init_x = (len(maze[0]) - 1) // 2
@@ -32,15 +40,14 @@ class Pacman:
         self.death = 0
 
     def can_turn(self, x, y, direction):
-        if direction == Directions.UP:
-            return not (self.maze[y][x] & 1)
-        if direction == Directions.RIGHT:
-            return not (self.maze[y][x] & 2)
-        if direction == Directions.DOWN:
-            return not (self.maze[y][x] & 4)
-        if direction == Directions.LEFT:
-            return not (self.maze[y][x] & 8)
-        return False
+        mask, _, _, _ = DIR_DATA[direction]
+        return not (self.maze[y][x] & mask)
+
+    def set_next_direction(self, new_dir):
+        self.next_direction = new_dir
+        if self.can_turn(self.x, self.y, new_dir):
+            self.direction = new_dir
+            self.angle = DIR_DATA[new_dir][3]
 
     def update(self):
         self.prev_x = self.smooth_x
@@ -50,26 +57,18 @@ class Pacman:
         cols = len(self.maze[0])
         rows = len(self.maze)
         self.path.add((self.x, self.y))
+
         if self.can_turn(self.x, self.y, self.next_direction):
             self.direction = self.next_direction
-        if self.direction == Directions.LEFT:
-            if not self.maze[self.y][self.x] & 8:
-                self.x = max(self.x - 1, 0)
-            self.angle = 180
-        if self.direction == Directions.RIGHT:
-            if not self.maze[self.y][self.x] & 2:
-                self.x = min(self.x + 1, cols - 1)
-            self.angle = 0
-        if self.direction == Directions.UP:
-            if not self.maze[self.y][self.x] & 1:
-                self.y = max(self.y - 1, 0)
-            self.angle = 90
-        if self.direction == Directions.DOWN:
-            if not self.maze[self.y][self.x] & 4:
-                self.y = min(self.y + 1, rows - 1)
-            self.angle = 270
 
-    def smooth_animation(self, delta_time, duration=0.3):
+        mask, dx, dy, angle = DIR_DATA[self.direction]
+        self.angle = angle
+
+        if not (self.maze[self.y][self.x] & mask):
+            self.x = max(0, min(cols - 1, self.x + dx))
+            self.y = max(0, min(rows - 1, self.y + dy))
+
+    def smooth_animation(self, delta_time, duration=0.15):
         self.step_time += delta_time
         progress = min(1.0, self.step_time / duration)
         self.smooth_x = self.prev_x + (self.x - self.prev_x) * progress

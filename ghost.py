@@ -15,21 +15,22 @@ class Ghost:
         self.c_size = c_size
         self.path = []
 
-    def choose_target(self):
+    def choose_target(self, pacman):
         if len(self.path) > 1 and len(self.path) < 10:
             self.r_c = self.path[1]
         else:
             x, y = self.r_c
             self.r_c = random.choice(neighbor_coordinates(x, y, self.maze))
-
-    def update(self, speed, delta_time, pacman):
-        self.smooth_x += (self.r_c[0] - self.smooth_x) * speed * delta_time
-        self.smooth_y += (self.r_c[1] - self.smooth_y) * speed * delta_time
         pac = (pacman.x, pacman.y)
         self.path = construct_path(
-            pac, self.r_c, shortest_path(self.r_c, pac, self.maze)
-        )
+					pac, self.r_c, shortest_path(self.r_c, pac, self.maze)
+				)
+		
 
+    def update(self, speed, delta_time):
+        self.smooth_x += (self.r_c[0] - self.smooth_x) * speed * delta_time
+        self.smooth_y += (self.r_c[1] - self.smooth_y) * speed * delta_time
+        
     def draw(self):
         cx, cy = self.draw_cords
         s = 0.002 * self.c_size
