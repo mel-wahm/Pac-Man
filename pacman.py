@@ -38,7 +38,25 @@ class Pacman:
         self.next_direction = Directions.DOWN
         self.maze = maze
         self.death = 0
-
+        self.score = 0
+        self.score_text = arcade.Text(
+            f"SCORE: {self.score}",
+            x=150,
+            y=70,
+            color=arcade.color.YELLOW,
+            font_size=24,
+            bold=True,
+        )
+        self.lives_text = arcade.Text(
+					f"LIVES: ",
+					x=0,
+					y=72,
+					color=arcade.color.YELLOW,
+					font_size=24,
+					bold=True,
+                    anchor_x="center",
+                    anchor_y="center",
+				)
     def can_turn(self, x, y, direction):
         mask, _, _, _ = DIR_DATA[direction]
         return not (self.maze[y][x] & mask)

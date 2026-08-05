@@ -25,6 +25,7 @@ class Game(arcade.Window):
         self.pacman_speed = 0
         self.seconds = 0
         self.pause = 0
+        
         cx = self.width / 2
         cy = self.height / 2
         self.pause_text = arcade.Text(
@@ -158,6 +159,8 @@ class Game(arcade.Window):
         self.pacman_speed = 0
 
         self.pacman.death = 0
+        self.pacman.score = 0
+        self.pacman.score_text.text = "SCORE: 0"
         self.pacman.x = self.pacman.init_x
         self.pacman.y = self.pacman.init_y
         self.pacman.smooth_x = float(self.pacman.init_x)
@@ -277,6 +280,8 @@ class Game(arcade.Window):
 
             smooth_cell = (round(self.pacman.smooth_x), round(self.pacman.smooth_y))
             if smooth_cell in self.dots_grid:
+                self.pacman.score += 10
+                self.pacman.score_text.text = f"SCORE: {self.pacman.score}"
                 dot = self.dots_grid.pop(smooth_cell)
                 dot.remove_from_sprite_lists()
 
@@ -305,7 +310,15 @@ class Game(arcade.Window):
         self.pacman.draw(self)
         for ghost in self.ghosts:
             ghost.draw()
+        self.pacman.score_text.draw()
+        self.pacman.lives_text.x = self.width - 380
+        self.pacman.lives_text.draw()
 
+        lives_remaining = 3 - self.pacman.death
+        for i in range(lives_remaining):
+            arcade.draw_arc_filled(
+                self.width - 150 - ((150) - i * 50), 70, 40, 40, arcade.color.YELLOW, 30, 330
+            )
         if self.pause:
             cx = self.width / 2
             cy = self.height / 2
