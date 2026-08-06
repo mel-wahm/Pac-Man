@@ -4,8 +4,9 @@ from mazegenerator import MazeGenerator
 from game import Game
 
 
-width = 21
-height = 13
+
+width = 12
+height = 5
 maze = MazeGenerator(size=(width, height)).maze
 Game(maze)
 

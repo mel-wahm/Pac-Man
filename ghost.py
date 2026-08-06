@@ -1,3 +1,4 @@
+import math
 import random
 import arcade
 from game_logic import (Directions, neighbor_coordinates, 
@@ -30,6 +31,9 @@ class Ghost:
 			Directions.UP : Directions.DOWN,
 			Directions.DOWN : Directions.UP
 		}
+		self.edible = 0
+		self.anim_time = 0.0
+		self.eye_time = 0.0
 
 	def can_turn(self, x, y, direction):
 		mask, _, _, _ = DIR_DATA[direction]
@@ -64,38 +68,78 @@ class Ghost:
 				if neighbors:
 					self.r_c = random.choice(neighbors)
 
-
 	def update(self, speed, delta_time):
 		self.smooth_x += (self.r_c[0] - self.smooth_x) * speed * delta_time
 		self.smooth_y += (self.r_c[1] - self.smooth_y) * speed * delta_time
+		self.anim_time += delta_time
+		self.eye_time += delta_time * 8
 
 	def draw(self):
 		cx, cy = self.draw_cords
 		s = 0.002 * self.c_size
 
-		arcade.draw_arc_filled(
-			cx, cy + 15 * s, 240 * s, 240 * s, self.color, 0, 180
-		)
-		rect = arcade.rect.XYWH(cx, cy - 30 * s, 240 * s, 90 * s)
-		arcade.draw_rect_filled(rect, self.color)
-
-		arcade.draw_arc_filled(
-			cx, cy - 75 * s, 80 * s, 80 * s, self.color, 180, 360
-		)
-		arcade.draw_arc_filled(
-			cx - 80 * s, cy - 75 * s, 80 * s, 80 * s, self.color, 180, 360
-		)
-		arcade.draw_arc_filled(
-			cx + 80 * s, cy - 75 * s, 80 * s, 80 * s, self.color, 180, 360
-		)
-
-		for eye_x in (cx - 35 * s, cx + 35 * s):
-			arcade.draw_circle_filled(
-				eye_x, cy + 15 * s, 30 * s, arcade.color.WHITE, num_segments=32
+		if not self.edible:
+			arcade.draw_arc_filled(
+				cx, cy + 15 * s, 240 * s, 240 * s, self.color, 0, 180
 			)
-			arcade.draw_circle_filled(
-				eye_x, cy + 15 * s, 20 * s, (33, 33, 255), num_segments=32
+			rect = arcade.rect.XYWH(cx, cy - 30 * s, 240 * s, 90 * s)
+			arcade.draw_rect_filled(rect, self.color)
+
+			arcade.draw_arc_filled(
+				cx, cy - 75 * s, 80 * s, 80 * s, self.color, 180, 360
 			)
-			arcade.draw_circle_filled(
-				eye_x, cy + 19 * s, 3 * s, arcade.color.WHEAT, num_segments=32
+			arcade.draw_arc_filled(
+				cx - 80 * s, cy - 75 * s, 80 * s, 80 * s, self.color, 180, 360
+			)
+			arcade.draw_arc_filled(
+				cx + 80 * s, cy - 75 * s, 80 * s, 80 * s, self.color, 180, 360
+			)
+
+			for eye_x in (cx - 35 * s, cx + 35 * s):
+				arcade.draw_circle_filled(
+					eye_x, cy + 15 * s, 30 * s, arcade.color.WHITE, num_segments=32
+				)
+				arcade.draw_circle_filled(
+					eye_x, cy + 15 * s, 20 * s, (33, 33, 255), num_segments=32
+				)
+				arcade.draw_circle_filled(
+					eye_x, cy + 19 * s, 3 * s, arcade.color.WHEAT, num_segments=32
+				)
+		else:
+			edible_color = (0, 0, 64)
+
+			arcade.draw_arc_filled(
+				cx, cy + 15 * s, 240 * s, 240 * s, edible_color, 0, 180
+			)
+			rect = arcade.rect.XYWH(cx, cy - 30 * s, 240 * s, 90 * s)
+			arcade.draw_rect_filled(rect, edible_color)
+
+			eye_x = math.cos(self.eye_time) * 3
+			eye_y = math.sin(self.eye_time) * 3
+
+			for ex in (cx - 35 * s, cx + 35 * s):
+				arcade.draw_circle_filled(
+					ex, cy + 40 * s, 30 * s, arcade.color.WHITE, num_segments=32
+				)
+				arcade.draw_circle_filled(
+					ex + eye_x * s * 2, cy + 40 * s - eye_y * s * 2, 18 * s, edible_color, num_segments=32
+				)
+
+			mlx = cx - 80 * s
+			mouth = []
+			for i in range(20):
+				xs = mlx + i * 8 * s
+				y = cy - 50 * s + 6 * s * math.sin(i + self.anim_time * 5)
+				mouth.append((xs, y))
+
+			arcade.draw_line_strip(mouth, arcade.color.WHITE, max(2, int(6 * s)))
+
+			arcade.draw_arc_filled(
+				cx, cy - 75 * s, 80 * s, 80 * s, edible_color, 180, 360
+			)
+			arcade.draw_arc_filled(
+				cx - 80 * s, cy - 75 * s, 80 * s, 80 * s, edible_color, 180, 360
+			)
+			arcade.draw_arc_filled(
+				cx + 80 * s, cy - 75 * s, 80 * s, 80 * s, edible_color, 180, 360
 			)

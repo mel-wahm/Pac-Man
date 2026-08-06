@@ -10,7 +10,7 @@ class Game(arcade.Window):
 	def __init__(self, maze: list):
 		super().__init__(1980, 1080, "PACMAN", True, True, vsync=False)
 		self.background_color = (10, 10, 30)
-		self.dots_number = 0
+		self.dots_number = 25	
 		self.state = 0
 		self.maze = maze
 		self.pacman = Pacman(maze)
@@ -64,10 +64,6 @@ class Game(arcade.Window):
 			max_maze_width / self.cols,
 			(self.height - 100) / self.rows
 		)
-		print(min(
-			max_maze_width / self.cols,
-			(self.height - 100) / self.rows
-		))
 		self.corners = {
 			(0, 0),
 			(self.cols - 1, 0),
@@ -239,6 +235,9 @@ class Game(arcade.Window):
 		if symbol == arcade.key.SPACE:
 			self.state = 2
 			self.pause = not (self.pause)
+		if symbol == arcade.key.E:
+			for ghost in self.ghosts:
+				ghost.edible = not ghost.edible
 		if symbol == arcade.key.Q:
 			exit(0)
 
@@ -299,7 +298,7 @@ class Game(arcade.Window):
 			self.ghost_speed += delta_time
 			self.pacman_speed += delta_time 
 
-			speed = 6
+			speed = 2
 			if self.ghost_speed > 2.5 / speed:
 				self.ghost_speed = 0
 				for ghost in self.ghosts:
