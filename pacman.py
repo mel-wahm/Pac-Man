@@ -65,8 +65,23 @@ class Pacman:
 		self.angle = angle
 
 		if not (self.maze[self.y][self.x] & mask):
-			self.x = max(0, min(cols - 1, self.x + dx))
-			self.y = max(0, min(rows - 1, self.y + dy))
+			if self.x + dx >= 0 and self.x + dx < cols:
+				self.x += dx
+			elif self.x + dx < 0:
+				self.x = cols - 1
+				self.smooth_x = cols - 1
+			elif self.x + dx > cols - 1:
+				self.smooth_x = 0
+				self.x = 0
+
+			if self.y + dy >= 0 and self.y + dy < rows:
+				self.y += dy
+			elif self.y + dy < 0:
+				self.y = rows - 1
+				self.smooth_y = rows - 1
+			elif self.y + dy > rows - 1:
+				self.y = 0
+				self.smooth_y = 0
 
 	def smooth_animation(self, delta_time, duration=0.15):
 		self.step_time += delta_time
