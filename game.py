@@ -6,16 +6,16 @@ from ghost import Ghost
 from pacman import Directions, Pacman
 
 
-class Game(arcade.Window):
+class Game(arcade.View):
 	def __init__(self, maze: list):
-		super().__init__(1980, 1080, "PACMAN", True, True, vsync=False)
+		super().__init__()
 		maze[0][len(maze[0]) // 2] -= 1
 		maze[len(maze) - 1][len(maze[0]) // 2] -= 4
 		maze[len(maze) // 2][0] -= 8
 		maze[len(maze) // 2][len(maze[0]) - 1] -= 2
 		self.background_color = (10, 10, 30)
 		self.intro = 1
-		self.intro_wallpaper = arcade.load_texture("photos/pacman_logo.png")
+		self.intro_wallpaper = arcade.load_texture("wallpaper/wallpaper2.png")
 		self.dots_number = 0
 		self.state = 0
 		self.maze = maze
@@ -272,7 +272,7 @@ class Game(arcade.Window):
 		if symbol == arcade.key.DOWN:
 			self.pacman.set_next_direction(Directions.DOWN)
 		if symbol == arcade.key.F:
-			self.set_fullscreen(not self.fullscreen)
+			self.window.set_fullscreen(not self.fullscreen)
 		if symbol == arcade.key.R:
 			self.reset_game()
 		if symbol == arcade.key.SPACE:
@@ -381,13 +381,12 @@ class Game(arcade.Window):
 		if self.intro:
 			arcade.draw_texture_rect(self.intro_wallpaper,
 							arcade.rect.XYWH(
-								self.width / 2 + 20, self.height / 2 + 80,
-								1698, 926
+								self.width / 2, self.height / 2,
+								1980, 1080
 							))
 			r = arcade.rect.XYWH(
-					self.width / 2 + 20, self.height / 2 + 80,
-					1980, 1080
-										)
+					self.width / 2, self.height / 2,
+					1980, 1080)
 			arcade.draw_rect_filled(r, (10, 10, 30, 100))
 		else:
 			if self.wall_lines:
