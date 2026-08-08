@@ -22,24 +22,48 @@ class Sketch(arcade.Window):
 
     def on_draw(self):
         cx, cy = self.width / 2, self.height / 2
-        arcade.draw_arc_filled(cx - 100, cy + 100, 350, 350, (0, 0, 64), 0, 180)
+        arcade.draw_arc_filled(
+            cx - 100, cy + 100, 350, 350, (0, 0, 64), 0, 180
+        )
         rec = arcade.rect.XYWH(cx - 100, cy + 33, 350, 150)
         arcade.draw_rect_filled(rec, (0, 0, 64))
 
         eye_x = math.cos(self.eye_time) * 3
         eye_y = math.sin(self.eye_time) * 3
-        arcade.draw_arc_filled(cx - 150, cy + 140, 65, 90, arcade.color.WHITE, 0, 360)
         arcade.draw_arc_filled(
-            cx - 150 + 5 * eye_x, cy + 140 - 5 * eye_y, 45, 60, (0, 0, 64), 0, 360
+            cx - 150, cy + 140, 65, 90, arcade.color.WHITE, 0, 360
         )
-        arcade.draw_arc_filled(cx - 60, cy + 140, 65, 90, arcade.color.WHITE, 0, 360)
         arcade.draw_arc_filled(
-            cx - 60 + 5 * eye_x, cy + 140 - 5 * eye_y, 45, 60, (0, 0, 64), 0, 360
+            cx - 150 + 5 * eye_x,
+            cy + 140 - 5 * eye_y,
+            45,
+            60,
+            (0, 0, 64),
+            0,
+            360,
+        )
+        arcade.draw_arc_filled(
+            cx - 60, cy + 140, 65, 90, arcade.color.WHITE, 0, 360
+        )
+        arcade.draw_arc_filled(
+            cx - 60 + 5 * eye_x,
+            cy + 140 - 5 * eye_y,
+            45,
+            60,
+            (0, 0, 64),
+            0,
+            360,
         )
 
-        arcade.draw_arc_filled(cx + 15, cy - 40, 120, 100, (0, 0, 64), 180, 360)
-        arcade.draw_arc_filled(cx - 100, cy - 40, 120, 100, (0, 0, 64), 180, 360)
-        arcade.draw_arc_filled(cx - 215, cy - 40, 120, 100, (0, 0, 64), 180, 360)
+        arcade.draw_arc_filled(
+            cx + 15, cy - 40, 120, 100, (0, 0, 64), 180, 360
+        )
+        arcade.draw_arc_filled(
+            cx - 100, cy - 40, 120, 100, (0, 0, 64), 180, 360
+        )
+        arcade.draw_arc_filled(
+            cx - 215, cy - 40, 120, 100, (0, 0, 64), 180, 360
+        )
 
         mlx = cx - 220
         mouth = []
