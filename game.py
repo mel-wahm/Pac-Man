@@ -1,5 +1,6 @@
 from math import hypot
 import arcade
+import config
 from random import sample
 from game_logic import center_coordinates
 from ghost import Ghost
@@ -37,12 +38,6 @@ class Game(arcade.View):
 		arcade.load_font("fonts/Renogare-Regular.otf")
 		cx = self.width / 2
 		cy = self.height / 2
-		self.keys = {
-					"UP" : arcade.key.UP,
-					"DOWN" : arcade.key.DOWN,
-					"LEFT" : arcade.key.LEFT,
-					"RIGHT" : arcade.key.RIGHT,
-				}
 		
 		self.pause_text = arcade.Text(
 			"PAUSE",
@@ -232,7 +227,7 @@ class Game(arcade.View):
 		self.pacman.prev_y = float(self.pacman.init_y)
 		self.pacman.direction = Directions.DOWN
 		self.pacman.next_direction = Directions.DOWN
-		self.pacman.path = {(self.pacman.init_x, self.pacman.init_y)}
+		self.pacman.path = {(self.pacman.init_x, self.pacman.init_y)} 
 		self.won_text.font_size = 280
 		self.win_timer = 0.0
 		
@@ -270,14 +265,14 @@ class Game(arcade.View):
 	def on_key_press(self, symbol, modifiers):
 		if symbol == arcade.key.C and modifiers & arcade.key.MOD_CTRL:
 			exit()
-		if symbol == self.keys["LEFT"]:
-			self.pacman.set_next_direction(Directions.LEFT)
-		if symbol == self.keys["RIGHT"]:
-			self.pacman.set_next_direction(Directions.RIGHT)
-		if symbol == self.keys["UP"]:
+		if symbol == config.keys["UP"]:
 			self.pacman.set_next_direction(Directions.UP)
-		if symbol == self.keys["DOWN"]:
+		if symbol == config.keys["DOWN"]:
 			self.pacman.set_next_direction(Directions.DOWN)
+		if symbol == config.keys["RIGHT"]:
+			self.pacman.set_next_direction(Directions.RIGHT)
+		if symbol == config.keys["LEFT"]:
+			self.pacman.set_next_direction(Directions.LEFT)
 		if symbol == arcade.key.R:
 			self.reset_game()
 		if symbol == arcade.key.ESCAPE:
@@ -289,8 +284,6 @@ class Game(arcade.View):
 		if symbol == arcade.key.E:
 			for ghost in self.ghosts:
 				ghost.edible = not ghost.edible
-		if symbol == arcade.key.Q:
-			exit(0)
 
 	def cc(self, x, y):
 		margin_right = 80
@@ -354,7 +347,7 @@ class Game(arcade.View):
 			self.ghost_speed += delta_time
 			self.pacman_speed += delta_time
 
-			speed = 7
+			speed = 5
 			if self.ghost_speed > 2.5 / speed:
 				self.ghost_speed = 0
 				for ghost in self.ghosts:

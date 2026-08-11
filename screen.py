@@ -1,4 +1,5 @@
 import arcade
+import config
 from game import Game
 from mazegenerator import MazeGenerator
 from settings import Settings
@@ -16,11 +17,11 @@ class Screen(arcade.View):
 		self.exit = Selection("Exit", lambda: self.exit_game())
 		self.menus = Menu([self.start, self.settings, self.exit],
 					self.width / 2, self.height / 2)
-		maze = MazeGenerator((13, 7)).maze
+		maze = MazeGenerator(config.MAZE_SIZE).maze
 		self.game_view = Game(maze, self)
 
 	def start_game(self):
-		maze = MazeGenerator((13, 7)).maze
+		maze = MazeGenerator(config.MAZE_SIZE).maze
 		self.game_view = Game(maze, self)
 		self.window.show_view(self.game_view)
 	def enter_settings(self):
@@ -28,10 +29,8 @@ class Screen(arcade.View):
 		self.window.show_view(settings_view)
 	def exit_game(self):
 		exit()
-		
+	
 	def on_key_press(self, symbol, modifiers):
-		if symbol == arcade.key.Q:
-			exit()
 		if symbol == arcade.key.DOWN:
 			self.menus.move_down()
 		if symbol == arcade.key.UP:

@@ -20,7 +20,7 @@ class	Menu():
 		for i in range(len(menus)):
 			self.texts.append(arcade.Text(
 				self.menus[i].name, self.x, self.y + total_height / 2 - (i * self.gap),
-				arcade.color.WHITE if i != self.select else arcade.color.YELLOW,
+				arcade.color.WHITE,
 				self.font_size, anchor_x="center",
 				font_name="Renogare"
 			))

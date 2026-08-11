@@ -1,42 +1,85 @@
 import arcade
 import pyglet
-
-# from game import Game
+import config
 from menu import Selection, Menu
 class	Control(arcade.View):
-	def __init__(self, previous_view, game):
+	def __init__(self, previous_view):
 		super().__init__()
 		self.previous_view = previous_view
 		self.wallpaper = arcade.load_texture("photos/settings.png")
-		self.left = Selection(f"Move left:   {pyglet.window.key.symbol_string(game.keys["LEFT"])}",
-					lambda: self.listen())
-		self.right = Selection(f"Move right:   {pyglet.window.key.symbol_string(game.keys["RIGHT"])}",
-					lambda: self.listen())
-		self.up = Selection(f"Move up:   {pyglet.window.key.symbol_string(game.keys["UP"])}",
-					lambda: self.listen())
-		self.down = Selection(f"Move down:   {pyglet.window.key.symbol_string(game.keys["DOWN"])}",
-					lambda: self.listen())
+		k = config.keys
+		ks = pyglet.window.key.symbol_string
+		self.left = Selection(f"Move left:   {ks(k['LEFT'])}",
+					lambda: self.listen("LEFT"))
+		self.right = Selection(f"Move right:   {ks(k['RIGHT'])}",
+					lambda: self.listen("RIGHT"))
+		self.up = Selection(f"Move up:   {ks(k['UP'])}",
+					lambda: self.listen("UP"))
+		self.down = Selection(f"Move down:   {ks(k['DOWN'])}",
+					lambda: self.listen("DOWN"))
 		self.menus = Menu([self.up, self.down, self.right, self.left],
 					self.width / 2, self.height / 2)
+		self.press_key = arcade.Text("Press a key", self.width / 2, self.height / 2 + 50, (180, 180, 180), 40, 
+							   anchor_x="center", font_name="Renogare")
+		self.error_key = arcade.Text("Key not supported", self.width / 2, self.height / 2, (180, 180, 180), 40, 
+									   anchor_x="center", font_name="Renogare")
+		self.select_key = arcade.Text("", self.width / 2, self.height / 2 - 50, (180, 180, 180), 60, 
+									   anchor_x="center", font_name="Renogare")
+		self.listening = 0
+		self.current_action = ""
+		self.timer = 0
+
+	def on_update(self, delta_time):
+		if self.timer > 0:
+			self.timer -= delta_time
 
 	def on_key_press(self, symbol, modifiers):
-		if symbol == arcade.key.UP:
-			self.menus.move_up()
-		if symbol == arcade.key.DOWN:
-			self.menus.move_down()
-		if symbol == arcade.key.ENTER:
-			self.menus.action()
 		if symbol == arcade.key.ESCAPE:
 			self.window.show_view(self.previous_view)
+			return
+		if self.listening:
+			if 97 <= symbol <= 122 or 65361 <= symbol <= 65364:
+				if symbol in config.keys.values() and symbol != config.keys[self.current_action]:
+					self.timer = 1.0
+					self.error_key.text = "Key Already Used"
+					return
+				config.keys[self.current_action] = symbol
+				self.listening = 0
+				key_name = pyglet.window.key.symbol_string(symbol)
+				act_name = self.current_action.lower()
+				item = self.menus.texts[self.menus.select]
+				item.text = f"Move {act_name}:   {key_name}"
+			else:
+				self.error_key.text = "Key Not Supported"
+				self.timer = 1.0
+			return
+		if symbol == arcade.key.UP and not self.listening:
+			self.menus.move_up()
+		if symbol == arcade.key.DOWN and not self.listening:
+			self.menus.move_down()
+		if symbol == arcade.key.ENTER:
+			if not self.listening:
+				self.menus.action()
 
-	def listen(self):
-		pass
+	def listen(self, key):
+		self.select_key.text = key
+		self.current_action = key
+		self.listening = not(self.listening)
 
 	def on_draw(self):
 		self.clear()
-		r = arcade.rect.XYWH(self.width / 2, self.height / 2, self.width, self.height)
-		arcade.draw_texture_rect(self.wallpaper, r)
-		r = arcade.rect.XYWH(self.width / 2, self.height / 2, self.width, self.height)
-		arcade.draw_rect_filled(r, (0, 0, 0, 220))
-		self.menus.draw_texts()
-	
+		if not self.listening:
+			r = arcade.rect.XYWH(self.width / 2, self.height / 2, self.width, self.height)
+			arcade.draw_texture_rect(self.wallpaper, r)
+			arcade.draw_rect_filled(r, (0, 0, 0, 120))
+			self.menus.draw_texts()
+		else:
+			r = arcade.rect.XYWH(self.width / 2, self.height / 2, self.width, self.height)
+			arcade.draw_texture_rect(self.wallpaper, r)
+			r = arcade.rect.XYWH(self.width / 2, self.height / 2, self.width, self.height)
+			arcade.draw_rect_filled(r, (0, 0, 0, 220))
+			if self.timer > 0:
+				self.error_key.draw()
+			else:
+				self.press_key.draw()
+				self.select_key.draw()

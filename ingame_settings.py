@@ -1,4 +1,5 @@
 import arcade
+import config
 from menu import Selection, Menu
 from mazegenerator import MazeGenerator
 
@@ -24,7 +25,7 @@ class InGameSettings(arcade.View):
 		self.window.show_view(self.game_view)
 
 	def retry(self):
-		maze = MazeGenerator((13, 8)).maze
+		maze = MazeGenerator(config.MAZE_SIZE).maze
 		from game import Game
 		game_view = Game(maze, self.screen_view)
 		self.window.show_view(game_view)
