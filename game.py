@@ -15,7 +15,7 @@ class Game(arcade.View):
 		maze[len(maze) - 1][len(maze[0]) // 2] -= 4
 		maze[len(maze) // 2][0] -= 8
 		maze[len(maze) // 2][len(maze[0]) - 1] -= 2
-		self.background_color = (40, 40, 80)
+		self.background_color = (20, 20, 70)
 		self.intro = 1
 		self.pac_gums = 100
 		self.state = 0

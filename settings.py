@@ -12,16 +12,13 @@ class   Settings(arcade.View):
 		self.cx, self.cy = self.width / 2, self.height / 2
 		self._return = Selection("Return", lambda: self.returning())
 		self._controls = Selection("Controls", lambda: self.controls())
-		self._exit = Selection("Exit", lambda: self.exiting())
-		self.menus = Menu([self._return, self._controls, self._exit], self.width / 2, self.height / 2)
+		self.menus = Menu([self._controls, self._return], self.width / 2, self.height / 2)
 
 	def returning(self):
 		self.window.show_view(self.previous_view)
 	def controls(self):
 		control_view = Control(self, self.game_view)
 		self.window.show_view(control_view)
-	def exiting(self):
-		exit()
 
 	def on_key_press(self, symbol, modifiers):
 		if symbol == arcade.key.Q:

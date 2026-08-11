@@ -20,6 +20,8 @@ class Screen(arcade.View):
 		self.game_view = Game(maze, self)
 
 	def start_game(self):
+		maze = MazeGenerator((13, 7)).maze
+		self.game_view = Game(maze, self)
 		self.window.show_view(self.game_view)
 	def enter_settings(self):
 		settings_view = Settings(self, self.game_view)

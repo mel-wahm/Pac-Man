@@ -15,9 +15,8 @@ class InGameSettings(arcade.View):
 		self._retry = Selection("Retry",lambda : self.retry())
 		self._options = Selection("Options",lambda : self.options())
 		self._main_menu = Selection("Main menu",lambda : self.main_menu())
-		self._exit_game = Selection("Exit",lambda : self.exit_game())
 		self.menus = Menu(
-			[self._resume, self._retry, self._options, self._main_menu, self._exit_game],
+			[self._resume, self._retry, self._options, self._main_menu],
 			self.width / 2, self.height / 2
 		)
 
@@ -38,8 +37,6 @@ class InGameSettings(arcade.View):
 	def	main_menu(self):
 		self.window.show_view(self.screen_view)
 
-	def	exit_game(self):
-		exit()
 
 	def on_key_press(self, symbol, modifiers):
 		if symbol == arcade.key.UP:
