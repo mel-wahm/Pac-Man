@@ -50,9 +50,9 @@ class Pacman:
 		self.x = self.init_x
 		self.y = self.init_y
 		self.smooth_x = float(self.init_x)
-		self.smooth_y = float(self.init_x)
+		self.smooth_y = float(self.init_y)
 		self.prev_x = float(self.init_x)
-		self.prev_y = float(self.init_x)
+		self.prev_y = float(self.init_y)
 		self.direction = Directions.DOWN
 		self.next_direction = Directions.DOWN
 		self.path = {(self.init_x, self.init_y)}

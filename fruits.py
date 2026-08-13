@@ -1,5 +1,5 @@
 import arcade
-regular_fruits = arcade.load_texture("fruits/super_fruit.png")
+regular_fruits = arcade.load_texture("fruits/super_fruit_green.png")
 class	Fruits(arcade.View):
 	def __init__(self, fruit: arcade.Texture) -> None:
 		super().__init__()
