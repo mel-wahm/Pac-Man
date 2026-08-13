@@ -16,7 +16,7 @@ class Game(arcade.View):
 		maze[len(maze) - 1][len(maze[0]) // 2] -= 4
 		maze[len(maze) // 2][0] -= 8
 		maze[len(maze) // 2][len(maze[0]) - 1] -= 2
-		self.background_color = (20, 20, 70)
+		self.background_color = (20, 20, 30)
 		self.intro = 1
 		self.pac_gums = 100
 		self.state = 0
@@ -232,6 +232,7 @@ class Game(arcade.View):
 		self.win_timer = 0.0
 		
 		for g in self.ghosts:
+			g.ghost_freeze = 2
 			g.r_c = g.default
 			g.smooth_x = float(g.default[0])
 			g.smooth_y = float(g.default[1])
@@ -281,9 +282,7 @@ class Game(arcade.View):
 		if symbol == arcade.key.SPACE:
 			self.state = 2
 			self.pause = not (self.pause)
-		if symbol == arcade.key.E:
-			for ghost in self.ghosts:
-				ghost.edible = not ghost.edible
+
 
 	def cc(self, x, y):
 		margin_right = 80
@@ -301,6 +300,8 @@ class Game(arcade.View):
 		)
 
 	def on_update(self, delta_time):
+		gst_speed = 5
+		pcmn_speed = 0.19
 		if len(self.dots) == 0:
 			self.pause = 1
 			self.state = 3
@@ -318,28 +319,42 @@ class Game(arcade.View):
 				)
 				< 0.5
 			):
-				self.pacman.death += 1
-				self.pacman.x = self.pacman.init_x
-				self.pacman.smooth_x = self.pacman.init_x
-				self.pacman.y = self.pacman.init_y
-				self.pacman.smooth_y = self.pacman.init_y
-				self.pacman.prev_x = self.pacman.init_x
-				self.pacman.prev_y = self.pacman.init_y
-				self.pacman.direction = Directions.DOWN
-				self.pacman.next_direction = Directions.DOWN
-				for g in self.ghosts:
-					g.r_c = g.default
-					g.path = []
-					g.smooth_x = float(g.default[0])
-					g.smooth_y = float(g.default[1])
-					g.draw_cords = self.cc(g.smooth_x, g.smooth_y)
-				if self.pacman.death == 3:
-					self.reset_game()
-					self.state = 1
-					self.pause = 1
-					self.pacman.death = 0
-					self.pacman.path = {(self.pacman.x, self.pacman.y)}
-				break
+				if not ghost.edible:
+					self.pacman.death += 1
+					self.pacman.x = self.pacman.init_x
+					self.pacman.smooth_x = self.pacman.init_x
+					self.pacman.y = self.pacman.init_y
+					self.pacman.smooth_y = self.pacman.init_y
+					self.pacman.prev_x = self.pacman.init_x
+					self.pacman.prev_y = self.pacman.init_y
+					self.pacman.direction = Directions.DOWN
+					self.pacman.next_direction = Directions.DOWN
+					for g in self.ghosts:
+						g.edible_timer = 0
+						g.edible = 0
+						g.r_c = g.default
+						g.path = []
+						g.smooth_x = float(g.default[0])
+						g.smooth_y = float(g.default[1])
+						g.draw_cords = self.cc(g.smooth_x, g.smooth_y)
+						g.ghost_freeze = 1
+					if self.pacman.death == 3:
+						self.reset_game()
+						self.state = 1
+						self.pause = 1
+						self.pacman.death = 0
+						self.pacman.path = {(self.pacman.x, self.pacman.y)}
+					break
+				else:
+					self.pacman.score += 100
+					self.pacman.score_text.text = f"SCORE: {self.pacman.score}"
+					ghost.r_c = ghost.default
+					ghost.smooth_x, ghost.smooth_y = ghost.default
+					ghost.draw_cords = self.cc(ghost.smooth_x, ghost.smooth_y)
+					ghost.ghost_freeze = 5
+					ghost.edible_timer = 0
+					ghost.edible = 0
+					break
 
 		if not self.pause:
 			self.sec += delta_time
@@ -347,21 +362,24 @@ class Game(arcade.View):
 			self.ghost_speed += delta_time
 			self.pacman_speed += delta_time
 
-			speed = 5
-			if self.ghost_speed > 2.5 / speed:
+			should_choose_target = False
+			if self.ghost_speed > 2.5 / gst_speed:
 				self.ghost_speed = 0
-				for ghost in self.ghosts:
-					ghost.choose_target(self.pacman)
+				should_choose_target = True
 
 			for ghost in self.ghosts:
-				ghost.update(speed, delta_time)
-				ghost.draw_cords = self.cc(ghost.smooth_x, ghost.smooth_y)
-			duration = 0.15
-			if self.pacman_speed > duration:
+				ghost.ghost_freeze -= delta_time
+				if ghost.ghost_freeze <= 0:
+					if should_choose_target:
+						ghost.choose_target(self.pacman)
+					ghost.update(gst_speed, delta_time)
+					ghost.draw_cords = self.cc(ghost.smooth_x, ghost.smooth_y)
+
+			if self.pacman_speed > pcmn_speed:
 				self.pacman_speed = 0
 				self.pacman.update()
 			if not self.pacman.teleport:
-				self.pacman.smooth_animation(delta_time, duration)
+				self.pacman.smooth_animation(delta_time, pcmn_speed)
 
 			smooth_cell = (
 				self.pacman.smooth_x,
@@ -371,6 +389,10 @@ class Game(arcade.View):
 				self.pacman.score += 10
 				self.pacman.score_text.text = f"SCORE: {self.pacman.score}"
 				dot = self.dots_grid.pop(smooth_cell)
+				if smooth_cell in self.corners:
+					for ghost in self.ghosts:
+						ghost.edible = True
+						ghost.edible_timer = 20
 				dot.remove_from_sprite_lists()
 
 	def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):

@@ -32,12 +32,14 @@ class	Control(arcade.View):
 	def on_update(self, delta_time):
 		if self.timer > 0:
 			self.timer -= delta_time
+		if self.menus.scale < 2:
+			self.menus.scale += delta_time * 3
 
 	def on_key_press(self, symbol, modifiers):
-		if symbol == arcade.key.ESCAPE:
-			self.window.show_view(self.previous_view)
-			return
 		if self.listening:
+			if symbol == arcade.key.ESCAPE:
+				self.listening = False
+				return
 			if 97 <= symbol <= 122 or 65361 <= symbol <= 65364:
 				if symbol in config.keys.values() and symbol != config.keys[self.current_action]:
 					self.timer = 1.0
@@ -52,6 +54,9 @@ class	Control(arcade.View):
 			else:
 				self.error_key.text = "Key Not Supported"
 				self.timer = 1.0
+			return
+		if symbol == arcade.key.ESCAPE:
+			self.window.show_view(self.previous_view)
 			return
 		if symbol == arcade.key.UP and not self.listening:
 			self.menus.move_up()

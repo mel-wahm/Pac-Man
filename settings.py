@@ -16,10 +16,13 @@ class   Settings(arcade.View):
 
 	def returning(self):
 		self.window.show_view(self.previous_view)
+
 	def controls(self):
 		control_view = Control(self)
 		self.window.show_view(control_view)
 
+	def on_update(self, delta_time):
+		self.menus.scale += delta_time * 3
 	def on_key_press(self, symbol, modifiers):
 		if symbol == arcade.key.UP:
 			self.menus.move_up()

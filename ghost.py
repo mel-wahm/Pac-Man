@@ -16,6 +16,7 @@ class Ghost:
 		self.default = r_c
 		self.smooth_x = float(r_c[0])
 		self.smooth_y = float(r_c[1])
+		self.ghost_freeze = 1
 		self.draw_cords = draw_cords
 		self.maze = maze
 		self.color = color
@@ -23,6 +24,7 @@ class Ghost:
 		self.path = []
 		self.direction = Directions.LEFT
 		self.next_direction = Directions.RIGHT
+		self.edible_timer = 0
 		self.choices = [
 			Directions.LEFT,
 			Directions.RIGHT,
@@ -43,6 +45,19 @@ class Ghost:
 		mask, _, _, _ = DIR_DATA[direction]
 		return not (self.maze[y][x] & mask)
 
+	def get_direction(self, current, target):
+		x, y  = current
+		nx, ny = target
+		if nx == x + 1:
+			return Directions.RIGHT
+		if nx == x - 1:
+			return Directions.LEFT
+		if ny == y + 1:
+			return Directions.UP
+		if ny == y - 1:
+			return Directions.DOWN
+
+
 	def choose_target(self, pacman):
 		x, y = self.r_c
 		pac = (pacman.x, pacman.y)
@@ -50,7 +65,8 @@ class Ghost:
 		self.path = construct_path(
 			pac, self.r_c, shortest_path(self.r_c, pac, self.maze)
 		)
-		if len(self.path) > 1 and len(self.path) < max(len(self.maze[0]) / 2, len(self.maze) / 2):
+		close = len(self.path) > 1 and len(self.path) < max(len(self.maze[0]) / 2, len(self.maze) / 2)
+		if close and not self.edible:
 			self.r_c = self.path[1]
 		else:
 			valid_moves = []
@@ -62,15 +78,15 @@ class Ghost:
 			if not valid_moves:
 				self.direction = self.opposites[self.direction]
 				self.next_direction = self.opposites[self.next_direction]
-
-			if valid_moves:
-				next_x, next_y, new_dir = random.choice(valid_moves)
-				self.r_c = (next_x, next_y)
-				self.direction = new_dir
 			else:
-				neighbors = neighbor_coordinates(x, y, self.maze)
-				if neighbors:
-					self.r_c = random.choice(neighbors)
+				if close and self.edible:
+					furthest = max(valid_moves, key=lambda move: math.hypot((move[0] - pacman.x), (move[1] - pacman.y)))
+					self.r_c = (furthest[0], furthest[1])
+					self.direction = furthest[2]
+				else:
+					next_x, next_y, new_dir = random.choice(valid_moves)
+					self.r_c = (next_x, next_y)
+					self.direction = new_dir
 
 		cols = len(self.maze[0])
 		rows = len(self.maze)
@@ -97,7 +113,9 @@ class Ghost:
 		self.smooth_y += (self.r_c[1] - self.smooth_y) * speed * delta_time
 		self.anim_time += delta_time
 		self.eye_time += delta_time * 8
-		pass
+		self.edible_timer = max(0, self.edible_timer - delta_time)
+		if not self.edible_timer:
+			self.edible = False
 
 	def draw(self):
 		cx, cy = self.draw_cords

@@ -38,6 +38,9 @@ class InGameSettings(arcade.View):
 	def	main_menu(self):
 		self.window.show_view(self.screen_view)
 
+	def on_update(self, delta_time):
+		if self.menus.scale < 2:
+			self.menus.scale += delta_time * 3
 
 	def on_key_press(self, symbol, modifiers):
 		if symbol == arcade.key.UP:

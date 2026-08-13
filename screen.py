@@ -29,7 +29,11 @@ class Screen(arcade.View):
 		self.window.show_view(settings_view)
 	def exit_game(self):
 		exit()
-	
+
+	def on_update(self, delta_time):
+		if self.menus.scale < 2:
+			self.menus.scale += delta_time * 3
+
 	def on_key_press(self, symbol, modifiers):
 		if symbol == arcade.key.DOWN:
 			self.menus.move_down()

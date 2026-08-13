@@ -16,6 +16,7 @@ class	Menu():
 		self.font_size = font_size
 		self.select = 0
 		self.texts = []
+		self.scale = 1
 		total_height = (len(menus) - 1) * gap
 		for i in range(len(menus)):
 			self.texts.append(arcade.Text(
@@ -25,11 +26,15 @@ class	Menu():
 				font_name="Renogare"
 			))
 
+
 	def move_up(self):
 		self.select = (self.select - 1) % len(self.menus)
+		self.scale = 1
+
 
 	def move_down(self):
 		self.select = (self.select + 1) % len(self.menus)
+		self.scale = 1
 
 	def action(self):
 		self.menus[self.select].action()
@@ -38,7 +43,7 @@ class	Menu():
 		for i in range(len(self.menus)):
 			if i == self.select:
 				self.texts[i].color = arcade.color.YELLOW
-				self.texts[i].font_size = self.font_size * 1.2
+				self.texts[i].font_size = self.font_size * min(1.5, self.scale)
 			else:
 				self.texts[i].color = arcade.color.WHITE
 				self.texts[i].font_size = self.font_size
