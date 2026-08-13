@@ -7,5 +7,5 @@ keys = {
 	"RIGHT" : arcade.key.RIGHT,
 }
 
-MAZE_SIZE = (25, 11)
+MAZE_SIZE = (9, 5)
 
