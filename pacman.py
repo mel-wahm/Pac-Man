@@ -43,6 +43,20 @@ class Pacman:
 			font_size=24,
 		)
 
+	def reset_game(self):
+		self.death = 0
+		self.score = 0
+		self.score_text.text = "SCORE: 0"
+		self.x = self.init_x
+		self.y = self.init_y
+		self.smooth_x = float(self.init_x)
+		self.smooth_y = float(self.init_x)
+		self.prev_x = float(self.init_x)
+		self.prev_y = float(self.init_x)
+		self.direction = Directions.DOWN
+		self.next_direction = Directions.DOWN
+		self.path = {(self.init_x, self.init_y)}
+
 	def can_turn(self, x, y, direction):
 		mask, _, _, _ = DIR_DATA[direction]
 		return not (self.maze[y][x] & mask)
@@ -103,7 +117,7 @@ class Pacman:
 		return neighbor_coordinates(self.x, self.y, self.maze)
 
 	def draw(self, renderer):
-		cx, cy = renderer.cc(self.smooth_x, self.smooth_y)
+		cx, cy = renderer.center(self.smooth_x, self.smooth_y)
 		arcade.draw_arc_filled(
 			cx,
 			cy,

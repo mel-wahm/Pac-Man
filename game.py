@@ -84,28 +84,28 @@ class Game(arcade.View):
 		self.ghosts = {
 			Ghost(
 				(0, 0),
-				self.cc(0, 0),
+				self.center(0, 0),
 				self.maze,
 				(255, 0, 0),
 				self.cell_size,
 			),
 			Ghost(
 				(self.cols - 1, 0),
-				self.cc(self.cols - 1, 0),
+				self.center(self.cols - 1, 0),
 				self.maze,
 				(255, 184, 255),
 				self.cell_size,
 			),
 			Ghost(
 				(0, self.rows - 1),
-				self.cc(0, self.rows - 1),
+				self.center(0, self.rows - 1),
 				self.maze,
 				(0, 255, 255),
 				self.cell_size,
 			),
 			Ghost(
 				(self.cols - 1, self.rows - 1),
-				self.cc(self.cols - 1, self.rows - 1),
+				self.center(self.cols - 1, self.rows - 1),
 				self.maze,
 				(255, 184, 82),
 				self.cell_size,
@@ -143,7 +143,7 @@ class Game(arcade.View):
 		self.all_cords = []
 		for r in range(self.rows):
 			for c in range(self.cols):
-				real_x, real_y = self.cc(c, r)
+				real_x, real_y = self.center(c, r)
 				half = self.cell_size / 2
 				cell_val = self.maze[r][c]
 
@@ -187,7 +187,7 @@ class Game(arcade.View):
 		)
 		for cell in self.drawing_dots:
 			c, r = cell
-			real_x, real_y = self.cc(c, r)
+			real_x, real_y = self.center(c, r)
 			dot_r = int(self.cell_size * 0.05)
 			dot = arcade.SpriteCircle(
 				radius=max(1, dot_r), color=(255, 255, 0)
@@ -198,7 +198,7 @@ class Game(arcade.View):
 			self.dots_grid[(c, r)] = dot
 		for cell in self.corners:
 			c, r = cell
-			real_x, real_y = self.cc(c, r)
+			real_x, real_y = self.center(c, r)
 			dot_r = int(self.cell_size * 0.125)
 			dot = arcade.SpriteCircle(
 				radius=max(1, dot_r), color=(255, 255, 0)
@@ -216,28 +216,12 @@ class Game(arcade.View):
 		self.ghost_speed = 0
 		self.pacman_speed = 0
 
-		self.pacman.death = 0
-		self.pacman.score = 0
-		self.pacman.score_text.text = "SCORE: 0"
-		self.pacman.x = self.pacman.init_x
-		self.pacman.y = self.pacman.init_y
-		self.pacman.smooth_x = float(self.pacman.init_x)
-		self.pacman.smooth_y = float(self.pacman.init_y)
-		self.pacman.prev_x = float(self.pacman.init_x)
-		self.pacman.prev_y = float(self.pacman.init_y)
-		self.pacman.direction = Directions.DOWN
-		self.pacman.next_direction = Directions.DOWN
-		self.pacman.path = {(self.pacman.init_x, self.pacman.init_y)} 
+		self.pacman.reset_game()
 		self.won_text.font_size = 280
 		self.win_timer = 0.0
 		
 		for g in self.ghosts:
-			g.ghost_freeze = 2
-			g.r_c = g.default
-			g.smooth_x = float(g.default[0])
-			g.smooth_y = float(g.default[1])
-			g.path = []
-			g.draw_cords = self.cc(g.smooth_x, g.smooth_y)
+			g.reset_game()
 
 		self.dots = arcade.SpriteList()
 		self.dots_grid = {}
@@ -246,7 +230,7 @@ class Game(arcade.View):
 		)
 		for cell in self.drawing_dots:
 			c, r = cell
-			real_x, real_y = self.cc(c, r)
+			real_x, real_y = self.center(c, r)
 			dot_r = int(self.cell_size * 0.05)
 			dot = arcade.SpriteCircle(radius=dot_r, color=(255, 255, 0))
 			dot.center_x = real_x
@@ -255,7 +239,7 @@ class Game(arcade.View):
 			self.dots_grid[(c, r)] = dot
 		for cell in self.corners:
 			c, r = cell
-			real_x, real_y = self.cc(c, r)
+			real_x, real_y = self.center(c, r)
 			dot_r = int(self.cell_size * 0.125)
 			dot = arcade.SpriteCircle(radius=dot_r, color=(255, 255, 0))
 			dot.center_x = real_x
@@ -274,8 +258,6 @@ class Game(arcade.View):
 			self.pacman.set_next_direction(Directions.RIGHT)
 		if symbol == config.keys["LEFT"]:
 			self.pacman.set_next_direction(Directions.LEFT)
-		if symbol == arcade.key.R:
-			self.reset_game()
 		if symbol == arcade.key.ESCAPE:
 			set_view = InGameSettings(self, self.screen_view)
 			self.window.show_view(set_view)
@@ -284,7 +266,7 @@ class Game(arcade.View):
 			self.pause = not (self.pause)
 
 
-	def cc(self, x, y):
+	def center(self, x, y):
 		margin_right = 80
 		maze_pixel_width = self.cols * self.cell_size
 		right_center_x = self.width - (maze_pixel_width / 2) - margin_right
@@ -336,7 +318,7 @@ class Game(arcade.View):
 						g.path = []
 						g.smooth_x = float(g.default[0])
 						g.smooth_y = float(g.default[1])
-						g.draw_cords = self.cc(g.smooth_x, g.smooth_y)
+						g.draw_cords = self.center(g.smooth_x, g.smooth_y)
 						g.ghost_freeze = 1
 					if self.pacman.death == 3:
 						self.reset_game()
@@ -350,7 +332,7 @@ class Game(arcade.View):
 					self.pacman.score_text.text = f"SCORE: {self.pacman.score}"
 					ghost.r_c = ghost.default
 					ghost.smooth_x, ghost.smooth_y = ghost.default
-					ghost.draw_cords = self.cc(ghost.smooth_x, ghost.smooth_y)
+					ghost.draw_cords = self.center(ghost.smooth_x, ghost.smooth_y)
 					ghost.ghost_freeze = 5
 					ghost.edible_timer = 0
 					ghost.edible = 0
@@ -373,7 +355,7 @@ class Game(arcade.View):
 					if should_choose_target:
 						ghost.choose_target(self.pacman)
 					ghost.update(gst_speed, delta_time)
-					ghost.draw_cords = self.cc(ghost.smooth_x, ghost.smooth_y)
+					ghost.draw_cords = self.center(ghost.smooth_x, ghost.smooth_y)
 
 			if self.pacman_speed > pcmn_speed:
 				self.pacman_speed = 0
@@ -409,7 +391,7 @@ class Game(arcade.View):
 		self.dots.draw()
 
 		for c, r in self.forty_two_coords:
-			real_x, real_y = self.cc(c, r)
+			real_x, real_y = self.center(c, r)
 			sqr = arcade.rect.XYWH(
 				real_x,
 				real_y,

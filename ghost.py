@@ -41,6 +41,13 @@ class Ghost:
 		self.anim_time = 0.0
 		self.eye_time = 0.0
 
+	def reset_game(self):
+		self.ghost_freeze = 2
+		self.r_c = self.default
+		self.smooth_x = float(self.default[0])
+		self.smooth_y = float(self.default[1])
+		self.path = []
+
 	def can_turn(self, x, y, direction):
 		mask, _, _, _ = DIR_DATA[direction]
 		return not (self.maze[y][x] & mask)
