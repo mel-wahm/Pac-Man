@@ -23,6 +23,7 @@ class   Settings(arcade.View):
 
 	def on_update(self, delta_time):
 		self.menus.scale += delta_time * 3
+
 	def on_key_press(self, symbol, modifiers):
 		if symbol == arcade.key.UP:
 			self.menus.move_up()
@@ -32,6 +33,12 @@ class   Settings(arcade.View):
 			self.menus.action()
 		if symbol == arcade.key.ESCAPE:
 			self.window.show_view(self.previous_view)
+
+	def on_mouse_motion(self, x, y, dx, dy):
+		self.menus.mouse_motion(x, y, self.menus)
+
+	def on_mouse_press(self, x, y, button, modifiers):
+		self.menus.mouse_press(x, y, self.menus)    
 
 	def on_draw(self):
 		self.clear()

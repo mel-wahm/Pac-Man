@@ -52,6 +52,12 @@ class InGameSettings(arcade.View):
 		if symbol == arcade.key.ENTER:
 			self.menus.action()
 
+	def on_mouse_motion(self, x, y, dx, dy):
+		self.menus.mouse_motion(x, y, self.menus)
+
+	def on_mouse_press(self, x, y, button, modifiers):
+		self.menus.mouse_press(x, y, self.menus)
+
 	def on_draw(self):
 		self.clear()
 		self.game_view.on_draw()

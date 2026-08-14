@@ -18,7 +18,7 @@ class	Control(arcade.View):
 		self.down = Selection(f"Move down:   {ks(k['DOWN'])}",
 					lambda: self.listen("DOWN"))
 		self.menus = Menu([self.up, self.down, self.right, self.left],
-					self.width / 2, self.height / 2)
+					self.width / 2, self.height / 2, gap=80)
 		self.press_key = arcade.Text("Press a key", self.width / 2, self.height / 2 + 50, (180, 180, 180), 40, 
 							   anchor_x="center", font_name="Renogare")
 		self.error_key = arcade.Text("Key not supported", self.width / 2, self.height / 2, (180, 180, 180), 40, 
@@ -70,6 +70,12 @@ class	Control(arcade.View):
 		self.select_key.text = key
 		self.current_action = key
 		self.listening = not(self.listening)
+	
+	def on_mouse_motion(self, x, y, dx, dy):
+		self.menus.mouse_motion(x, y, self.menus)
+		
+	def on_mouse_press(self, x, y, button, modifiers):
+		self.menus.mouse_press(x, y, self.menus)       
 
 	def on_draw(self):
 		self.clear()

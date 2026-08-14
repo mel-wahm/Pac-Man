@@ -24,7 +24,7 @@ class Game(arcade.View):
 		maze[len(maze) // 2][len(maze[0]) - 1] -= 2
 		self.background_color = (20, 20, 30)
 		self.intro = 1
-		self.pac_gums = 100
+		self.pac_gums = 1000
 		self.state = 0
 		self.maze = maze
 		self.pacman = Pacman(maze)
@@ -77,10 +77,11 @@ class Game(arcade.View):
 			font_name="Renogare",
 			# bold=True,
 		)
-		max_maze_width = self.width * 0.8
-		self.cell_size = min(
-			max_maze_width / self.cols, (self.height - 200) / self.rows
-		)
+		sidebar_width = 170
+		padding = 20
+		available_w = self.width - sidebar_width - padding
+		available_h = self.height - padding
+		self.cell_size = min(available_w / self.cols, available_h / self.rows)
 		self.corners = {
 			(0, 0),
 			(self.cols - 1, 0),
@@ -273,23 +274,18 @@ class Game(arcade.View):
 
 
 	def center(self, x, y):
-		margin_right = 80
-		maze_pixel_width = self.cols * self.cell_size
-		right_center_x = self.width - (maze_pixel_width / 2) - margin_right
+		sidebar_width = 170
+		padding = 20
+		center_x = sidebar_width + (self.width - sidebar_width - padding) / 2
+		center_y = self.height / 2
 
-		return center_coordinates(
-			x,
-			y,
-			right_center_x * 2,
-			self.height,
-			self.total_w,
-			self.total_h,
-			self.cell_size,
-		)
+		nx = center_x + (x - self.total_w) * self.cell_size
+		ny = center_y - (y - self.total_h) * self.cell_size
+		return (nx, ny)
 
 	def on_update(self, delta_time):
-		gst_speed = 5
-		pcmn_speed = 0.19
+		gst_speed = 8
+		pcmn_speed = 0.12
 		if len(self.dots) == 0:
 			self.pause = 1
 			self.state = 3
