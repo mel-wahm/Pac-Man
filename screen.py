@@ -4,7 +4,7 @@ from game import Game
 from mazegenerator import MazeGenerator
 from settings import Settings
 from menu import Selection, Menu
-
+from credits import Credits
 
 class Screen(arcade.View):
     def __init__(self):
@@ -31,7 +31,7 @@ class Screen(arcade.View):
         self.window.show_view(self.game_view)
 
     def show_credits(self):
-        pass
+        self.window.show_view(Credits(self))
 
     def enter_settings(self):
         settings_view = Settings(self, self.game_view)
