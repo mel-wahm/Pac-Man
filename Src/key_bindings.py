@@ -1,7 +1,8 @@
 import arcade
 import pyglet
-import config
-from menu import Selection, Menu
+
+from . import config
+from .menu import Menu, Selection
 class	Control(arcade.View):
 	def __init__(self, previous_view):
 		super().__init__()

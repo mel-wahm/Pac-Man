@@ -1,10 +1,12 @@
 import arcade
-import config
-from game import Game
+
 from mazegenerator import MazeGenerator
-from settings import Settings
-from menu import Selection, Menu
-from credits import Credits
+
+from . import config
+from .credits import Credits
+from .game import Game
+from .menu import Menu, Selection
+from .settings import Settings
 
 class Screen(arcade.View):
     def __init__(self):

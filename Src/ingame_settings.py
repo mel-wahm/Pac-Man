@@ -1,7 +1,9 @@
 import arcade
-import config
-from menu import Selection, Menu
+
 from mazegenerator import MazeGenerator
+
+from . import config
+from .menu import Menu, Selection
 
 class InGameSettings(arcade.View):
 	def __init__(self, game_view, screen_view):
@@ -26,12 +28,12 @@ class InGameSettings(arcade.View):
 
 	def retry(self):
 		maze = MazeGenerator(config.MAZE_SIZE).maze
-		from game import Game
+		from .game import Game
 		game_view = Game(maze, self.screen_view)
 		self.window.show_view(game_view)
 
 	def options(self):
-		from settings import Settings
+		from .settings import Settings
 		set_view = Settings(self, self.game_view)
 		self.window.show_view(set_view)
 

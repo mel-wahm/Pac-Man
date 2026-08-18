@@ -1,7 +1,7 @@
 import arcade
-from game import Game
-from menu import Selection, Menu
-from key_bindings import Control
+
+from .key_bindings import Control
+from .menu import Menu, Selection
 
 class   Settings(arcade.View):
 	def __init__(self, previous_view, game_view):

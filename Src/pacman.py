@@ -1,9 +1,8 @@
-from game_logic import Directions
 from math import sin
 
 import arcade
 
-from game_logic import neighbor_coordinates, DIR_DATA
+from .game_logic import DIR_DATA, Directions, neighbor_coordinates
 
 
 class Pacman:

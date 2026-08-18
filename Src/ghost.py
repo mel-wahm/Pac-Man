@@ -1,12 +1,13 @@
 import math
 import random
+
 import arcade
-from game_logic import (
-	Directions,
-	neighbor_coordinates,
-	shortest_path,
-	construct_path,
+
+from .game_logic import (
 	DIR_DATA,
+	Directions,
+	construct_path,
+	shortest_path,
 )
 
 

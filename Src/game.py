@@ -1,11 +1,13 @@
 from math import hypot
-import arcade
-import config
 from random import sample
-from game_logic import center_coordinates
-from ghost import Ghost
-from pacman import Directions, Pacman
-from ingame_settings import InGameSettings
+
+import arcade
+
+from . import config
+from .game_logic import Directions
+from .ghost import Ghost
+from .ingame_settings import InGameSettings
+from .pacman import Pacman
 
 class Game(arcade.View):
 	def __init__(self, maze: list, screen_view):
@@ -285,7 +287,7 @@ class Game(arcade.View):
 
 	def on_update(self, delta_time):
 		gst_speed = 8
-		pcmn_speed = 0.12
+		pcmn_speed = 0.14
 		if len(self.dots) == 0:
 			self.pause = 1
 			self.state = 3
@@ -376,7 +378,7 @@ class Game(arcade.View):
 				if smooth_cell in self.corners:
 					for ghost in self.ghosts:
 						ghost.edible = True
-						ghost.edible_timer = 20
+						ghost.edible_timer = 5
 				dot.remove_from_sprite_lists()
 
 	def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
