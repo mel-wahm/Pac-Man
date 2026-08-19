@@ -38,14 +38,18 @@ class Menu:
 
     def mouse_motion(self, x, y, menu):
         for i in range(len(menu.menus)):
-            if menu.texts[i].left < x < menu.texts[i].right and \
-					menu.texts[i].bottom < y < menu.texts[i].top:
+            if (
+                menu.texts[i].left < x < menu.texts[i].right
+                and menu.texts[i].bottom < y < menu.texts[i].top
+            ):
                 menu.select = i
 
     def mouse_press(self, x, y, menu):
         for i in range(len(menu.menus)):
-            if menu.texts[i].left < x < menu.texts[i].right and \
-					menu.texts[i].bottom < y < menu.texts[i].top:
+            if (
+                menu.texts[i].left < x < menu.texts[i].right
+                and menu.texts[i].bottom < y < menu.texts[i].top
+            ):
                 menu.menus[i].action()
 
     def move_up(self):
@@ -58,6 +62,7 @@ class Menu:
 
     def action(self):
         self.menus[self.select].action()
+
     def draw_texts(self):
         for i in range(len(self.menus)):
             if i == self.select:

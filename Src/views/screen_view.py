@@ -2,11 +2,12 @@ import arcade
 
 from mazegenerator import MazeGenerator
 
-from . import config
-from .credits import Credits
-from .game import Game
-from .menu import Menu, Selection
-from .settings import Settings
+from ..config import MAZE_SIZE
+from ..ui import Menu, Selection
+from .credits_view import Credits
+from .game_view import Game
+from .settings_view import Settings
+
 
 class Screen(arcade.View):
     def __init__(self):
@@ -24,11 +25,11 @@ class Screen(arcade.View):
             self.width / 2,
             self.height / 2,
         )
-        maze = MazeGenerator(config.MAZE_SIZE).maze
+        maze = MazeGenerator(MAZE_SIZE).maze
         self.game_view = Game(maze, self)
 
     def start_game(self):
-        maze = MazeGenerator(config.MAZE_SIZE).maze
+        maze = MazeGenerator(MAZE_SIZE).maze
         self.game_view = Game(maze, self)
         self.window.show_view(self.game_view)
 
@@ -56,12 +57,13 @@ class Screen(arcade.View):
 
     def on_mouse_motion(self, x, y, dx, dy):
         self.menus.mouse_motion(x, y, self.menus)
-        
+
     def on_mouse_press(self, x, y, button, modifiers):
         self.menus.mouse_press(x, y, self.menus)
 
     def on_draw(self):
         self.clear()
-        r = arcade.rect.XYWH(self.width / 2, self.height / 2, self.width, self.height)
+        r = arcade.rect.XYWH(self.width / 2, self.height / 2,
+                             self.width, self.height)
         arcade.draw_texture_rect(self.wallpaper, r)
         self.menus.draw_texts()
