@@ -134,7 +134,7 @@ class Ghost:
         if not self.edible_timer:
             self.edible = False
         self.sec += delta_time
-        self.flash_speed = 0.3 if self.edible_timer > 1 else 0.04
+        self.flash_speed = 0.3 if self.edible_timer > 1 else 0.15
         if self.sec > self.flash_speed:
             self.sec = 0
             self.select += 1
@@ -182,11 +182,12 @@ class Ghost:
         else:
             if self.edible_timer < 4:
                 edible_color = [(0, 0, 164), (255, 255, 255)][self.select % 2]
+                pupil_color = [(255, 184, 82), (220, 20, 20)][self.select % 2]
+                mouth_color = [white, (220, 20, 20)][self.select % 2]
             else:
                 edible_color = (0, 0, 164)
-                
-            # print(edible_color)
-            # exit()
+                pupil_color = (255, 184, 82)
+                mouth_color = white
 
             arcade.draw_arc_filled(
                 cx, cy + 15 * s, 240 * s, 240 * s, edible_color, 0, 180
@@ -209,18 +210,18 @@ class Ghost:
                     ex + eye_x * s * 2,
                     cy + 40 * s - eye_y * s * 2,
                     18 * s,
-                    edible_color,
+                    pupil_color,
                     num_segments=32,
                 )
 
-            mlx = cx - 80 * s
+            mouth_x = cx - 80 * s
             mouth = []
             for i in range(20):
-                xs = mlx + i * 8 * s
+                xs = mouth_x + i * 8 * s
                 y = cy - 40 * s + 16 * s * math.sin(i + self.anim_time * 5)
                 mouth.append((xs, y))
 
-            arcade.draw_line_strip(mouth, white, max(2, int(6 * s)))
+            arcade.draw_line_strip(mouth, mouth_color, max(2, int(6 * s)))
 
             arcade.draw_arc_filled(
                 cx, cy - 75 * s, 80 * s, 80 * s, edible_color, 180, 360
