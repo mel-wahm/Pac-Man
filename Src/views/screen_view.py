@@ -15,18 +15,28 @@ class Screen(arcade.View):
         self.wallpaper = arcade.load_texture("wallpaper/wallpaper.png")
         arcade.load_font("fonts/arcade_font.ttf")
         arcade.load_font("fonts/Renogare-Regular.otf")
-        self.cx, self.cy = self.width / 2, self.height / 2
-        self.start = Selection("Start", lambda: self.start_game())
-        self.settings = Selection("Settings", lambda: self.enter_settings())
-        self.credits = Selection("Credits", lambda: self.show_credits())
-        self.exit = Selection("Exit", lambda: self.exit_game())
-        self.menus = Menu(
-            [self.start, self.settings, self.credits, self.exit],
-            self.width / 2,
-            self.height / 2,
+
+        center_x = self.width / 2
+        center_y = self.height / 2
+
+        self.start_option = Selection("Start", lambda: self.start_game())
+        self.settings_option = Selection("Settings", lambda: self.enter_settings())
+        self.credits_option = Selection("Credits", lambda: self.show_credits())
+        self.exit_option = Selection("Exit", lambda: self.exit_game())
+
+        self.menu = Menu(
+            [self.start_option, self.settings_option, self.credits_option, self.exit_option],
+            center_x,
+            center_y,
         )
+
         maze = MazeGenerator(MAZE_SIZE).maze
         self.game_view = Game(maze, self)
+
+    # Backward compatibility alias
+    @property
+    def menus(self):
+        return self.menu
 
     def start_game(self):
         maze = MazeGenerator(MAZE_SIZE).maze
@@ -44,26 +54,27 @@ class Screen(arcade.View):
         exit()
 
     def on_update(self, delta_time):
-        if self.menus.scale < 2:
-            self.menus.scale += delta_time * 3
+        if self.menu.scale < 2:
+            self.menu.scale += delta_time * 3
 
     def on_key_press(self, symbol, modifiers):
         if symbol == arcade.key.DOWN:
-            self.menus.move_down()
+            self.menu.move_down()
         if symbol == arcade.key.UP:
-            self.menus.move_up()
+            self.menu.move_up()
         if symbol == arcade.key.ENTER:
-            self.menus.action()
+            self.menu.action()
 
     def on_mouse_motion(self, x, y, dx, dy):
-        self.menus.mouse_motion(x, y, self.menus)
+        self.menu.mouse_motion(x, y)
 
     def on_mouse_press(self, x, y, button, modifiers):
-        self.menus.mouse_press(x, y, self.menus)
+        self.menu.mouse_press(x, y)
 
     def on_draw(self):
         self.clear()
-        r = arcade.rect.XYWH(self.width / 2, self.height / 2,
-                             self.width, self.height)
-        arcade.draw_texture_rect(self.wallpaper, r)
-        self.menus.draw_texts()
+        screen_rect = arcade.rect.XYWH(
+            self.width / 2, self.height / 2, self.width, self.height
+        )
+        arcade.draw_texture_rect(self.wallpaper, screen_rect)
+        self.menu.draw_texts()

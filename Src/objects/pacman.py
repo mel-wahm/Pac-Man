@@ -21,9 +21,10 @@ class Pacman:
         self.direction = Directions.DOWN
         self.next_direction = Directions.DOWN
         self.maze = maze
-        self.death = 0
+        self.death_count = 0
         self.score = 0
-        self.teleport = 0
+        self.is_teleporting = False
+
         arcade.load_font("fonts/Renogare-Regular.otf")
         self.score_text = arcade.Text(
             f"SCORE: {self.score}",
@@ -42,8 +43,25 @@ class Pacman:
             font_size=24,
         )
 
+    # Backward compatibility properties
+    @property
+    def death(self):
+        return self.death_count
+
+    @death.setter
+    def death(self, value):
+        self.death_count = value
+
+    @property
+    def teleport(self):
+        return self.is_teleporting
+
+    @teleport.setter
+    def teleport(self, value):
+        self.is_teleporting = bool(value)
+
     def reset_game(self):
-        self.death = 0
+        self.death_count = 0
         self.score = 0
         self.score_text.text = "SCORE: 0"
         self.x = self.init_x
@@ -67,7 +85,7 @@ class Pacman:
             self.angle = DIR_DATA[new_dir][3]
 
     def update(self):
-        self.teleport = 0
+        self.is_teleporting = False
         self.prev_x = self.smooth_x
         self.prev_y = self.smooth_y
         self.step_time = 0.0
@@ -83,27 +101,27 @@ class Pacman:
         self.angle = angle
 
         if not (self.maze[self.y][self.x] & mask):
-            if self.x + dx >= 0 and self.x + dx < cols:
+            if 0 <= self.x + dx < cols:
                 self.x += dx
             elif self.x + dx < 0:
-                self.teleport = 1
+                self.is_teleporting = True
                 self.x = cols - 1
-                self.smooth_x = cols - 1
-            elif self.x + dx > cols - 1:
-                self.teleport = 1
-                self.smooth_x = 0
+                self.smooth_x = float(cols - 1)
+            elif self.x + dx >= cols:
+                self.is_teleporting = True
+                self.smooth_x = 0.0
                 self.x = 0
 
-            if self.y + dy >= 0 and self.y + dy < rows:
+            if 0 <= self.y + dy < rows:
                 self.y += dy
             elif self.y + dy < 0:
-                self.teleport = 1
+                self.is_teleporting = True
                 self.y = rows - 1
-                self.smooth_y = rows - 1
-            elif self.y + dy > rows - 1:
-                self.teleport = 1
+                self.smooth_y = float(rows - 1)
+            elif self.y + dy >= rows:
+                self.is_teleporting = True
                 self.y = 0
-                self.smooth_y = 0
+                self.smooth_y = 0.0
 
     def smooth_animation(self, delta_time, duration=0.15):
         self.step_time += delta_time
@@ -117,11 +135,12 @@ class Pacman:
 
     def draw(self, renderer):
         cx, cy = renderer.center(self.smooth_x, self.smooth_y)
+        radius = 15 * 0.025 * renderer.cell_size
         arcade.draw_arc_filled(
             cx,
             cy,
-            15 * 0.025 * renderer.cell_size,
-            15 * 0.025 * renderer.cell_size,
+            radius,
+            radius,
             arcade.color.YELLOW,
             30 + self.angle + 15 * sin(renderer.progress),
             330 + self.angle - 15 * sin(renderer.progress),

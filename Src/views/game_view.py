@@ -7,33 +7,38 @@ from .ingame_settings_view import InGameSettings
 
 
 class Game(arcade.View):
+    """Game View: handles Arcade rendering, HUD/Text overlays, and user input routing."""
+
     def __init__(self, maze: list, screen_view):
         super().__init__()
 
         self.screen_view = screen_view
         self.background_color = (20, 20, 30)
 
+        # View and Layout Configuration
         sidebar_width = 170
         padding = 20
         self.cols = len(maze[0])
         self.rows = len(maze)
-        self.total_w = (self.cols - 1) / 2
-        self.total_h = (self.rows - 1) / 2
-        available_w = self.width - sidebar_width - padding
-        available_h = self.height - padding
-        self.cell_size = min(available_w / self.cols, available_h / self.rows)
+        self.half_width = (self.cols - 1) / 2
+        self.half_height = (self.rows - 1) / 2
+        available_width = self.width - sidebar_width - padding
+        available_height = self.height - padding
+        self.cell_size = min(available_width / self.cols, available_height / self.rows)
         self.wall_thickness = max(1, int(self.cell_size * 0.03))
 
+        # Initialize Game Engine
         self.engine = GameEngine(maze, self.center, self.cell_size)
 
+        # UI & Fonts
         arcade.load_font("fonts/Renogare-Regular.otf")
-        cx = self.width / 2
-        cy = self.height / 2
+        center_x = self.width / 2
+        center_y = self.height / 2
 
         self.pause_text = arcade.Text(
             "PAUSE",
-            cx,
-            cy,
+            center_x,
+            center_y,
             (200, 200, 200),
             font_size=160,
             anchor_x="center",
@@ -42,8 +47,8 @@ class Game(arcade.View):
         )
         self.died_text = arcade.Text(
             "YOU DIED",
-            cx,
-            cy,
+            center_x,
+            center_y,
             (180, 15, 15),
             font_size=80,
             anchor_x="center",
@@ -52,8 +57,8 @@ class Game(arcade.View):
         )
         self.won_text = arcade.Text(
             "YOU WON",
-            cx,
-            cy,
+            center_x,
+            center_y,
             (255, 200, 0),
             font_size=280,
             anchor_x="center",
@@ -65,15 +70,15 @@ class Game(arcade.View):
     def progress(self):
         return self.engine.progress
 
-    def center(self, x, y):
+    def center(self, grid_x, grid_y):
         sidebar_width = 170
         padding = 20
         center_x = sidebar_width + (self.width - sidebar_width - padding) / 2
         center_y = self.height / 2
 
-        nx = center_x + (x - self.total_w) * self.cell_size
-        ny = center_y - (y - self.total_h) * self.cell_size
-        return (nx, ny)
+        screen_x = center_x + (grid_x - self.half_width) * self.cell_size
+        screen_y = center_y - (grid_y - self.half_height) * self.cell_size
+        return (screen_x, screen_y)
 
     def reset_game(self):
         self.engine.reset_game()
@@ -93,7 +98,7 @@ class Game(arcade.View):
         if symbol == arcade.key.ESCAPE:
             set_view = InGameSettings(self, self.screen_view)
             self.window.show_view(set_view)
-        if symbol == arcade.key.SPACE:	
+        if symbol == arcade.key.SPACE:
             self.engine.state = 2
             self.engine.pause = not (self.engine.pause)
 
@@ -142,7 +147,7 @@ class Game(arcade.View):
         self.engine.pacman.lives_text.y = self.height - 170
         self.engine.pacman.lives_text.draw()
 
-        lives_remaining = 3 - self.engine.pacman.death
+        lives_remaining = 3 - self.engine.pacman.death_count
         for i in range(lives_remaining):
             arcade.draw_arc_filled(
                 sidebar_x + 20 + (i * 45),

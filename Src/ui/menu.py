@@ -2,31 +2,34 @@ import arcade
 
 
 class Selection:
-    """Class to create an instance of a menu"""
+    """Represents a single selectable menu item with a display label and action callback."""
 
-    def __init__(self, name, action):
+    def __init__(self, name: str, action):
         self.name = name
         self.action = action
 
 
 class Menu:
-    """Class to store all instance of menus"""
+    """Manages a vertical list of menu items with keyboard and mouse navigation."""
 
-    def __init__(self, menus, x, y, gap=65, font_size=35):
-        self.menus = menus
-        self.x, self.y = x, y
+    def __init__(self, items: list[Selection], x: float, y: float, gap: float = 65, font_size: int = 35):
+        self.menus = items
+        self.x = x
+        self.y = y
         self.gap = gap
         self.font_size = font_size
-        self.select = 0
-        self.texts = []
-        self.scale = 1
-        total_height = (len(menus) - 1) * gap
-        for i in range(len(menus)):
-            self.texts.append(
+        self.selected_index = 0
+        self.labels = []
+        self.scale = 1.0
+
+        total_height = (len(items) - 1) * gap
+        for i, item in enumerate(items):
+            item_y = self.y + total_height / 2 - (i * self.gap)
+            self.labels.append(
                 arcade.Text(
-                    self.menus[i].name,
+                    item.name,
                     self.x,
-                    self.y + total_height / 2 - (i * self.gap),
+                    item_y,
                     arcade.color.WHITE,
                     self.font_size,
                     anchor_x="center",
@@ -34,39 +37,51 @@ class Menu:
                 )
             )
 
-    def mouse_motion(self, x, y, menu):
-        for i in range(len(menu.menus)):
-            if (
-                menu.texts[i].left < x < menu.texts[i].right
-                and menu.texts[i].bottom < y < menu.texts[i].top
-            ):
-                menu.select = i
+    # Backward compatibility properties
+    @property
+    def select(self):
+        return self.selected_index
 
-    def mouse_press(self, x, y, menu):
-        for i in range(len(menu.menus)):
-            if (
-                menu.texts[i].left < x < menu.texts[i].right
-                and menu.texts[i].bottom < y < menu.texts[i].top
-            ):
-                menu.menus[i].action()
+    @select.setter
+    def select(self, value):
+        self.selected_index = value
+
+    @property
+    def texts(self):
+        return self.labels
+
+    def mouse_motion(self, x: float, y: float, menu=None):
+        target = menu or self
+        for i, label in enumerate(target.labels):
+            if label.left < x < label.right and label.bottom < y < label.top:
+                target.selected_index = i
+
+    def mouse_press(self, x: float, y: float, menu=None):
+        target = menu or self
+        for i, label in enumerate(target.labels):
+            if label.left < x < label.right and label.bottom < y < label.top:
+                target.menus[i].action()
 
     def move_up(self):
-        self.select = (self.select - 1) % len(self.menus)
-        self.scale = 1
+        self.selected_index = (self.selected_index - 1) % len(self.menus)
+        self.scale = 1.0
 
     def move_down(self):
-        self.select = (self.select + 1) % len(self.menus)
-        self.scale = 1
+        self.selected_index = (self.selected_index + 1) % len(self.menus)
+        self.scale = 1.0
 
     def action(self):
-        self.menus[self.select].action()
+        self.menus[self.selected_index].action()
 
     def draw_texts(self):
-        for i in range(len(self.menus)):
-            if i == self.select:
-                self.texts[i].color = arcade.color.YELLOW
-                self.texts[i].font_size = self.font_size * min(1.5, self.scale)
+        for i, label in enumerate(self.labels):
+            if i == self.selected_index:
+                label.color = arcade.color.YELLOW
+                label.font_size = self.font_size * min(1.5, self.scale)
             else:
-                self.texts[i].color = arcade.color.WHITE
-                self.texts[i].font_size = self.font_size
-            self.texts[i].draw()
+                label.color = arcade.color.WHITE
+                label.font_size = self.font_size
+            label.draw()
+
+    def draw(self):
+        self.draw_texts()
