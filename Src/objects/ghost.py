@@ -134,6 +134,7 @@ class Ghost:
         if not self.edible_timer:
             self.edible = False
         self.sec += delta_time
+
         self.flash_speed = 0.3 if self.edible_timer > 1 else 0.20
         if self.sec > self.flash_speed:
             self.sec = 0
