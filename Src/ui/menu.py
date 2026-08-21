@@ -1,7 +1,5 @@
 import arcade
 
-width, height = 1536, 864
-
 
 class Selection:
     """Class to create an instance of a menu"""

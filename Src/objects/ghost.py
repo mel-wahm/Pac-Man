@@ -51,22 +51,14 @@ class Ghost:
         self.smooth_x = float(self.default[0])
         self.smooth_y = float(self.default[1])
         self.path = []
+        self.edible = 0
+        self.edible_timer = 0
+        self.sec = 0
+        self.select = 0
 
     def can_turn(self, x, y, direction):
         mask, _, _, _ = DIR_DATA[direction]
         return not (self.maze[y][x] & mask)
-
-    def get_direction(self, current, target):
-        x, y = current
-        nx, ny = target
-        if nx == x + 1:
-            return Directions.RIGHT
-        if nx == x - 1:
-            return Directions.LEFT
-        if ny == y + 1:
-            return Directions.UP
-        if ny == y - 1:
-            return Directions.DOWN
 
     def choose_target(self, pacman):
         x, y = self.r_c
