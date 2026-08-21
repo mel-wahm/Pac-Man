@@ -26,6 +26,8 @@ class Ghost:
         self.direction = Directions.LEFT
         self.next_direction = Directions.RIGHT
         self.edible_timer = 0
+        self.sec = 0
+        self.select = 0
         self.choices = [
             Directions.LEFT,
             Directions.RIGHT,
@@ -41,6 +43,7 @@ class Ghost:
         self.edible = 0
         self.anim_time = 0.0
         self.eye_time = 0.0
+        self.flash_speed = 0
 
     def reset_game(self):
         self.ghost_freeze = 2
@@ -130,6 +133,11 @@ class Ghost:
         self.edible_timer = max(0, self.edible_timer - delta_time)
         if not self.edible_timer:
             self.edible = False
+        self.sec += delta_time
+        self.flash_speed = 0.3 if self.edible_timer > 1 else 0.04
+        if self.sec > self.flash_speed:
+            self.sec = 0
+            self.select += 1
 
     def draw(self):
         white = arcade.color.WHITE
@@ -172,7 +180,13 @@ class Ghost:
                     num_segments=32,
                 )
         else:
-            edible_color = (0, 0, 164)
+            if self.edible_timer < 4:
+                edible_color = [(0, 0, 164), (255, 255, 255)][self.select % 2]
+            else:
+                edible_color = (0, 0, 164)
+                
+            # print(edible_color)
+            # exit()
 
             arcade.draw_arc_filled(
                 cx, cy + 15 * s, 240 * s, 240 * s, edible_color, 0, 180

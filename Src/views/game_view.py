@@ -378,7 +378,7 @@ class Game(arcade.View):
                 if smooth_cell in self.corners:
                     for ghost in self.ghosts:
                         ghost.edible = True
-                        ghost.edible_timer = 5
+                        ghost.edible_timer = 8
                 dot.remove_from_sprite_lists()
 
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
