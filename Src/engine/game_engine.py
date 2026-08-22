@@ -227,7 +227,6 @@ class GameEngine:
         if self.state == 3:
             self.win_timer = min(1.0, self.win_timer + delta_time * 2.0)
 
-
         for ghost in self.ghosts:
             if not self.pause:
                 ghost.eaten_timer = max(0.0, ghost.eaten_timer - delta_time)
