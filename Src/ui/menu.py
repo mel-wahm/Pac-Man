@@ -37,19 +37,6 @@ class Menu:
                 )
             )
 
-    # Backward compatibility properties
-    @property
-    def select(self):
-        return self.selected_index
-
-    @select.setter
-    def select(self, value):
-        self.selected_index = value
-
-    @property
-    def texts(self):
-        return self.labels
-
     def mouse_motion(self, x: float, y: float, menu=None):
         target = menu or self
         for i, label in enumerate(target.labels):

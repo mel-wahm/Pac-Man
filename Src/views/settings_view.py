@@ -17,11 +17,6 @@ class Settings(arcade.View):
             [self.controls_option, self.return_option], self.width / 2, self.height / 2
         )
 
-    # Backward compatibility
-    @property
-    def menus(self):
-        return self.menu
-
     def return_to_previous(self):
         self.window.show_view(self.previous_view)
 
