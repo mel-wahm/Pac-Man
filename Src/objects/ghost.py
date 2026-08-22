@@ -29,6 +29,7 @@ class Ghost:
         self.flash_timer = 0.0
         self.flash_index = 0
         self.flash_speed = 0.3
+        self.eaten_timer = 0
         self.choices = [
             Directions.LEFT,
             Directions.RIGHT,
@@ -45,29 +46,9 @@ class Ghost:
         self.anim_time = 0.0
         self.eye_time = 0.0
 
-    # Backward compatibility properties
-    @property
-    def r_c(self):
-        return self.grid_pos
-
-    @r_c.setter
-    def r_c(self, value):
-        self.grid_pos = value
-
-    @property
-    def default(self):
-        return self.spawn_pos
-
-    @property
-    def draw_cords(self):
-        return self.draw_coords
-
-    @draw_cords.setter
-    def draw_cords(self, value):
-        self.draw_coords = value
-
     def reset_game(self):
         self.ghost_freeze = 2
+        self.eaten_timer = 0
         self.grid_pos = self.spawn_pos
         self.smooth_x = float(self.spawn_pos[0])
         self.smooth_y = float(self.spawn_pos[1])
@@ -146,6 +127,7 @@ class Ghost:
         self.anim_time += delta_time
         self.eye_time += delta_time * 8.0
         self.edible_timer = max(0.0, self.edible_timer - delta_time)
+        
 
         if not self.edible_timer:
             self.edible = False

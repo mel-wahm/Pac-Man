@@ -33,7 +33,7 @@ class GameEngine:
         self.half_height = (self.rows - 1) / 2
 
         self.pacman = Pacman(maze)
-        self.max_dots = 1000
+        self.max_dots = 7
         self.state = 0
         self.pause = 0
         self.progress = 0
@@ -205,7 +205,7 @@ class GameEngine:
             self.dots.append(dot)
             self.dots_grid[(c, r)] = dot
 
-        for i, cell in enumerate(sorted(self.corners)):
+        for i, cell in enumerate(self.corners):
             c, r = cell
             real_x, real_y = self.center(c, r)
             super_gum = arcade.Sprite(self.super_gum_textures[i % 4])
@@ -228,6 +228,11 @@ class GameEngine:
             self.win_timer = min(1.0, self.win_timer + delta_time * 2.0)
 
         for ghost in self.ghosts:
+            if not self.pause:
+                ghost.eaten_timer = max(0.0, ghost.eaten_timer - delta_time)
+                ghost.ghost_freeze = max(0.0, ghost.ghost_freeze - delta_time)
+            if ghost.eaten_timer:
+                continue
             distance_to_pacman = hypot(
                 (ghost.smooth_x - self.pacman.smooth_x),
                 (ghost.smooth_y - self.pacman.smooth_y),
@@ -245,6 +250,7 @@ class GameEngine:
                     self.pacman.next_direction = Directions.DOWN
                     for g in self.ghosts:
                         g.edible_timer = 0.0
+                        g.eaten_timer = 0.0
                         g.edible = False
                         g.grid_pos = g.spawn_pos
                         g.path = []
@@ -266,6 +272,7 @@ class GameEngine:
                     ghost.smooth_x = float(ghost.spawn_pos[0])
                     ghost.smooth_y = float(ghost.spawn_pos[1])
                     ghost.draw_coords = self.center(ghost.smooth_x, ghost.smooth_y)
+                    ghost.eaten_timer = 5
                     ghost.ghost_freeze = 5
                     ghost.edible_timer = 0.0
                     ghost.edible = False
@@ -283,7 +290,8 @@ class GameEngine:
                 should_choose_target = True
 
             for ghost in self.ghosts:
-                ghost.ghost_freeze -= delta_time
+                if ghost.eaten_timer:
+                    continue
                 if ghost.ghost_freeze <= 0:
                     if should_choose_target:
                         ghost.choose_target(self.pacman)

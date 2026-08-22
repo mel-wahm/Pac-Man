@@ -7,8 +7,6 @@ from .ingame_settings_view import InGameSettings
 
 
 class Game(arcade.View):
-    """Game View: handles Arcade rendering, HUD/Text overlays, and user input routing."""
-
     def __init__(self, maze: list, screen_view):
         super().__init__()
 
@@ -136,7 +134,8 @@ class Game(arcade.View):
         # Draw Pac-Man and Ghosts
         self.engine.pacman.draw(self)
         for ghost in self.engine.ghosts:
-            ghost.draw()
+            if not ghost.eaten_timer:
+                ghost.draw()
 
         # Draw Sidebar HUD (Score & Lives)
         sidebar_x = 20

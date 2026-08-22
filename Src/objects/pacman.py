@@ -43,23 +43,6 @@ class Pacman:
             font_size=24,
         )
 
-    # Backward compatibility properties
-    @property
-    def death(self):
-        return self.death_count
-
-    @death.setter
-    def death(self, value):
-        self.death_count = value
-
-    @property
-    def teleport(self):
-        return self.is_teleporting
-
-    @teleport.setter
-    def teleport(self, value):
-        self.is_teleporting = bool(value)
-
     def reset_game(self):
         self.death_count = 0
         self.score = 0
@@ -129,19 +112,15 @@ class Pacman:
         self.smooth_x = self.prev_x + (self.x - self.prev_x) * progress
         self.smooth_y = self.prev_y + (self.y - self.prev_y) * progress
 
-    @property
-    def neighbors(self):
-        return neighbor_coordinates(self.x, self.y, self.maze)
-
-    def draw(self, renderer):
-        cx, cy = renderer.center(self.smooth_x, self.smooth_y)
-        radius = 15 * 0.025 * renderer.cell_size
+    def draw(self, game_view):
+        cx, cy = game_view.center(self.smooth_x, self.smooth_y)
+        radius = 15 * 0.025 * game_view.cell_size
         arcade.draw_arc_filled(
             cx,
             cy,
             radius,
             radius,
             arcade.color.YELLOW,
-            30 + self.angle + 15 * sin(renderer.progress),
-            330 + self.angle - 15 * sin(renderer.progress),
+            30 + self.angle + 15 * sin(game_view.progress),
+            330 + self.angle - 15 * sin(game_view.progress),
         )
