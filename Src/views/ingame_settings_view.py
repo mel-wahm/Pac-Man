@@ -26,11 +26,6 @@ class InGameSettings(arcade.View):
             self.height / 2,
         )
 
-    # Backward compatibility
-    @property
-    def menus(self):
-        return self.menu
-
     def resume_game(self):
         self.window.show_view(self.game_view)
 

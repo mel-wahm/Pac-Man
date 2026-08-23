@@ -40,11 +40,6 @@ class Screen(arcade.View):
         maze = MazeGenerator(MAZE_SIZE).maze
         self.game_view = Game(maze, self)
 
-    # Backward compatibility alias
-    @property
-    def menus(self):
-        return self.menu
-
     def start_game(self):
         maze = MazeGenerator(MAZE_SIZE).maze
         self.game_view = Game(maze, self, theme=self.game_view.theme)
