@@ -38,7 +38,9 @@ class InGameSettings(arcade.View):
         maze = MazeGenerator(MAZE_SIZE).maze
         from .game_view import Game
 
-        game_view = Game(maze, self.screen_view)
+        game_view = Game(
+            maze, self.screen_view, theme=getattr(self.game_view, "theme", "dark")
+        )
         self.window.show_view(game_view)
 
     def open_options(self):

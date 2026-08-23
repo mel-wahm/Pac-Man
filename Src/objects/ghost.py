@@ -12,7 +12,7 @@ from ..core import (
 
 
 class Ghost:
-    def __init__(self, grid_pos, draw_coords, maze, color, cell_size):
+    def __init__(self, grid_pos, draw_coords, maze, color, cell_size, theme_colors=None):
         self.grid_pos = grid_pos
         self.spawn_pos = grid_pos
         self.smooth_x = float(grid_pos[0])
@@ -26,6 +26,7 @@ class Ghost:
         self.maze = maze
         self.color = color
         self.cell_size = cell_size
+        self.theme_colors = theme_colors or {}
         self.path = []
         self.direction = Directions.LEFT
         self.next_direction = Directions.RIGHT
@@ -165,8 +166,16 @@ class Ghost:
             self.flash_timer = 0.0
             self.flash_index += 1
 
-    def draw(self):
+    def draw(self, theme_colors=None):
         white = arcade.color.WHITE
+        tc = theme_colors or self.theme_colors
+        normal_pupil = tc.get("ghost_pupil", (33, 33, 255))
+        base_edible_color = tc.get("ghost_edible", (0, 0, 164))
+        base_edible_pupil = tc.get("ghost_edible_pupil", (255, 184, 82))
+        flash_body = tc.get("ghost_flash_body", (255, 255, 255))
+        flash_pupil = tc.get("ghost_flash_pupil", (220, 20, 20))
+        flash_mouth = tc.get("ghost_flash_mouth", (220, 20, 20))
+
         cx, cy = self.draw_coords
         scale = 0.002 * self.cell_size
 
@@ -199,7 +208,7 @@ class Ghost:
                     num_segments=32,
                 )
                 arcade.draw_circle_filled(
-                    eye_x, cy + 15 * scale, 20 * scale, (33, 33, 255), num_segments=32
+                    eye_x, cy + 15 * scale, 20 * scale, normal_pupil, num_segments=32
                 )
                 arcade.draw_circle_filled(
                     eye_x,
@@ -211,12 +220,12 @@ class Ghost:
         else:
             if self.edible_timer < 4.0:
                 is_flashing_white = (self.flash_index % 2 == 1)
-                edible_color = (255, 255, 255) if is_flashing_white else (0, 0, 164)
-                pupil_color = (220, 20, 20) if is_flashing_white else (255, 184, 82)
-                mouth_color = (220, 20, 20) if is_flashing_white else white
+                edible_color = flash_body if is_flashing_white else base_edible_color
+                pupil_color = flash_pupil if is_flashing_white else base_edible_pupil
+                mouth_color = flash_mouth if is_flashing_white else white
             else:
-                edible_color = (0, 0, 164)
-                pupil_color = (255, 184, 82)
+                edible_color = base_edible_color
+                pupil_color = base_edible_pupil
                 mouth_color = white
 
             arcade.draw_arc_filled(

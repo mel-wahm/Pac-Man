@@ -1,17 +1,19 @@
 import arcade
 
-from ..config import keys
+from ..config import THEMES, keys
 from ..core import Directions
 from ..engine import GameEngine
 from .ingame_settings_view import InGameSettings
 
 
 class Game(arcade.View):
-    def __init__(self, maze: list, screen_view):
+    def __init__(self, maze: list, screen_view, theme: str = "dark"):
         super().__init__()
 
         self.screen_view = screen_view
-        self.background_color = (20, 20, 30)
+        self.theme = theme
+        self.theme_colors = THEMES.get(self.theme, THEMES["dark"])
+        self.background_color = self.theme_colors["background"]
 
         # View and Layout Configuration
         sidebar_width = 170
@@ -26,7 +28,7 @@ class Game(arcade.View):
         self.wall_thickness = max(1, int(self.cell_size * 0.03))
 
         # Initialize Game Engine
-        self.engine = GameEngine(maze, self.center, self.cell_size)
+        self.engine = GameEngine(maze, self.center, self.cell_size, theme=self.theme)
 
         # UI & Fonts
         arcade.load_font("fonts/Renogare-Regular.otf")
@@ -37,7 +39,7 @@ class Game(arcade.View):
             "PAUSE",
             center_x,
             center_y,
-            (200, 200, 200),
+            self.theme_colors["pause_text"],
             font_size=160,
             anchor_x="center",
             anchor_y="center",
@@ -47,7 +49,7 @@ class Game(arcade.View):
             "YOU DIED",
             center_x,
             center_y,
-            (180, 15, 15),
+            self.theme_colors["died_text"],
             font_size=80,
             anchor_x="center",
             anchor_y="center",
@@ -57,7 +59,7 @@ class Game(arcade.View):
             "YOU WON",
             center_x,
             center_y,
-            (255, 200, 0),
+            self.theme_colors["won_text"],
             font_size=280,
             anchor_x="center",
             anchor_y="center",
@@ -111,31 +113,52 @@ class Game(arcade.View):
     def on_draw(self):
         self.clear()
 
-        # Draw Walls
+        # Draw Walls (Outer Outline + Inner Core)
         if self.engine.wall_lines:
+            outer_thickness = max(4, int(self.wall_thickness * 2.2))
+            wall_outline_col = self.theme_colors.get(
+                "wall_outline", self.theme_colors["wall"]
+            )
             arcade.draw_lines(
-                self.engine.wall_lines, (33, 33, 255), self.wall_thickness
+                self.engine.wall_lines,
+                wall_outline_col,
+                outer_thickness,
+            )
+            arcade.draw_lines(
+                self.engine.wall_lines,
+                self.theme_colors["wall"],
+                self.wall_thickness,
             )
 
         # Draw Dots & Super Gums
         self.engine.dots.draw()
 
-        # Draw 42 Center Blocks
+        # Draw 42 Center Blocks (Outer Outline + Inner Core)
+        block_outline_col = self.theme_colors.get(
+            "center_block_outline", self.theme_colors["wall_outline"]
+        )
         for c, r in self.engine.forty_two_coords:
             real_x, real_y = self.center(c, r)
+            sqr_outer = arcade.rect.XYWH(
+                real_x,
+                real_y,
+                self.cell_size * 0.54,
+                self.cell_size * 0.54,
+            )
+            arcade.draw_rect_filled(sqr_outer, block_outline_col)
             sqr = arcade.rect.XYWH(
                 real_x,
                 real_y,
-                self.cell_size * 0.5,
-                self.cell_size * 0.5,
+                self.cell_size * 0.44,
+                self.cell_size * 0.44,
             )
-            arcade.draw_rect_filled(sqr, (33, 33, 255))
+            arcade.draw_rect_filled(sqr, self.theme_colors["center_block"])
 
         # Draw Pac-Man and Ghosts
         self.engine.pacman.draw(self)
         for ghost in self.engine.ghosts:
             if not ghost.eaten_timer:
-                ghost.draw()
+                ghost.draw(self.theme_colors)
 
         # Draw Sidebar HUD (Score & Lives)
         sidebar_x = 20
@@ -153,7 +176,7 @@ class Game(arcade.View):
                 self.height - 230,
                 32,
                 32,
-                arcade.color.YELLOW,
+                self.theme_colors["pacman"],
                 30,
                 330,
             )
@@ -163,7 +186,7 @@ class Game(arcade.View):
             cx = self.width / 2
             cy = self.height / 2
             shade = arcade.rect.XYWH(cx, cy, self.width, self.height)
-            arcade.draw_rect_filled(shade, (10, 10, 10, 170))
+            arcade.draw_rect_filled(shade, self.theme_colors["dim_overlay"])
             if self.engine.state == 1:
                 self.died_text.draw()
             if self.engine.state == 2:

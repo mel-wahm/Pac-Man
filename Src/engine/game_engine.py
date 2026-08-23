@@ -3,6 +3,7 @@ from random import sample
 
 import arcade
 
+from ..config import THEMES
 from ..core import Directions
 from ..objects import Ghost, Pacman
 
@@ -10,9 +11,11 @@ from ..objects import Ghost, Pacman
 class GameEngine:
     """Core Game Engine: handles maze state, entity management, physics, and game rules."""
 
-    def __init__(self, maze: list, center_func, cell_size: float):
+    def __init__(self, maze: list, center_func, cell_size: float, theme: str = "dark"):
         self.center = center_func
         self.cell_size = cell_size
+        self.theme = theme
+        self.theme_colors = THEMES.get(self.theme, THEMES["dark"])
         self.super_gum_textures = [
             arcade.load_texture("fruits/super_fruit_yellow.png"),
             arcade.load_texture("fruits/super_fruit_pink.png"),
@@ -33,6 +36,8 @@ class GameEngine:
         self.half_height = (self.rows - 1) / 2
 
         self.pacman = Pacman(maze)
+        self.pacman.score_text.color = self.theme_colors["hud_text"]
+        self.pacman.lives_text.color = self.theme_colors["hud_text"]
         self.max_dots = 7
         self.state = 0
         self.pause = 0
@@ -49,34 +54,39 @@ class GameEngine:
             (self.cols - 1, self.rows - 1),
         }
 
+        ghost_colors = self.theme_colors["ghosts"]
         self.ghosts = {
             Ghost(
                 (0, 0),
                 self.center(0, 0),
                 self.maze,
-                (255, 0, 0),
+                ghost_colors[0],
                 self.cell_size,
+                self.theme_colors,
             ),
             Ghost(
                 (self.cols - 1, 0),
                 self.center(self.cols - 1, 0),
                 self.maze,
-                (255, 184, 255),
+                ghost_colors[1],
                 self.cell_size,
+                self.theme_colors,
             ),
             Ghost(
                 (0, self.rows - 1),
                 self.center(0, self.rows - 1),
                 self.maze,
-                (0, 255, 255),
+                ghost_colors[2],
                 self.cell_size,
+                self.theme_colors,
             ),
             Ghost(
                 (self.cols - 1, self.rows - 1),
                 self.center(self.cols - 1, self.rows - 1),
                 self.maze,
-                (255, 184, 82),
+                ghost_colors[3],
                 self.cell_size,
+                self.theme_colors,
             ),
         }
 
@@ -159,7 +169,9 @@ class GameEngine:
             c, r = cell
             real_x, real_y = self.center(c, r)
             dot_r = int(self.cell_size * 0.05)
-            dot = arcade.SpriteCircle(radius=max(1, dot_r), color=(255, 255, 0))
+            dot = arcade.SpriteCircle(
+                radius=max(1, dot_r), color=self.theme_colors["dot"]
+            )
             dot.center_x = real_x
             dot.center_y = real_y
             self.dots.append(dot)
@@ -199,7 +211,7 @@ class GameEngine:
             c, r = cell
             real_x, real_y = self.center(c, r)
             dot_r = int(self.cell_size * 0.05)
-            dot = arcade.SpriteCircle(radius=dot_r, color=(255, 255, 0))
+            dot = arcade.SpriteCircle(radius=dot_r, color=self.theme_colors["dot"])
             dot.center_x = real_x
             dot.center_y = real_y
             self.dots.append(dot)

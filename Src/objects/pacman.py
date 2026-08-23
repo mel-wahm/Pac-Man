@@ -2,7 +2,7 @@ from math import sin
 
 import arcade
 
-from ..core import DIR_DATA, Directions, neighbor_coordinates
+from ..core import DIR_DATA, Directions
 
 
 class Pacman:
@@ -115,12 +115,13 @@ class Pacman:
     def draw(self, game_view):
         cx, cy = game_view.center(self.smooth_x, self.smooth_y)
         radius = 15 * 0.025 * game_view.cell_size
+        color = game_view.theme_colors.get("pacman", arcade.color.YELLOW)
         arcade.draw_arc_filled(
             cx,
             cy,
             radius,
             radius,
-            arcade.color.YELLOW,
+            color,
             30 + self.angle + 15 * sin(game_view.progress),
             330 + self.angle - 15 * sin(game_view.progress),
         )
