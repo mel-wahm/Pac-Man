@@ -11,7 +11,7 @@ class Settings(arcade.View):
         self.previous_view = previous_view
         self.game_view = game_view
 
-        self.theme_option = Selection("Theme", lambda: self.toggle_theme())
+        self.theme_option = Selection(f"Theme: {game_view.theme}", lambda: self.toggle_theme())
         self.return_option = Selection("Return", lambda: self.return_to_previous())
         self.controls_option = Selection("Controls", lambda: self.open_controls())
         self.menu = Menu(
@@ -25,6 +25,7 @@ class Settings(arcade.View):
     def toggle_theme(self):
         new_theme = "dark" if self.game_view.theme == "light" else "light"
         self.game_view.toggle_theme(new_theme)
+        self.theme_option.name = f"Theme: {new_theme}"
 
     def open_controls(self):
         control_view = Control(self)

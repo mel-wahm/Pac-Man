@@ -2,16 +2,11 @@ import arcade
 
 
 class Selection:
-    """Represents a single selectable menu item with a display label and action callback."""
-
     def __init__(self, name: str, action):
         self.name = name
         self.action = action
 
-
 class Menu:
-    """Manages a vertical list of menu items with keyboard and mouse navigation."""
-
     def __init__(self, items: list[Selection], x: float, y: float, gap: float = 65, font_size: int = 35):
         self.menus = items
         self.x = x

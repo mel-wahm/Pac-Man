@@ -28,14 +28,14 @@ THEMES = {
         "wall_outline": (18, 28, 80),
         "center_block": (60, 110, 245),
         "center_block_outline": (18, 28, 80),
-        "dot": (205, 120, 0),
+        "dot": (0, 120, 205),
         "pacman": (235, 150, 0),
         "hud_text": (25, 32, 55),
         "ghosts": [
-            (180, 15, 45),      # Blinky: Deep Crimson Wine
-            (155, 40, 180),     # Pinky: Deep Violet Purple
-            (0, 120, 140),      # Inky: Deep Forest Teal
-            (190, 75, 0),       # Clyde: Deep Burnt Sienna Orange
+            (180, 15, 45),
+            (155, 40, 180),
+            (0, 120, 140),
+            (190, 75, 0),
         ],
         "ghost_pupil": (10, 15, 60),
         "ghost_edible": (25, 35, 130),
