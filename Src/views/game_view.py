@@ -5,9 +5,8 @@ from ..core import Directions
 from ..engine import GameEngine
 from .ingame_settings_view import InGameSettings
 
-
 class Game(arcade.View):
-    def __init__(self, maze: list, screen_view, theme: str = "dark"):
+    def __init__(self, maze: list, screen_view, theme="light"):
         super().__init__()
 
         self.screen_view = screen_view
@@ -70,6 +69,16 @@ class Game(arcade.View):
     def progress(self):
         return self.engine.progress
 
+    def toggle_theme(self, new_theme):
+        self.theme = new_theme
+        self.theme_colors = THEMES.get(self.theme)
+        self.background_color = self.theme_colors["background"]
+        self.pause_text.color = self.theme_colors["pause_text"]
+        self.died_text.color = self.theme_colors["died_text"]
+        self.won_text.color = self.theme_colors["won_text"]
+        self.engine.pacman.score_text.color = self.theme_colors['hud_text']
+        self.engine.pacman.lives_text.color = self.theme_colors['hud_text']
+
     def center(self, grid_x, grid_y):
         sidebar_width = 170
         padding = 20
@@ -83,6 +92,10 @@ class Game(arcade.View):
     def reset_game(self):
         self.engine.reset_game()
         self.won_text.font_size = 280
+
+    def set_theme(self, new_theme):
+        self.theme = new_theme
+        print(self.theme)
 
     def on_key_press(self, symbol, modifiers):
         if symbol == arcade.key.C and modifiers & arcade.key.MOD_CTRL:

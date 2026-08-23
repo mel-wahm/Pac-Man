@@ -12,7 +12,7 @@ from ..core import (
 
 
 class Ghost:
-    def __init__(self, grid_pos, draw_coords, maze, color, cell_size, theme_colors=None):
+    def __init__(self, grid_pos, draw_coords, maze, color, cell_size, theme_colors):
         self.grid_pos = grid_pos
         self.spawn_pos = grid_pos
         self.smooth_x = float(grid_pos[0])
@@ -26,7 +26,6 @@ class Ghost:
         self.maze = maze
         self.color = color
         self.cell_size = cell_size
-        self.theme_colors = theme_colors or {}
         self.path = []
         self.direction = Directions.LEFT
         self.next_direction = Directions.RIGHT
@@ -161,14 +160,14 @@ class Ghost:
             self.edible = False
 
         self.flash_timer += delta_time
-        self.flash_speed = 0.3 if self.edible_timer > 1.0 else 0.20
+        self.flash_speed = 0.3 if self.edible_timer > 1.0 else 0.13
         if self.flash_timer > self.flash_speed:
             self.flash_timer = 0.0
             self.flash_index += 1
 
-    def draw(self, theme_colors=None):
+    def draw(self, theme):
         white = arcade.color.WHITE
-        tc = theme_colors or self.theme_colors
+        tc = theme
         normal_pupil = tc.get("ghost_pupil", (33, 33, 255))
         base_edible_color = tc.get("ghost_edible", (0, 0, 164))
         base_edible_pupil = tc.get("ghost_edible_pupil", (255, 184, 82))
@@ -180,14 +179,14 @@ class Ghost:
         scale = 0.002 * self.cell_size
 
         if not self.edible:
-            # Body Dome & Rect
+            # Body
             arcade.draw_arc_filled(
                 cx, cy + 15 * scale, 240 * scale, 240 * scale, self.color, 0, 180
             )
             rect = arcade.rect.XYWH(cx, cy - 30 * scale, 240 * scale, 90 * scale)
             arcade.draw_rect_filled(rect, self.color)
 
-            # Skirt Tentacles
+            # Skirt
             arcade.draw_arc_filled(
                 cx, cy - 75 * scale, 80 * scale, 80 * scale, self.color, 180, 360
             )
@@ -218,7 +217,7 @@ class Ghost:
                     num_segments=32,
                 )
         else:
-            if self.edible_timer < 4.0:
+            if self.edible_timer < 3.0:
                 is_flashing_white = (self.flash_index % 2 == 1)
                 edible_color = flash_body if is_flashing_white else base_edible_color
                 pupil_color = flash_pupil if is_flashing_white else base_edible_pupil

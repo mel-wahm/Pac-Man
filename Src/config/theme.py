@@ -9,10 +9,10 @@ THEMES = {
         "pacman": (255, 230, 0),
         "hud_text": (255, 230, 0),
         "ghosts": [
-            (255, 0, 0),        # Blinky (Red)
-            (255, 184, 255),    # Pinky (Pink)
-            (0, 255, 255),      # Inky (Cyan)
-            (255, 184, 82),     # Clyde (Orange)
+            (255, 0, 0),
+            (255, 184, 255),
+            (0, 255, 255),
+            (255, 184, 82),
         ],
         "ghost_pupil": (33, 33, 255),
         "ghost_edible": (0, 0, 164),
@@ -32,14 +32,14 @@ THEMES = {
         "pacman": (235, 150, 0),
         "hud_text": (25, 32, 55),
         "ghosts": [
-            (220, 25, 45),      # Blinky (Ruby Crimson)
-            (225, 55, 150),     # Pinky (Magenta Rose)
-            (0, 140, 195),      # Inky (Ocean Cyan)
-            (230, 105, 10),     # Clyde (Sunset Orange)
+            (180, 15, 45),      # Blinky: Deep Crimson Wine
+            (155, 40, 180),     # Pinky: Deep Violet Purple
+            (0, 120, 140),      # Inky: Deep Forest Teal
+            (190, 75, 0),       # Clyde: Deep Burnt Sienna Orange
         ],
-        "ghost_pupil": (18, 26, 75),
-        "ghost_edible": (35, 50, 170),
-        "ghost_edible_pupil": (255, 175, 75),
+        "ghost_pupil": (10, 15, 60),
+        "ghost_edible": (25, 35, 130),
+        "ghost_edible_pupil": (255, 190, 0),
         "pause_text": (35, 42, 65),
         "died_text": (195, 20, 20),
         "won_text": (205, 125, 0),

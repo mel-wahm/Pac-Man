@@ -336,5 +336,5 @@ class GameEngine:
                 if smooth_cell in self.corners:
                     for ghost in self.ghosts:
                         ghost.edible = True
-                        ghost.edible_timer = 8.0
+                        ghost.edible_timer = 6.0
                 dot.remove_from_sprite_lists()
