@@ -9,7 +9,10 @@ class Control(arcade.View):
     def __init__(self, previous_view):
         super().__init__()
         self.previous_view = previous_view
-        self.wallpaper = arcade.load_texture("photos/settings.png")
+        self.wallpapers = {
+            "dark": arcade.load_texture("photos/settings.png"),
+            "light": arcade.load_texture("photos/light_settings.png"),
+        }
 
         key_symbol = pyglet.window.key.symbol_string
         self.left_option = Selection(
@@ -115,13 +118,25 @@ class Control(arcade.View):
         screen_rect = arcade.rect.XYWH(
             self.width / 2, self.height / 2, self.width, self.height
         )
-        arcade.draw_texture_rect(self.wallpaper, screen_rect)
+        if self.previous_view.game_view.theme == "dark":
+            wallpaper = self.wallpapers["dark"]
+            menu_color = arcade.color.WHITE
+            listen_overlay = (10, 16, 35, 230)
+            text_color = (180, 180, 180)
+        else:
+            wallpaper = self.wallpapers["light"]
+            menu_color = arcade.color.BLACK
+            listen_overlay = (245, 248, 255, 230)
+            text_color = (40, 50, 75)
+
+        arcade.draw_texture_rect(wallpaper, screen_rect)
 
         if not self.is_listening:
-            arcade.draw_rect_filled(screen_rect, (0, 0, 0, 120))
-            self.menu.draw(arcade.color.WHITE)
+            self.menu.draw(menu_color)
         else:
-            arcade.draw_rect_filled(screen_rect, (0, 0, 0, 220))
+            arcade.draw_rect_filled(screen_rect, listen_overlay)
+            self.press_key_text.color = text_color
+            self.selected_action_text.color = text_color
             if self.error_timer > 0:
                 self.error_key_text.draw()
             else:

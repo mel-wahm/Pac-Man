@@ -7,5 +7,5 @@ keys = {
     "RIGHT": arcade.key.RIGHT,
 }
 
-maze_theme = 'dark'
+maze_theme = 'light'
 MAZE_SIZE = (19, 19)

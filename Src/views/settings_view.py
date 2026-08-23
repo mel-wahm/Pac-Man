@@ -7,7 +7,10 @@ from .key_bindings_view import Control
 class Settings(arcade.View):
     def __init__(self, previous_view, game_view):
         super().__init__()
-        self.settings_wallpaper = arcade.load_texture("photos/settings.png")
+        self.wallpapers = {
+            "dark": arcade.load_texture("photos/settings.png"),
+            "light": arcade.load_texture("photos/light_settings.png"),
+        }
         self.previous_view = previous_view
         self.game_view = game_view
 
@@ -145,24 +148,37 @@ class Settings(arcade.View):
         screen_rect = arcade.rect.XYWH(
             self.width / 2, self.height / 2, self.window.width, self.window.height
         )
-        arcade.draw_texture_rect(self.settings_wallpaper, screen_rect)
+        if self.game_view.theme == "dark":
+            wallpaper = self.wallpapers["dark"]
+            menu_color = arcade.color.WHITE
+            listen_overlay = (10, 16, 35, 230)
+            prompt_color = (180, 180, 180)
+            unselected_color = arcade.color.WHITE
+        else:
+            wallpaper = self.wallpapers["light"]
+            menu_color = arcade.color.BLACK
+            listen_overlay = (245, 248, 255, 230)
+            prompt_color = (40, 50, 75)
+            unselected_color = (40, 50, 75)
+
+        arcade.draw_texture_rect(wallpaper, screen_rect)
 
         if not self.is_listening:
-            arcade.draw_rect_filled(screen_rect, (0, 0, 0, 120))
-            self.menu.draw(arcade.color.WHITE)
+            self.menu.draw(menu_color)
         else:
-            arcade.draw_rect_filled(screen_rect, (0, 0, 0, 220))
+            arcade.draw_rect_filled(screen_rect, listen_overlay)
+            self.press_key_text.color = prompt_color
             self.press_key_text.draw()
 
             if self.theme_selected_index == 0:
                 self.dark_label.color = arcade.color.YELLOW
                 self.dark_label.font_size = int(40 * min(1.5, self.theme_scale))
-                self.light_label.color = arcade.color.WHITE
+                self.light_label.color = unselected_color
                 self.light_label.font_size = 40
             else:
                 self.light_label.color = arcade.color.YELLOW
                 self.light_label.font_size = int(40 * min(1.5, self.theme_scale))
-                self.dark_label.color = arcade.color.WHITE
+                self.dark_label.color = unselected_color
                 self.dark_label.font_size = 40
 
             self.dark_label.draw()

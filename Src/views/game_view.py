@@ -1,12 +1,12 @@
 import arcade
 
-from ..config import THEMES, keys
+from ..config import THEMES, keys, maze_theme
 from ..core import Directions
 from ..engine import GameEngine, AudioEngine
 from .ingame_settings_view import InGameSettings
 
 class Game(arcade.View):
-    def __init__(self, maze: list, screen_view, theme="light"):
+    def __init__(self, maze: list, screen_view, theme=maze_theme):
         super().__init__()
         self.audio_engine = AudioEngine()
         self.music_player = None
