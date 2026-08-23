@@ -2,13 +2,14 @@ import arcade
 
 from ..config import THEMES, keys
 from ..core import Directions
-from ..engine import GameEngine
+from ..engine import GameEngine, AudioEngine
 from .ingame_settings_view import InGameSettings
 
 class Game(arcade.View):
     def __init__(self, maze: list, screen_view, theme="light"):
         super().__init__()
-
+        self.audio_engine = AudioEngine()
+        self.music_player = None
         self.screen_view = screen_view
         self.theme = theme
         self.theme_colors = THEMES.get(self.theme, THEMES["dark"])
@@ -84,6 +85,16 @@ class Game(arcade.View):
         for dot in self.engine.dots:
             if isinstance(dot, arcade.SpriteCircle):
                 dot.color = self.theme_colors["dot"]
+
+    def on_show_view(self):
+        if self.music_player is None:
+            self.music_player = self.audio_engine.music.play(0.6, loop=True)
+        elif not self.music_player.playing:
+            self.music_player.play()
+
+    def on_hide_view(self):
+        if self.music_player and self.music_player.playing:
+            self.music_player.pause()
 
     def center(self, grid_x, grid_y):
         sidebar_width = 170
