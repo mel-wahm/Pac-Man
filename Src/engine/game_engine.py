@@ -38,7 +38,7 @@ class GameEngine:
         self.pacman = Pacman(maze)
         self.pacman.score_text.color = self.theme_colors["hud_text"]
         self.pacman.lives_text.color = self.theme_colors["hud_text"]
-        self.max_dots = 7
+        self.max_dots = 7100
         self.state = 0
         self.pause = 0
         self.progress = 0

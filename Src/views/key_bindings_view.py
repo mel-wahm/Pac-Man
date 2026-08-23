@@ -61,11 +61,6 @@ class Control(arcade.View):
         self.current_action = ""
         self.error_timer = 0.0
 
-    # Backward compatibility
-    @property
-    def menus(self):
-        return self.menu
-
     def on_update(self, delta_time):
         if self.error_timer > 0:
             self.error_timer -= delta_time

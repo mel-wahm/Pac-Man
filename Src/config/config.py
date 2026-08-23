@@ -8,4 +8,4 @@ keys = {
 }
 
 maze_theme = 'light'
-MAZE_SIZE = (5, 13)
+MAZE_SIZE = (19, 19)

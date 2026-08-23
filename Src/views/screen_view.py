@@ -8,6 +8,13 @@ from .credits_view import Credits
 from .game_view import Game
 from .settings_view import Settings
 
+if MAZE_SIZE[0] < 4 or MAZE_SIZE[1] < 4:
+    print("Maze coordinates are too small!")
+    exit(1)
+if MAZE_SIZE[0] > 40 or MAZE_SIZE[1] > 40:
+    print("Maze coordinates are too big!")
+    exit(1)
+
 
 class Screen(arcade.View):
     def __init__(self):
