@@ -74,4 +74,4 @@ class InGameSettings(arcade.View):
             self.width / 2, self.height / 2, self.width, self.height
         )
         arcade.draw_rect_filled(dim_rect, (0, 0, 0, 220))
-        self.menu.draw_texts()
+        self.menu.draw(arcade.color.WHITE)

@@ -55,15 +55,16 @@ class Menu:
     def action(self):
         self.menus[self.selected_index].action()
 
-    def draw_texts(self):
+    def draw(
+        self,
+        color=arcade.color.WHITE,
+        selected_color=arcade.color.YELLOW,
+    ):
         for i, label in enumerate(self.labels):
             if i == self.selected_index:
-                label.color = arcade.color.YELLOW
+                label.color = selected_color
                 label.font_size = self.font_size * min(1.5, self.scale)
             else:
-                label.color = arcade.color.WHITE
+                label.color = color
                 label.font_size = self.font_size
             label.draw()
-
-    def draw(self):
-        self.draw_texts()

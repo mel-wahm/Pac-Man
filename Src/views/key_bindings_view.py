@@ -119,7 +119,7 @@ class Control(arcade.View):
 
         if not self.is_listening:
             arcade.draw_rect_filled(screen_rect, (0, 0, 0, 120))
-            self.menu.draw_texts()
+            self.menu.draw(arcade.color.WHITE)
         else:
             arcade.draw_rect_filled(screen_rect, (0, 0, 0, 220))
             if self.error_timer > 0:
