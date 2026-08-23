@@ -19,7 +19,7 @@ if MAZE_SIZE[0] > 40 or MAZE_SIZE[1] > 40:
 class Screen(arcade.View):
     def __init__(self):
         super().__init__()
-        self.wallpaper = arcade.load_texture("wallpaper/wallpaper.png")
+        self.wallpaper = arcade.load_texture("wallpaper/dark_pwallpaper.png")
         arcade.load_font("fonts/arcade_font.ttf")
         arcade.load_font("fonts/Renogare-Regular.otf")
 

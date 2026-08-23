@@ -16,7 +16,7 @@ class Credits(arcade.View):
             font_name="Renogare",
         )
         self.mel_wahm = arcade.Text(
-            "Mel-wahm",
+            "Tsellak",
             self.width / 2 - 160,
             self.height / 2,
             arcade.color.WHITE,
@@ -25,7 +25,7 @@ class Credits(arcade.View):
             font_name="Renogare",
         )
         self.tsellak = arcade.Text(
-            "Tsellak",
+            "Mel-wahm",
             self.width / 2 + 160,
             self.height / 2,
             arcade.color.WHITE,

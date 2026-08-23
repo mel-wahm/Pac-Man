@@ -77,11 +77,11 @@ class Settings(arcade.View):
                 self.is_listening = False
                 return
             if symbol == arcade.key.LEFT:
-                self.theme_selected_index = 0
+                self.theme_selected_index = (self.theme_selected_index - 1) % 2
                 self.theme_scale = 1.0
                 return
             if symbol == arcade.key.RIGHT:
-                self.theme_selected_index = 1
+                self.theme_selected_index = (self.theme_selected_index + 1) % 2
                 self.theme_scale = 1.0
                 return
             if symbol == arcade.key.ENTER:
