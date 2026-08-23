@@ -217,8 +217,8 @@ class GameEngine:
             self.dots_grid[(c, r)] = super_gum
 
     def update(self, delta_time):
-        ghost_speed_rate = 8
-        pacman_step_interval = 0.14
+        ghost_step_interval = 0.30
+        pacman_step_interval = 0.15
 
         if len(self.dots) == 0:
             self.pause = 1
@@ -256,6 +256,10 @@ class GameEngine:
                         g.path = []
                         g.smooth_x = float(g.spawn_pos[0])
                         g.smooth_y = float(g.spawn_pos[1])
+                        g.prev_x = float(g.spawn_pos[0])
+                        g.prev_y = float(g.spawn_pos[1])
+                        g.step_time = 0.0
+                        g.is_teleporting = False
                         g.draw_coords = self.center(g.smooth_x, g.smooth_y)
                         g.ghost_freeze = 1
                     if self.pacman.death_count == 3:
@@ -271,6 +275,10 @@ class GameEngine:
                     ghost.grid_pos = ghost.spawn_pos
                     ghost.smooth_x = float(ghost.spawn_pos[0])
                     ghost.smooth_y = float(ghost.spawn_pos[1])
+                    ghost.prev_x = float(ghost.spawn_pos[0])
+                    ghost.prev_y = float(ghost.spawn_pos[1])
+                    ghost.step_time = 0.0
+                    ghost.is_teleporting = False
                     ghost.draw_coords = self.center(ghost.smooth_x, ghost.smooth_y)
                     ghost.eaten_timer = 5
                     ghost.ghost_freeze = 5
@@ -285,7 +293,7 @@ class GameEngine:
             self.pacman_step_timer += delta_time
 
             should_choose_target = False
-            if self.ghost_step_timer > 2.5 / ghost_speed_rate:
+            if self.ghost_step_timer > ghost_step_interval:
                 self.ghost_step_timer = 0.0
                 should_choose_target = True
 
@@ -295,7 +303,8 @@ class GameEngine:
                 if ghost.ghost_freeze <= 0:
                     if should_choose_target:
                         ghost.choose_target(self.pacman)
-                    ghost.update(ghost_speed_rate, delta_time)
+                    ghost.smooth_animation(delta_time, ghost_step_interval)
+                    ghost.update(delta_time)
                     ghost.draw_coords = self.center(ghost.smooth_x, ghost.smooth_y)
 
             if self.pacman_step_timer > pacman_step_interval:

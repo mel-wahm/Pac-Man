@@ -17,6 +17,10 @@ class Ghost:
         self.spawn_pos = grid_pos
         self.smooth_x = float(grid_pos[0])
         self.smooth_y = float(grid_pos[1])
+        self.prev_x = float(grid_pos[0])
+        self.prev_y = float(grid_pos[1])
+        self.step_time = 0.0
+        self.is_teleporting = False
         self.ghost_freeze = 1
         self.draw_coords = draw_coords
         self.maze = maze
@@ -52,6 +56,10 @@ class Ghost:
         self.grid_pos = self.spawn_pos
         self.smooth_x = float(self.spawn_pos[0])
         self.smooth_y = float(self.spawn_pos[1])
+        self.prev_x = float(self.spawn_pos[0])
+        self.prev_y = float(self.spawn_pos[1])
+        self.step_time = 0.0
+        self.is_teleporting = False
         self.path = []
         self.edible = False
         self.edible_timer = 0.0
@@ -63,6 +71,13 @@ class Ghost:
         return not (self.maze[y][x] & mask)
 
     def choose_target(self, pacman):
+        self.is_teleporting = False
+        self.prev_x = float(self.grid_pos[0])
+        self.prev_y = float(self.grid_pos[1])
+        self.smooth_x = self.prev_x
+        self.smooth_y = self.prev_y
+        self.step_time = 0.0
+
         x, y = self.grid_pos
         pac_pos = (pacman.x, pacman.y)
 
@@ -107,27 +122,39 @@ class Ghost:
 
         if gx < 0:
             gx = cols - 1
+            self.is_teleporting = True
             self.smooth_x = float(cols - 1)
+            self.prev_x = float(cols - 1)
         elif gx > cols - 1:
             gx = 0
+            self.is_teleporting = True
             self.smooth_x = 0.0
+            self.prev_x = 0.0
 
         if gy < 0:
             gy = rows - 1
+            self.is_teleporting = True
             self.smooth_y = float(rows - 1)
+            self.prev_y = float(rows - 1)
         elif gy > rows - 1:
             gy = 0
+            self.is_teleporting = True
             self.smooth_y = 0.0
+            self.prev_y = 0.0
 
         self.grid_pos = (gx, gy)
 
-    def update(self, speed, delta_time):
-        self.smooth_x += (self.grid_pos[0] - self.smooth_x) * speed * delta_time
-        self.smooth_y += (self.grid_pos[1] - self.smooth_y) * speed * delta_time
+    def smooth_animation(self, delta_time, duration=0.20):
+        if not self.is_teleporting:
+            self.step_time += delta_time
+            progress = min(1.0, self.step_time / duration)
+            self.smooth_x = self.prev_x + (self.grid_pos[0] - self.prev_x) * progress
+            self.smooth_y = self.prev_y + (self.grid_pos[1] - self.prev_y) * progress
+
+    def update(self, delta_time):
         self.anim_time += delta_time
         self.eye_time += delta_time * 8.0
         self.edible_timer = max(0.0, self.edible_timer - delta_time)
-        
 
         if not self.edible_timer:
             self.edible = False
