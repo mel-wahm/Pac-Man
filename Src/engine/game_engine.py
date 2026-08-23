@@ -14,7 +14,7 @@ class GameEngine:
     def __init__(self, maze: list, center_func, cell_size: float, theme: str = "dark"):
         self.center = center_func
         self.cell_size = cell_size
-        self.theme = theme
+        self.theme = theme if theme in THEMES else "dark"
         self.theme_colors = THEMES.get(self.theme, THEMES["dark"])
         self.super_gum_textures = [
             arcade.load_texture("fruits/super_fruit_yellow.png"),

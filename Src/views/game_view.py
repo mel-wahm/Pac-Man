@@ -11,7 +11,7 @@ class Game(arcade.View):
         self.audio_engine = AudioEngine()
         self.music_player = None
         self.screen_view = screen_view
-        self.theme = theme
+        self.theme = theme if theme in THEMES else "dark"
         self.theme_colors = THEMES.get(self.theme, THEMES["dark"])
         self.background_color = self.theme_colors["background"]
 
@@ -71,8 +71,8 @@ class Game(arcade.View):
         return self.engine.progress
 
     def toggle_theme(self, new_theme):
-        self.theme = new_theme
-        self.theme_colors = THEMES.get(self.theme)
+        self.theme = new_theme if new_theme in THEMES else "dark"
+        self.theme_colors = THEMES.get(self.theme, THEMES["dark"])
         self.background_color = self.theme_colors["background"]
         self.pause_text.color = self.theme_colors["pause_text"]
         self.died_text.color = self.theme_colors["died_text"]

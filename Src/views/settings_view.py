@@ -50,7 +50,7 @@ class Settings(arcade.View):
             font_name="Renogare",
         )
         self.theme_options = ["dark", "light"]
-        self.theme_selected_index = 0 if game_view.theme == "dark" else 1
+        self.theme_selected_index = 1 if game_view.theme == "light" else 0
         self.theme_scale = 1.0
         self.is_listening = False
 
@@ -58,7 +58,9 @@ class Settings(arcade.View):
         self.window.show_view(self.previous_view)
 
     def start_listening(self):
-        self.theme_selected_index = 0 if self.game_view.theme == "dark" else 1
+        self.theme_selected_index = (
+            1 if self.game_view.theme == "light" else 0
+        )
         self.theme_scale = 1.0
         self.is_listening = True
 
@@ -148,18 +150,18 @@ class Settings(arcade.View):
         screen_rect = arcade.rect.XYWH(
             self.width / 2, self.height / 2, self.window.width, self.window.height
         )
-        if self.game_view.theme == "dark":
-            wallpaper = self.wallpapers["dark"]
-            menu_color = arcade.color.WHITE
-            listen_overlay = (10, 16, 35, 230)
-            prompt_color = (180, 180, 180)
-            unselected_color = arcade.color.WHITE
-        else:
+        if self.game_view.theme == "light":
             wallpaper = self.wallpapers["light"]
             menu_color = arcade.color.BLACK
             listen_overlay = (245, 248, 255, 230)
             prompt_color = (40, 50, 75)
             unselected_color = (40, 50, 75)
+        else:
+            wallpaper = self.wallpapers["dark"]
+            menu_color = arcade.color.WHITE
+            listen_overlay = (10, 16, 35, 230)
+            prompt_color = (180, 180, 180)
+            unselected_color = arcade.color.WHITE
 
         arcade.draw_texture_rect(wallpaper, screen_rect)
 

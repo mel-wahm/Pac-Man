@@ -118,16 +118,16 @@ class Control(arcade.View):
         screen_rect = arcade.rect.XYWH(
             self.width / 2, self.height / 2, self.width, self.height
         )
-        if self.previous_view.game_view.theme == "dark":
-            wallpaper = self.wallpapers["dark"]
-            menu_color = arcade.color.WHITE
-            listen_overlay = (10, 16, 35, 230)
-            text_color = (180, 180, 180)
-        else:
+        if self.previous_view.game_view.theme == "light":
             wallpaper = self.wallpapers["light"]
             menu_color = arcade.color.BLACK
             listen_overlay = (245, 248, 255, 230)
             text_color = (40, 50, 75)
+        else:
+            wallpaper = self.wallpapers["dark"]
+            menu_color = arcade.color.WHITE
+            listen_overlay = (10, 16, 35, 230)
+            text_color = (180, 180, 180)
 
         arcade.draw_texture_rect(wallpaper, screen_rect)
 
