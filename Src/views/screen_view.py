@@ -85,9 +85,15 @@ class Screen(arcade.View):
             self.game_view.theme, self.wallpapers["dark"]
         )
         arcade.draw_texture_rect(wallpaper, screen_rect)
-        color = (
+        menu_color = (
             arcade.color.BLACK
             if self.game_view.theme == "light"
             else arcade.color.WHITE
         )
-        self.menu.draw(color)
+        sel_color = (
+            arcade.color.RED
+            if self.game_view.theme == "light"
+            else arcade.color.YELLOW
+            )
+
+        self.menu.draw(menu_color, sel_color)

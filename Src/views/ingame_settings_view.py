@@ -74,4 +74,10 @@ class InGameSettings(arcade.View):
             self.width / 2, self.height / 2, self.width, self.height
         )
         arcade.draw_rect_filled(dim_rect, (0, 0, 0, 220))
-        self.menu.draw(arcade.color.WHITE)
+        menu_color = arcade.color.WHITE
+        sel_color = (
+            arcade.color.YELLOW
+            if self.game_view.theme == "dark"
+            else arcade.color.RED
+            )
+        self.menu.draw(menu_color, sel_color)

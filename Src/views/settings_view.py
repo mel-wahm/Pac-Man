@@ -153,12 +153,14 @@ class Settings(arcade.View):
         if self.game_view.theme == "light":
             wallpaper = self.wallpapers["light"]
             menu_color = arcade.color.BLACK
+            sel_color = arcade.color.RED
             listen_overlay = (245, 248, 255, 230)
             prompt_color = (40, 50, 75)
             unselected_color = (40, 50, 75)
         else:
             wallpaper = self.wallpapers["dark"]
             menu_color = arcade.color.WHITE
+            sel_color = arcade.color.YELLOW
             listen_overlay = (10, 16, 35, 230)
             prompt_color = (180, 180, 180)
             unselected_color = arcade.color.WHITE
@@ -166,7 +168,7 @@ class Settings(arcade.View):
         arcade.draw_texture_rect(wallpaper, screen_rect)
 
         if not self.is_listening:
-            self.menu.draw(menu_color)
+            self.menu.draw(menu_color, sel_color)
         else:
             arcade.draw_rect_filled(screen_rect, listen_overlay)
             self.press_key_text.color = prompt_color
