@@ -103,6 +103,11 @@ class Ghost:
                 self.next_direction = self.opposites[self.next_direction]
             else:
                 if is_close and self.edible:
+                    valid_moves = []
+                    for d in self.choices:
+                        mask, dx, dy, _ = DIR_DATA[d]
+                        if not (self.maze[y][x] & mask):
+                            valid_moves.append((x + dx, y + dy, d))
                     furthest = max(
                         valid_moves,
                         key=lambda move: math.hypot(
