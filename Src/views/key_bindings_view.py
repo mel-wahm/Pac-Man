@@ -3,7 +3,7 @@ import pyglet
 
 from ..config import keys
 from ..ui import Menu, Selection
-
+import json
 
 class Control(arcade.View):
     def __init__(self, previous_view):
@@ -70,6 +70,14 @@ class Control(arcade.View):
         if self.menu.scale < 2:
             self.menu.scale += delta_time * 3
 
+    def update_json(self, json_file, key, value):
+        with open(json_file) as f:
+            js = f.read()
+        js = json.loads(js)
+        js[key] = value
+        with open(json_file, 'w') as f:
+            f.write(json.dumps(js, indent=4))
+
     def on_key_press(self, symbol, modifiers):
         if self.is_listening:
             if symbol == arcade.key.ESCAPE:
@@ -83,6 +91,8 @@ class Control(arcade.View):
                 keys[self.current_action] = symbol
                 self.is_listening = False
                 key_name = pyglet.window.key.symbol_string(symbol)
+                self.update_json("Src/config/keys.json",
+                                 self.current_action, 'arcade.key.' + key_name)
                 action_name = self.current_action.lower()
                 menu_item = self.menu.labels[self.menu.selected_index]
                 menu_item.text = f"Move {action_name}:   {key_name}"

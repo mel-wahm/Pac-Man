@@ -1,7 +1,7 @@
 import arcade
 from .views import Screen
 
-window = arcade.Window(1536, 864, "PACMAN", fullscreen=True)
+window = arcade.Window(1980, 1080, "PACMAN", fullscreen=True)
 start_view = Screen()
 window.show_view(start_view)
 

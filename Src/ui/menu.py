@@ -1,6 +1,5 @@
 import arcade
 
-
 class Selection:
     def __init__(self, name: str, action):
         self.name = name

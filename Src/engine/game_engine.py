@@ -229,8 +229,8 @@ class GameEngine:
             self.dots_grid[(c, r)] = super_gum
 
     def update(self, delta_time):
-        ghost_step_interval = 0.30
-        pacman_step_interval = 0.15
+        ghost_step_interval = 0.4
+        pacman_step_interval = 0.2
 
         if len(self.dots) == 0:
             self.pause = 1
