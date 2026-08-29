@@ -48,7 +48,7 @@ class InGameSettings(arcade.View):
         self.window.show_view(self.screen_view)
 
     def on_update(self, delta_time):
-        if self.menu.scale < 2:
+        if self.menu.scale < 1.3:
             self.menu.scale += delta_time * 3
 
     def on_key_press(self, symbol, modifiers):
@@ -70,10 +70,13 @@ class InGameSettings(arcade.View):
     def on_draw(self):
         self.clear()
         self.game_view.on_draw()
+        # image = arcade.get_image()
+        # image.show()
+        # exit()
         dim_rect = arcade.rect.XYWH(
             self.width / 2, self.height / 2, self.width, self.height
         )
-        arcade.draw_rect_filled(dim_rect, (0, 0, 0, 220))
+        arcade.draw_rect_filled(dim_rect, (0, 0, 0, 240))
         menu_color = arcade.color.WHITE
         sel_color = (
             arcade.color.YELLOW

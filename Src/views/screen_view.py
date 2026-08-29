@@ -8,7 +8,7 @@ from .credits_view import Credits
 from .game_view import Game
 from .settings_view import Settings
 
-if MAZE_SIZE[0] < 4 or MAZE_SIZE[1] < 4:
+if MAZE_SIZE[0] < 8 or MAZE_SIZE[1] < 8:
     print("Maze coordinates are too small!")
     exit(1)
 if MAZE_SIZE[0] > 40 or MAZE_SIZE[1] > 40:
@@ -59,7 +59,7 @@ class Screen(arcade.View):
         exit()
 
     def on_update(self, delta_time):
-        if self.menu.scale < 2:
+        if self.menu.scale < 1.3:
             self.menu.scale += delta_time * 3
 
     def on_key_press(self, symbol, modifiers):

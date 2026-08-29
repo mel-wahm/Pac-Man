@@ -62,7 +62,7 @@ class Menu:
         for i, label in enumerate(self.labels):
             if i == self.selected_index:
                 label.color = selected_color
-                label.font_size = self.font_size * min(1.5, self.scale)
+                label.font_size = self.font_size * self.scale
             else:
                 label.color = color
                 label.font_size = self.font_size

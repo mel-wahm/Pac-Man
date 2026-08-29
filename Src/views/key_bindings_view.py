@@ -67,7 +67,7 @@ class Control(arcade.View):
     def on_update(self, delta_time):
         if self.error_timer > 0:
             self.error_timer -= delta_time
-        if self.menu.scale < 2:
+        if self.menu.scale < 1.3:
             self.menu.scale += delta_time * 3
 
     def update_json(self, json_file, key, value):
