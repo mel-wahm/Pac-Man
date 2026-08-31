@@ -1,4 +1,5 @@
 import arcade
+import json
 
 class Selection:
     def __init__(self, name: str, action):
@@ -6,7 +7,8 @@ class Selection:
         self.action = action
 
 class Menu:
-    def __init__(self, items: list[Selection], x: float, y: float, gap: float = 65, font_size: int = 35):
+    def __init__(self, items: list[Selection], x: float, y: float,
+                 gap: float = 65, font_size: int = 35):
         self.menus = items
         self.x = x
         self.y = y
@@ -14,7 +16,7 @@ class Menu:
         self.font_size = font_size
         self.selected_index = 0
         self.labels = []
-        self.scale = 1.0
+        self.scale = 1.3
 
         total_height = (len(items) - 1) * gap
         for i, item in enumerate(items):
@@ -59,11 +61,101 @@ class Menu:
         color=arcade.color.WHITE,
         selected_color=arcade.color.YELLOW,
     ):
-        for i, label in enumerate(self.labels):
+        for i, text in enumerate(self.labels):
             if i == self.selected_index:
-                label.color = selected_color
-                label.font_size = self.font_size * self.scale
+                text.color = selected_color
+                text.font_size = self.font_size * self.scale
             else:
-                label.color = color
-                label.font_size = self.font_size
-            label.draw()
+                text.color = color
+                text.font_size = self.font_size
+            text.draw()
+
+
+class AudioControl:
+    def __init__(self, x, y, text_color=arcade.color.WHITE):
+        self.x = x
+        self.y = y
+        with open ("Src/config/audio_and_theme.json") as f:
+                    ant_dict = json.load(f)
+        self.volume = ant_dict["volume"]
+        self.text_color = text_color
+        self._rebuild_label()
+
+    def _rebuild_label(self):
+        self.label = arcade.Text(
+            f"< {self.volume} >",
+            self.x, self.y, self.text_color, 35,
+            anchor_x="center", font_name="Renogare",
+        )
+
+    def update_json(self, volume):
+        with open ("Src/config/audio_and_theme.json") as f:
+            ant_dict = json.load(f)
+        ant_dict["volume"] = volume
+        with open ("Src/config/audio_and_theme.json", "w") as f:
+            json.dump(ant_dict, f, indent=4)
+        
+
+    def volume_up(self):
+        self.volume = min(10, self.volume + 1)
+        self._rebuild_label()
+        self.update_json(self.volume)
+
+    def volume_down(self):
+        self.volume = max(0, self.volume - 1)
+        self._rebuild_label()
+        self.update_json(self.volume)
+
+    def draw(self):
+        self.label.draw()
+
+
+class ThemeToggle:
+    def __init__(self, x, y, current_theme="dark"):
+        self.x = x
+        self.y = y
+        self.selection = 0 if current_theme == "dark" else 1
+        self.dark_text = arcade.Text(
+            "Dark", x - 80, y, arcade.color.WHITE, 35,
+            anchor_x="center", font_name="Renogare",
+        )
+        self.light_text = arcade.Text(
+            "Light", x + 80, y, arcade.color.WHITE, 35,
+            anchor_x="center", font_name="Renogare",
+        )
+        self._update_display(current_theme)
+
+    def update_json(self, theme):
+        with open ("Src/config/audio_and_theme.json") as f:
+            ant_dict = json.load(f)
+        ant_dict["theme"] = theme
+        with open ("Src/config/audio_and_theme.json", "w") as f:
+            json.dump(ant_dict, f, indent=4)
+
+
+    def _update_display(self, theme):
+        self.update_json(theme)
+        if theme == "light":
+            unselected_color = arcade.color.BLACK
+            selected_color = arcade.color.RED
+        else:
+            unselected_color = arcade.color.WHITE
+            selected_color = arcade.color.YELLOW
+
+        if self.selection == 0:
+            self.dark_text.color = selected_color
+            self.light_text.color = unselected_color
+        else:
+            self.light_text.color = selected_color
+            self.dark_text.color = unselected_color
+
+    def move(self, current_theme):
+        self.selection = (self.selection + 1) % 2
+        self._update_display(current_theme)
+
+    def get_theme(self):
+        return "dark" if self.selection == 0 else "light"
+
+    def draw(self):
+        self.dark_text.draw()
+        self.light_text.draw()

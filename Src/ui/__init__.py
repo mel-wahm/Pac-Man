@@ -1,3 +1,3 @@
-from .menu import Menu, Selection
+from .menu import Menu, Selection, AudioControl, ThemeToggle
 
-__all__ = ["Menu", "Selection"]
+__all__ = ["Menu", "Selection", "AudioControl", "ThemeToggle"]

@@ -76,7 +76,7 @@ class Control(arcade.View):
         js = json.loads(js)
         js[key] = value
         with open(json_file, 'w') as f:
-            f.write(json.dumps(js, indent=4))
+            f.write(json.dumpdumps(js, indent=4))
 
     def on_key_press(self, symbol, modifiers):
         if self.is_listening:

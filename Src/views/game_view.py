@@ -1,4 +1,5 @@
 import arcade
+import json
 
 from ..config import THEMES, keys, maze_theme
 from ..core import Directions
@@ -9,13 +10,16 @@ class Game(arcade.View):
     def __init__(self, maze: list, screen_view, theme=maze_theme):
         super().__init__()
         self.audio_engine = AudioEngine()
+        with open ("Src/config/audio_and_theme.json") as f:
+                    ant_dict = json.load(f)
+        self.volume = ant_dict["volume"]    
         self.music_player = None
         self.screen_view = screen_view
         self.theme = theme if theme in THEMES else "dark"
         self.theme_colors = THEMES.get(self.theme, THEMES["dark"])
         self.background_color = self.theme_colors["background"]
 
-        # View and Layout Configuration
+         # View and Layout Configuration
         sidebar_width = 170
         padding = 20
         self.cols = len(maze[0])
@@ -88,7 +92,7 @@ class Game(arcade.View):
 
     def on_show_view(self):
         if self.music_player is None:
-            self.music_player = self.audio_engine.music.play(0.6, loop=True)
+            self.music_player = self.audio_engine.music.play(self.volume, loop=True)
         elif not self.music_player.playing:
             self.music_player.play()
 
