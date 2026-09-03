@@ -45,7 +45,7 @@ class Screen(arcade.View):
 
     def start_game(self):
         maze = MazeGenerator(MAZE_SIZE).maze
-        self.game_view = Game(maze, self, theme=self.game_view.theme)
+        self.game_view = Game(maze, self)
         self.window.show_view(self.game_view)
 
     def show_credits(self):

@@ -1,21 +1,22 @@
 import arcade
 import json
 
-from ..config import THEMES, keys, maze_theme
+from ..config import THEMES, keys
 from ..core import Directions
 from ..engine import GameEngine, AudioEngine
 from .ingame_settings_view import InGameSettings
 
 class Game(arcade.View):
-    def __init__(self, maze: list, screen_view, theme=maze_theme):
+    def __init__(self, maze: list, screen_view):
         super().__init__()
         self.audio_engine = AudioEngine()
         with open ("Src/config/audio_and_theme.json") as f:
                     ant_dict = json.load(f)
-        self.volume = ant_dict["volume"]    
+        self.volume = ant_dict["volume"] / 10
+        self.theme = ant_dict["theme"]
         self.music_player = None
         self.screen_view = screen_view
-        self.theme = theme if theme in THEMES else "dark"
+        self.theme = self.theme if self.theme in THEMES else "dark"
         self.theme_colors = THEMES.get(self.theme, THEMES["dark"])
         self.background_color = self.theme_colors["background"]
 

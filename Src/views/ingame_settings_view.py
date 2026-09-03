@@ -34,7 +34,7 @@ class InGameSettings(arcade.View):
         from .game_view import Game
 
         game_view = Game(
-            maze, self.screen_view, self.game_view.theme
+            maze, self.screen_view
         )
         self.window.show_view(game_view)
 

@@ -1,9 +1,12 @@
 run:
 	@python3 -m Src
+install:
+	@pip install arcade
+	@pip install pyclean
 it: run
 	@clear
 clean:
-	@rm -rf .mypy_cache .ruff_cache __pycache__ Src/__pycache__
+	@pyclean .
 
 lint:
 	@flake8 Src
