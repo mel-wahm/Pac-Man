@@ -22,7 +22,7 @@ class Game(arcade.View):
 
          # View and Layout Configuration
         sidebar_width = 170
-        padding = 20
+        padding = 20 
         self.cols = len(maze[0])
         self.rows = len(maze)
         self.half_width = (self.cols - 1) / 2

@@ -7,6 +7,7 @@ from ..ui import Menu, Selection
 from .credits_view import Credits
 from .game_view import Game
 from .settings_view import Settings
+from .leaderboard_view import Board
 
 if MAZE_SIZE[0] < 8 or MAZE_SIZE[1] < 8:
     print("Maze coordinates are too small!")
@@ -31,11 +32,13 @@ class Screen(arcade.View):
 
         self.start_option = Selection("Start", lambda: self.start_game())
         self.settings_option = Selection("Settings", lambda: self.enter_settings())
+        self.leaderboard = Selection("Leaderboard", lambda: self.show_leaderboard())
         self.credits_option = Selection("Credits", lambda: self.show_credits())
         self.exit_option = Selection("Exit", lambda: self.exit_game())
 
         self.menu = Menu(
-            [self.start_option, self.settings_option, self.credits_option, self.exit_option],
+            [self.start_option, self.settings_option,
+             self.leaderboard, self.credits_option, self.exit_option],
             center_x,
             center_y,
         )
@@ -48,6 +51,10 @@ class Screen(arcade.View):
         self.game_view = Game(maze, self)
         self.window.show_view(self.game_view)
 
+    def show_leaderboard(self):
+        board = Board(self)
+        self.window.show_view(board)
+
     def show_credits(self):
         self.window.show_view(Credits(self))
 
@@ -56,7 +63,7 @@ class Screen(arcade.View):
         self.window.show_view(settings_view)
 
     def exit_game(self):
-        exit()
+        self.window.close()
 
     def on_update(self, delta_time):
         if self.menu.scale < 1.3:

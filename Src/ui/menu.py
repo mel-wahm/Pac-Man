@@ -57,7 +57,7 @@ class Menu:
         self.menus[self.selected_index].action()
 
     def draw(
-        self,
+        self,   
         color=arcade.color.WHITE,
         selected_color=arcade.color.YELLOW,
     ):

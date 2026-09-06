@@ -92,8 +92,8 @@ class Pacman:
                 self.smooth_x = float(cols - 1)
             elif self.x + dx >= cols:
                 self.is_teleporting = True
-                self.smooth_x = 0.0
                 self.x = 0
+                self.smooth_x = 0.0
 
             if 0 <= self.y + dy < rows:
                 self.y += dy

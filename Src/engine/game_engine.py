@@ -9,8 +9,6 @@ from ..objects import Ghost, Pacman
 
 
 class GameEngine:
-    """Core Game Engine: handles maze state, entity management, physics, and game rules."""
-
     def __init__(self, maze: list, center_func, cell_size: float, theme: str = "dark"):
         self.center = center_func
         self.cell_size = cell_size
@@ -338,3 +336,4 @@ class GameEngine:
                         ghost.edible = True
                         ghost.edible_timer = 6.0
                 dot.remove_from_sprite_lists()
+

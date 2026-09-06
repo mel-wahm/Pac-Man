@@ -85,7 +85,7 @@ class Ghost:
             pac_pos, self.grid_pos, shortest_path(self.grid_pos, pac_pos, self.maze)
         )
         is_close = len(self.path) > 1 and len(self.path) < max(
-            len(self.maze[0]) / 2, len(self.maze) / 2
+            len(self.maze[0]) / 1.2, len(self.maze) / 1.2
         )
 
         if is_close and not self.edible:
