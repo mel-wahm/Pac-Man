@@ -26,73 +26,116 @@ class Board(arcade.View):
                 (50, 100, 244, 120), 50, font_name="Renogare",
                 anchor_x="center", anchor_y="center")
         self.background = arcade.load_texture("wallpaper/dark_wallpaper.png")
-        self.pointer_text = arcade.Text(">", self.cx - 350, self.cy, arcade.color.YELLOW, 24, bold=True)
+        self.pointer_text = arcade.Text(">", self.cx - 350,
+                self.cy, arcade.color.YELLOW, 24, bold=True)
+        self.empty_board = arcade.Text("The leaderboard is empty", self.cx, self.cy, 
+                                      (220, 220, 200, 120), 30, font_name="Renogare", anchor_x="center")
+        self.scrolling_up = False
+        self.scrolling_down = False
+        self.scrolling_timer = 0
 
     def load_json(self):
         with open(self.path) as f:
             if not f.read().strip():
-                return {}
+                return []
             f.seek(0)
             board = json.load(f)
         return sorted(board, key=lambda x: x["score"], reverse=True)
+
+    def update_json(self, name, score):
+        new_score = {
+            "name": name,
+            "score": score
+        }
+        self.board.append(new_score)
+        self.texts = self.board_texts()
+        with open(self.path) as f:
+            if not f.read().strip():
+                board = []
+            else:
+                f.seek(0)
+                board = json.load(f)
+        board.append(new_score)
+        with open(self.path, "w") as f:
+            json.dump(board, f, indent=4)
+
     
     def on_key_press(self, symbol, modifiers):
-        if symbol == arcade.key.Q:
-            self.window.close()
         if symbol == arcade.key.UP:
             self.scroller = max(0, self.scroller - 1)
             self.texts = self.board_texts()
+            self.scrolling_up = True
         if symbol == arcade.key.DOWN:
-            self.scroller = min(9, self.scroller + 1)
+            self.scrolling_down = True
+            self.scroller = min(len(self.board) - 1, self.scroller + 1)
             self.texts = self.board_texts()
         if symbol == arcade.key.ESCAPE:
             self.window.show_view(self.previous_view)
 
-    def board_texts(self):
-        board = []
-        gap = 50
-        for idx, object in enumerate(self.board):
-            print(idx)
-            for g, (name, score) in enumerate(object.items()):
-                k = 0.6
-                d = idx - self.scroller
-                alpha = 255 * (2.5 ** (-k * abs(d)))
-                color = (255, 255, 255, int(alpha))
-                if idx == self.scroller:
-                    color = arcade.color.YELLOW
-
-                y = self.cy - gap * idx + self.scroller * 50
-                name_text = arcade.Text(
-                    name,
-                    self.cx - 300,
-                    y,
-                    color,
-                    32,
-                    anchor_x="left",
-                    font_name="Renogare"
-                )
-                score_text = arcade.Text(
-                    str(score),
-                    self.cx + 300,
-                    y,
-                    color,
-                    32,
-                    anchor_x="right",
-                    font_name="Renogare"
-                )
-                board.append((name_text, score_text))
-        return board
-
+    def on_key_release(self, symbol: int, modifiers: int) -> bool | None:
+        if symbol == arcade.key.UP:
+            self.scrolling_timer = 0
+            self.scrolling_up = False
+        if symbol == arcade.key.DOWN:
+            self.scrolling_timer = 0
+            self.scrolling_down = False
+    
     def on_mouse_scroll(self, x, y, scroll_x, scroll_y):
         if scroll_y > 0:
             self.scroller = max(0, self.scroller - 1)
             self.texts = self.board_texts()
         elif scroll_y < 0:
-            self.scroller = min(9, self.scroller + 1)
+            self.scroller = min(len(self.board) - 1, self.scroller + 1)
             self.texts = self.board_texts()
 
+    def board_texts(self):
+        board = []
+        gap = 50
+        for idx, object in enumerate(self.board):
+            name = object["name"]
+            score = object["score"]
+            k = 0.6
+            d = idx - self.scroller
+            alpha = 255 * (2.5 ** (-k * abs(d)))
+            color = (255, 255, 255, int(alpha))
+            if idx == self.scroller:
+                color = arcade.color.YELLOW
+
+            y = self.cy - gap * idx + self.scroller * 50
+            name_text = arcade.Text(
+                name,
+                self.cx - 300,
+                y,
+                color,
+                32,
+                anchor_x="left",
+                font_name="Renogare"
+            )
+            score_text = arcade.Text(
+                str(score),
+                self.cx + 300,
+                y,
+                color,
+                32,
+                anchor_x="right",
+                font_name="Renogare"
+            )
+            board.append((name_text, score_text))
+        return board
+
     def on_update(self, delta_time):
-        pass
+        if self.scrolling_down and self.scrolling_timer > 0.2:
+            self.scroller = min(len(self.board) - 1,
+                self.scroller + 1)
+            self.texts = self.board_texts()
+            
+        if self.scrolling_up and self.scrolling_timer > 0.2:
+            self.scroller = max(0, self.scroller - 1)
+            self.texts = self.board_texts()
+        if self.scrolling_timer > 0.2:
+            self.scrolling_timer = 0
+        if self.scrolling_down or self.scrolling_up:
+            self.scrolling_timer += delta_time
 
 
     def on_draw(self):
@@ -102,10 +145,13 @@ class Board(arcade.View):
         arcade.draw_rect_filled(r, (240, 240, 240))
         r = arcade.rect.XYWH(self.cx, self.cy, self.width, self.height)
         arcade.draw_texture_rect(self.background, r)
-        self.pointer_text.draw()
-        self.leaderboard_text1.draw()
-        self.leaderboard_text2.draw()
-        self.leaderboard_text3.draw()
-        for name, score in self.texts:
-            name.draw()
-            score.draw()
+        if self.texts:
+            self.leaderboard_text1.draw()
+            self.leaderboard_text2.draw()
+            self.leaderboard_text3.draw()
+            self.pointer_text.draw()
+            for name, score in self.texts:
+                name.draw()
+                score.draw()
+        else:
+            self.empty_board.draw()

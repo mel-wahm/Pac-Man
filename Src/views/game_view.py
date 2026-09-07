@@ -70,6 +70,7 @@ class Game(arcade.View):
             anchor_y="center",
             font_name="Renogare",
         )
+        self.player_name = ""
 
     @property
     def progress(self):
@@ -100,6 +101,8 @@ class Game(arcade.View):
     def on_hide_view(self):
         if self.music_player and self.music_player.playing:
             self.music_player.pause()
+
+	
 
     def center(self, grid_x, grid_y):
         sidebar_width = 170
