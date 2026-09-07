@@ -6,6 +6,47 @@ from ..core import Directions
 from ..engine import GameEngine, AudioEngine
 from .ingame_settings_view import InGameSettings
 
+
+class Text():
+    def __init__(self, cx, cy, game):
+        self.cx = cx
+        self.cy = cy
+        self.name = ""
+        self.game = game
+        white = arcade.color.WHITE
+        self.text_name = arcade.Text(self.name, cx, cy, white, 32, anchor_x="center",
+                        font_name="Renogare")
+        self.path = "Src/config/leaderboard.json"
+
+    def update_text(self):
+        white = arcade.color.WHITE
+        self.text_name = arcade.Text(self.name, self.cx, self.cy, white, 32, anchor_x="center",
+                        font_name="Renogare")
+
+    def on_text(self, key):
+        self.name += key
+        self.update_text()
+
+    def on_finish(self, score):
+        if self.name.strip():
+            with open(self.path) as f:
+                if not f.read().strip():
+                    board = []
+                
+                else:
+                    f.seek(0)
+                    board = json.load(f)
+            new_score = {
+                "name": self.name,
+                "score": score
+            }
+            board.append(new_score)
+            with open(self.path, "w") as f:
+                json.dump(board, f, indent=4)
+            self.game.on_name = False
+            self.game.back_to_menu()
+
+
 class Game(arcade.View):
     def __init__(self, maze: list, screen_view):
         super().__init__()
@@ -37,13 +78,13 @@ class Game(arcade.View):
 
         # UI & Fonts
         arcade.load_font("fonts/Renogare-Regular.otf")
-        center_x = self.width / 2
-        center_y = self.height / 2
+        cx = self.width / 2
+        cy = self.height / 2
 
         self.pause_text = arcade.Text(
             "PAUSE",
-            center_x,
-            center_y,
+            cx,
+            cy,
             self.theme_colors["pause_text"],
             font_size=160,
             anchor_x="center",
@@ -52,8 +93,8 @@ class Game(arcade.View):
         )
         self.died_text = arcade.Text(
             "YOU DIED",
-            center_x,
-            center_y,
+            cx,
+            cy,
             self.theme_colors["died_text"],
             font_size=80,
             anchor_x="center",
@@ -62,19 +103,27 @@ class Game(arcade.View):
         )
         self.won_text = arcade.Text(
             "YOU WON",
-            center_x,
-            center_y,
+            cx,
+            cy,
             self.theme_colors["won_text"],
             font_size=280,
             anchor_x="center",
             anchor_y="center",
             font_name="Renogare",
         )
-        self.player_name = ""
+        self.on_name = False
+        self.text = Text(self.center_x, self.center_y, self)
 
     @property
     def progress(self):
         return self.engine.progress
+
+    def back_to_menu(self):
+        self.window.show_view(self.screen_view)
+
+    def on_text(self, text):
+        if self.on_name:
+            self.text.on_text(text)
 
     def toggle_theme(self, new_theme):
         self.theme = new_theme if new_theme in THEMES else "dark"
@@ -102,16 +151,14 @@ class Game(arcade.View):
         if self.music_player and self.music_player.playing:
             self.music_player.pause()
 
-	
-
     def center(self, grid_x, grid_y):
         sidebar_width = 170
         padding = 20
-        center_x = sidebar_width + (self.width - sidebar_width - padding) / 2
-        center_y = self.height / 2
+        cx = sidebar_width + (self.width - sidebar_width - padding) / 2
+        cy = self.height / 2
 
-        screen_x = center_x + (grid_x - self.half_width) * self.cell_size
-        screen_y = center_y - (grid_y - self.half_height) * self.cell_size
+        screen_x = cx + (grid_x - self.half_width) * self.cell_size
+        screen_y = cy - (grid_y - self.half_height) * self.cell_size
         return (screen_x, screen_y)
 
     def reset_game(self):
@@ -120,9 +167,12 @@ class Game(arcade.View):
 
     def set_theme(self, new_theme):
         self.theme = new_theme
-        print(self.theme)
 
     def on_key_press(self, symbol, modifiers):
+        if self.engine.state == 1:
+            if symbol == arcade.key.ENTER:
+                self.text.on_finish(self.engine.pacman.final_score)
+            return
         if symbol == arcade.key.C and modifiers & arcade.key.MOD_CTRL:
             exit()
         if symbol == keys["UP"]:
@@ -142,7 +192,6 @@ class Game(arcade.View):
 
     def on_update(self, delta_time):
         self.engine.update(delta_time)
-
         if self.engine.state == 3:
             t = self.engine.win_timer
             ease_out = t * (2 - t)
@@ -226,7 +275,11 @@ class Game(arcade.View):
             shade = arcade.rect.XYWH(cx, cy, self.width, self.height)
             arcade.draw_rect_filled(shade, self.theme_colors["dim_overlay"])
             if self.engine.state == 1:
-                self.died_text.draw()
+                self.on_name = True
+                r = arcade.rect.XYWH(cx, cy, self.width, self.height)
+                arcade.draw_rect_filled(r, (10, 10, 10, 200))
+                self.text.text_name.draw()
+
             if self.engine.state == 2:
                 self.pause_text.draw()
             if self.engine.state == 3:

@@ -272,7 +272,8 @@ class GameEngine:
                         g.is_teleporting = False
                         g.draw_coords = self.center(g.smooth_x, g.smooth_y)
                         g.ghost_freeze = 1
-                    if self.pacman.death_count == 3:
+                    if self.pacman.death_count == 1:
+                        self.pacman.final_score = self.pacman.score
                         self.reset_game()
                         self.state = 1
                         self.pause = 1

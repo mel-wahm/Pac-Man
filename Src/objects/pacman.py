@@ -24,6 +24,7 @@ class Pacman:
         self.death_count = 0
         self.score = 0
         self.is_teleporting = False
+        self.final_score = 0
 
         arcade.load_font("fonts/Renogare-Regular.otf")
         self.score_text = arcade.Text(
