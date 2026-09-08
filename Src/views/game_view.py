@@ -24,15 +24,15 @@ class Text():
                         font_name="Renogare")
 
     def on_text(self, key):
-        self.name += key
-        self.update_text()
+        if key.isalnum() and len(self.name) < 10:
+            self.name += key
+            self.update_text()
 
     def on_finish(self, score):
         if self.name.strip():
             with open(self.path) as f:
                 if not f.read().strip():
                     board = []
-                
                 else:
                     f.seek(0)
                     board = json.load(f)
@@ -60,6 +60,8 @@ class Game(arcade.View):
         self.theme = self.theme if self.theme in THEMES else "dark"
         self.theme_colors = THEMES.get(self.theme, THEMES["dark"])
         self.background_color = self.theme_colors["background"]
+        cx = self.width / 2
+        cy = self.height / 2
 
          # View and Layout Configuration
         sidebar_width = 170
@@ -72,14 +74,17 @@ class Game(arcade.View):
         available_height = self.height - padding
         self.cell_size = min(available_width / self.cols, available_height / self.rows)
         self.wall_thickness = max(1, int(self.cell_size * 0.03))
+        self.enter_text = arcade.Text(
+            "Please enter your name for the highscore", cx, cy + 100,
+            (80, 80, 80, 180), 32, anchor_x="center", font_name="Renogare"
+        )
+        self.sec = 0
 
         # Initialize Game Engine
         self.engine = GameEngine(maze, self.center, self.cell_size, theme=self.theme)
 
         # UI & Fonts
         arcade.load_font("fonts/Renogare-Regular.otf")
-        cx = self.width / 2
-        cy = self.height / 2
 
         self.pause_text = arcade.Text(
             "PAUSE",
@@ -114,6 +119,10 @@ class Game(arcade.View):
         self.on_name = False
         self.text = Text(self.center_x, self.center_y, self)
 
+        self.pointer_text = arcade.Text(
+            "|", self.text.text_name.right + 5, cy, (80, 80, 80, 180), 32,
+            anchor_x="center", font_name="Renogare"
+        )
     @property
     def progress(self):
         return self.engine.progress
@@ -172,6 +181,10 @@ class Game(arcade.View):
         if self.engine.state == 1:
             if symbol == arcade.key.ENTER:
                 self.text.on_finish(self.engine.pacman.final_score)
+            if symbol == arcade.key.BACKSPACE:
+                if self.text.name:
+                    self.text.name = self.text.name[:-1]
+                    self.text.update_text()
             return
         if symbol == arcade.key.C and modifiers & arcade.key.MOD_CTRL:
             exit()
@@ -192,6 +205,15 @@ class Game(arcade.View):
 
     def on_update(self, delta_time):
         self.engine.update(delta_time)
+        self.pointer_text = arcade.Text(
+            "|", self.text.text_name.right + 7, self.height / 2,
+            (180, 180, 180, 180), 32,
+            anchor_x="center", font_name="Renogare"
+        )
+        if self.engine.state == 1:
+            if self.sec > 1.5:
+                self.sec = 0
+            self.sec += delta_time
         if self.engine.state == 3:
             t = self.engine.win_timer
             ease_out = t * (2 - t)
@@ -278,7 +300,10 @@ class Game(arcade.View):
                 self.on_name = True
                 r = arcade.rect.XYWH(cx, cy, self.width, self.height)
                 arcade.draw_rect_filled(r, (10, 10, 10, 200))
+                self.enter_text.draw()
                 self.text.text_name.draw()
+                if self.sec < 0.75:
+                    self.pointer_text.draw()
 
             if self.engine.state == 2:
                 self.pause_text.draw()
