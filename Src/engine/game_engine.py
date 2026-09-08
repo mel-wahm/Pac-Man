@@ -194,6 +194,7 @@ class GameEngine:
             "Time left: " + str(90 - self.sec),
             20, 770, color, 24, font_name="Renogare"
         )
+
     def reset_game(self):
         self.state = 0
         self.pause = 0
