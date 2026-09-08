@@ -1,6 +1,7 @@
 import arcade
 import json
 
+
 class Board(arcade.View):
     def __init__(self, previous_view):
         super().__init__()
@@ -13,23 +14,49 @@ class Board(arcade.View):
         self.scroller = 0
         self.board = self.load_json()
         self.texts = self.board_texts()
-        self.leaderboard_text1 = arcade.Text("Leaderboard",
-                self.cx, self.height - 100,
-                (231, 255, 244), 50, font_name="Renogare",
-                anchor_x="center", anchor_y="center")
-        self.leaderboard_text2 = arcade.Text("Leaderboard",
-                self.cx - 2, self.height - 102,
-                (50, 100, 244, 180), 50, font_name="Renogare",
-                anchor_x="center", anchor_y="center")
-        self.leaderboard_text3 = arcade.Text("Leaderboard",
-                self.cx - 4, self.height - 104,
-                (50, 100, 244, 120), 50, font_name="Renogare",
-                anchor_x="center", anchor_y="center")
+        self.leaderboard_text1 = arcade.Text(
+            "Leaderboard",
+            self.cx,
+            self.height - 100,
+            (231, 255, 244),
+            50,
+            font_name="Renogare",
+            anchor_x="center",
+            anchor_y="center",
+        )
+        self.leaderboard_text2 = arcade.Text(
+            "Leaderboard",
+            self.cx - 2,
+            self.height - 102,
+            (50, 100, 244, 180),
+            50,
+            font_name="Renogare",
+            anchor_x="center",
+            anchor_y="center",
+        )
+        self.leaderboard_text3 = arcade.Text(
+            "Leaderboard",
+            self.cx - 4,
+            self.height - 104,
+            (50, 100, 244, 120),
+            50,
+            font_name="Renogare",
+            anchor_x="center",
+            anchor_y="center",
+        )
         self.background = arcade.load_texture("wallpaper/dark_wallpaper.png")
-        self.pointer_text = arcade.Text(">", self.cx - 350,
-                self.cy, arcade.color.YELLOW, 24, bold=True)
-        self.empty_board = arcade.Text("The leaderboard is empty", self.cx, self.cy, 
-                                      (220, 220, 200, 120), 30, font_name="Renogare", anchor_x="center")
+        self.pointer_text = arcade.Text(
+            ">", self.cx - 350, self.cy, arcade.color.YELLOW, 24, bold=True
+        )
+        self.empty_board = arcade.Text(
+            "The leaderboard is empty",
+            self.cx,
+            self.cy,
+            (220, 220, 200, 120),
+            30,
+            font_name="Renogare",
+            anchor_x="center",
+        )
         self.scrolling_up = False
         self.scrolling_down = False
         self.scrolling_timer = 0
@@ -42,24 +69,19 @@ class Board(arcade.View):
             board = json.load(f)
         return sorted(board, key=lambda x: x["score"], reverse=True)
 
-    def update_json(self, name, score):
-        new_score = {
-            "name": name,
-            "score": score
-        }
-        self.board.append(new_score)
-        self.texts = self.board_texts()
-        with open(self.path) as f:
+    @staticmethod
+    def update_json(path, name, score):
+        new_score = {"name": name, "score": score}
+        with open(path) as f:
             if not f.read().strip():
                 board = []
             else:
                 f.seek(0)
                 board = json.load(f)
         board.append(new_score)
-        with open(self.path, "w") as f:
+        with open(path, "w") as f:
             json.dump(board, f, indent=4)
 
-    
     def on_key_press(self, symbol, modifiers):
         if symbol == arcade.key.UP:
             self.scroller = max(0, self.scroller - 1)
@@ -79,7 +101,7 @@ class Board(arcade.View):
         if symbol == arcade.key.DOWN:
             self.scrolling_timer = 0
             self.scrolling_down = False
-    
+
     def on_mouse_scroll(self, x, y, scroll_x, scroll_y):
         if scroll_y > 0:
             self.scroller = max(0, self.scroller - 1)
@@ -109,7 +131,7 @@ class Board(arcade.View):
                 color,
                 32,
                 anchor_x="left",
-                font_name="Renogare"
+                font_name="Renogare",
             )
             score_text = arcade.Text(
                 str(score),
@@ -118,17 +140,16 @@ class Board(arcade.View):
                 color,
                 32,
                 anchor_x="right",
-                font_name="Renogare"
+                font_name="Renogare",
             )
             board.append((name_text, score_text))
         return board
 
     def on_update(self, delta_time):
         if self.scrolling_down and self.scrolling_timer > 0.2:
-            self.scroller = min(len(self.board) - 1,
-                self.scroller + 1)
+            self.scroller = min(len(self.board) - 1, self.scroller + 1)
             self.texts = self.board_texts()
-            
+
         if self.scrolling_up and self.scrolling_timer > 0.2:
             self.scroller = max(0, self.scroller - 1)
             self.texts = self.board_texts()
@@ -137,12 +158,8 @@ class Board(arcade.View):
         if self.scrolling_down or self.scrolling_up:
             self.scrolling_timer += delta_time
 
-
     def on_draw(self):
         self.clear()
-        r = arcade.rect.XYWH(self.cx, self.height - 100,
-                            200, 45)
-        arcade.draw_rect_filled(r, (240, 240, 240))
         r = arcade.rect.XYWH(self.cx, self.cy, self.width, self.height)
         arcade.draw_texture_rect(self.background, r)
         if self.texts:

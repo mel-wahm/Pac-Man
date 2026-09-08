@@ -19,7 +19,9 @@ class Settings(arcade.View):
         cy = self.height / 2
 
         # Audio
-        text_color = arcade.color.WHITE if not self.theme else arcade.color.BLACK
+        text_color = (
+            arcade.color.WHITE if not self.theme else arcade.color.BLACK
+        )
         self.audio_control = AudioControl(cx, cy, text_color)
 
         # Themes
@@ -30,12 +32,21 @@ class Settings(arcade.View):
 
         self.audio_option = Selection("Audio", lambda: self.open_audio())
         self.theme_option = Selection("Theme", lambda: self.open_theme())
-        self.controls_option = Selection("Key Binding", lambda: self.open_controls())
-        self.return_option = Selection("Return", lambda: self.return_to_previous())
+        self.controls_option = Selection(
+            "Key Binding", lambda: self.open_controls()
+        )
+        self.return_option = Selection(
+            "Return", lambda: self.return_to_previous()
+        )
         self.menu = Menu(
-            [self.audio_option, self.theme_option,
-             self.controls_option, self.return_option],
-            cx, cy,
+            [
+                self.audio_option,
+                self.theme_option,
+                self.controls_option,
+                self.return_option,
+            ],
+            cx,
+            cy,
         )
 
     def open_audio(self):
@@ -77,7 +88,8 @@ class Settings(arcade.View):
                 self.game_view.toggle_theme(new_theme)
                 self.theme = 0 if new_theme == "dark" else 1
                 text_color = (
-                    arcade.color.WHITE if new_theme == "dark"
+                    arcade.color.WHITE
+                    if new_theme == "dark"
                     else arcade.color.BLACK
                 )
                 self.audio_control.text_color = text_color
@@ -110,7 +122,10 @@ class Settings(arcade.View):
     def on_draw(self):
         self.clear()
         screen_rect = arcade.rect.XYWH(
-            self.width / 2, self.height / 2, self.window.width, self.window.height
+            self.width / 2,
+            self.height / 2,
+            self.window.width,
+            self.window.height,
         )
         arcade.draw_texture_rect(self.wallpapers[self.theme], screen_rect)
         color = [arcade.color.WHITE, arcade.color.BLACK][self.theme]

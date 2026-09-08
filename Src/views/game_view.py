@@ -5,23 +5,37 @@ from ..config import THEMES, keys
 from ..core import Directions
 from ..engine import GameEngine, AudioEngine
 from .ingame_settings_view import InGameSettings
+from .leaderboard_view import Board
 
 
-class Text():
-    def __init__(self, cx, cy, game):
+class Text:
+    def __init__(self, cx, cy):
         self.cx = cx
         self.cy = cy
         self.name = ""
-        self.game = game
         white = arcade.color.WHITE
-        self.text_name = arcade.Text(self.name, cx, cy, white, 32, anchor_x="center",
-                        font_name="Renogare")
+        self.text_name = arcade.Text(
+            self.name,
+            cx,
+            cy,
+            white,
+            32,
+            anchor_x="center",
+            font_name="Renogare",
+        )
         self.path = "Src/config/leaderboard.json"
 
     def update_text(self):
         white = arcade.color.WHITE
-        self.text_name = arcade.Text(self.name, self.cx, self.cy, white, 32, anchor_x="center",
-                        font_name="Renogare")
+        self.text_name = arcade.Text(
+            self.name,
+            self.cx,
+            self.cy,
+            white,
+            32,
+            anchor_x="center",
+            font_name="Renogare",
+        )
 
     def on_text(self, key):
         if key.isalnum() and len(self.name) < 10:
@@ -30,29 +44,17 @@ class Text():
 
     def on_finish(self, score):
         if self.name.strip():
-            with open(self.path) as f:
-                if not f.read().strip():
-                    board = []
-                else:
-                    f.seek(0)
-                    board = json.load(f)
-            new_score = {
-                "name": self.name,
-                "score": score
-            }
-            board.append(new_score)
-            with open(self.path, "w") as f:
-                json.dump(board, f, indent=4)
-            self.game.on_name = False
-            self.game.back_to_menu()
+            Board.update_json(self.path, self.name, score)
+            return 1
+        return 0
 
 
 class Game(arcade.View):
     def __init__(self, maze: list, screen_view):
         super().__init__()
         self.audio_engine = AudioEngine()
-        with open ("Src/config/audio_and_theme.json") as f:
-                    ant_dict = json.load(f)
+        with open("Src/config/audio_and_theme.json") as f:
+            ant_dict = json.load(f)
         self.volume = ant_dict["volume"] / 10
         self.theme = ant_dict["theme"]
         self.music_player = None
@@ -63,25 +65,34 @@ class Game(arcade.View):
         cx = self.width / 2
         cy = self.height / 2
 
-         # View and Layout Configuration
+        # View and Layout Configuration
         sidebar_width = 170
-        padding = 20 
+        padding = 20
         self.cols = len(maze[0])
         self.rows = len(maze)
         self.half_width = (self.cols - 1) / 2
         self.half_height = (self.rows - 1) / 2
         available_width = self.width - sidebar_width - padding
         available_height = self.height - padding
-        self.cell_size = min(available_width / self.cols, available_height / self.rows)
+        self.cell_size = min(
+            available_width / self.cols, available_height / self.rows
+        )
         self.wall_thickness = max(1, int(self.cell_size * 0.03))
         self.enter_text = arcade.Text(
-            "Please enter your name for the highscore", cx, cy + 100,
-            (80, 80, 80, 180), 32, anchor_x="center", font_name="Renogare"
+            "Please enter your name for the highscore",
+            cx,
+            cy + 100,
+            (80, 80, 80, 180),
+            32,
+            anchor_x="center",
+            font_name="Renogare",
         )
         self.sec = 0
 
         # Initialize Game Engine
-        self.engine = GameEngine(maze, self.center, self.cell_size, theme=self.theme)
+        self.engine = GameEngine(
+            maze, self.center, self.cell_size, theme=self.theme
+        )
 
         # UI & Fonts
         arcade.load_font("fonts/Renogare-Regular.otf")
@@ -92,16 +103,6 @@ class Game(arcade.View):
             cy,
             self.theme_colors["pause_text"],
             font_size=160,
-            anchor_x="center",
-            anchor_y="center",
-            font_name="Renogare",
-        )
-        self.died_text = arcade.Text(
-            "YOU DIED",
-            cx,
-            cy,
-            self.theme_colors["died_text"],
-            font_size=80,
             anchor_x="center",
             anchor_y="center",
             font_name="Renogare",
@@ -117,12 +118,18 @@ class Game(arcade.View):
             font_name="Renogare",
         )
         self.on_name = False
-        self.text = Text(self.center_x, self.center_y, self)
+        self.text = Text(self.center_x, self.center_y)
 
         self.pointer_text = arcade.Text(
-            "|", self.text.text_name.right + 5, cy, (80, 80, 80, 180), 32,
-            anchor_x="center", font_name="Renogare"
+            "|",
+            self.text.text_name.right + 5,
+            cy,
+            (80, 80, 80, 180),
+            32,
+            anchor_x="center",
+            font_name="Renogare",
         )
+
     @property
     def progress(self):
         return self.engine.progress
@@ -139,10 +146,9 @@ class Game(arcade.View):
         self.theme_colors = THEMES.get(self.theme, THEMES["dark"])
         self.background_color = self.theme_colors["background"]
         self.pause_text.color = self.theme_colors["pause_text"]
-        self.died_text.color = self.theme_colors["died_text"]
         self.won_text.color = self.theme_colors["won_text"]
-        self.engine.pacman.score_text.color = self.theme_colors['hud_text']
-        self.engine.pacman.lives_text.color = self.theme_colors['hud_text']
+        self.engine.pacman.score_text.color = self.theme_colors["hud_text"]
+        self.engine.pacman.lives_text.color = self.theme_colors["hud_text"]
         ghost_colors = self.theme_colors["ghosts"]
         for i, ghost in enumerate(self.engine.ghosts):
             ghost.color = ghost_colors[i % len(ghost_colors)]
@@ -152,7 +158,9 @@ class Game(arcade.View):
 
     def on_show_view(self):
         if self.music_player is None:
-            self.music_player = self.audio_engine.music.play(self.volume, loop=True)
+            self.music_player = self.audio_engine.music.play(
+                self.volume, loop=True
+            )
         elif not self.music_player.playing:
             self.music_player.play()
 
@@ -174,13 +182,12 @@ class Game(arcade.View):
         self.engine.reset_game()
         self.won_text.font_size = 280
 
-    def set_theme(self, new_theme):
-        self.theme = new_theme
-
     def on_key_press(self, symbol, modifiers):
         if self.engine.state == 1:
             if symbol == arcade.key.ENTER:
-                self.text.on_finish(self.engine.pacman.final_score)
+                if self.text.on_finish(self.engine.pacman.final_score):
+                    self.on_name = False
+                    self.back_to_menu()
             if symbol == arcade.key.BACKSPACE:
                 if self.text.name:
                     self.text.name = self.text.name[:-1]
@@ -205,11 +212,7 @@ class Game(arcade.View):
 
     def on_update(self, delta_time):
         self.engine.update(delta_time)
-        self.pointer_text = arcade.Text(
-            "|", self.text.text_name.right + 7, self.height / 2,
-            (180, 180, 180, 180), 32,
-            anchor_x="center", font_name="Renogare"
-        )
+        self.pointer_text.x = self.text.text_name.right + 7
         if self.engine.state == 1:
             if self.sec > 1.5:
                 self.sec = 0

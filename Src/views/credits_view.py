@@ -40,8 +40,9 @@ class Credits(arcade.View):
 
     def on_draw(self):
         self.clear()
-        r = arcade.rect.XYWH(self.width / 2, self.height / 2,
-                             self.width, self.height)
+        r = arcade.rect.XYWH(
+            self.width / 2, self.height / 2, self.width, self.height
+        )
         self.prev_view.on_draw()
         arcade.draw_rect_filled(r, (0, 0, 0, 240))
         self.credits.draw()

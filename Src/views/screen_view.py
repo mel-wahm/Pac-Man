@@ -31,14 +31,23 @@ class Screen(arcade.View):
         center_y = self.height / 2
 
         self.start_option = Selection("Start", lambda: self.start_game())
-        self.settings_option = Selection("Settings", lambda: self.enter_settings())
-        self.leaderboard = Selection("Leaderboard", lambda: self.show_leaderboard())
+        self.settings_option = Selection(
+            "Settings", lambda: self.enter_settings()
+        )
+        self.leaderboard = Selection(
+            "Leaderboard", lambda: self.show_leaderboard()
+        )
         self.credits_option = Selection("Credits", lambda: self.show_credits())
         self.exit_option = Selection("Exit", lambda: self.exit_game())
 
         self.menu = Menu(
-            [self.start_option, self.settings_option,
-             self.leaderboard, self.credits_option, self.exit_option],
+            [
+                self.start_option,
+                self.settings_option,
+                self.leaderboard,
+                self.credits_option,
+                self.exit_option,
+            ],
             center_x,
             center_y,
         )
@@ -101,6 +110,6 @@ class Screen(arcade.View):
             arcade.color.RED
             if self.game_view.theme == "light"
             else arcade.color.YELLOW
-            )
+        )
 
         self.menu.draw(menu_color, sel_color)

@@ -12,7 +12,9 @@ from ..core import (
 
 
 class Ghost:
-    def __init__(self, grid_pos, draw_coords, maze, color, cell_size, theme_colors):
+    def __init__(
+        self, grid_pos, draw_coords, maze, color, cell_size, theme_colors
+    ):
         self.grid_pos = grid_pos
         self.spawn_pos = grid_pos
         self.smooth_x = float(grid_pos[0])
@@ -66,10 +68,6 @@ class Ghost:
         self.flash_timer = 0.0
         self.flash_index = 0
 
-    def can_turn(self, x, y, direction):
-        mask, _, _, _ = DIR_DATA[direction]
-        return not (self.maze[y][x] & mask)
-
     def choose_target(self, pacman):
         self.is_teleporting = False
         self.prev_x = float(self.grid_pos[0])
@@ -82,7 +80,9 @@ class Ghost:
         pac_pos = (pacman.x, pacman.y)
 
         self.path = construct_path(
-            pac_pos, self.grid_pos, shortest_path(self.grid_pos, pac_pos, self.maze)
+            pac_pos,
+            self.grid_pos,
+            shortest_path(self.grid_pos, pac_pos, self.maze),
         )
         is_close = len(self.path) > 1 and len(self.path) < max(
             len(self.maze[0]) / 1.2, len(self.maze) / 1.2
@@ -153,8 +153,12 @@ class Ghost:
         if not self.is_teleporting:
             self.step_time += delta_time
             progress = min(1.0, self.step_time / duration)
-            self.smooth_x = self.prev_x + (self.grid_pos[0] - self.prev_x) * progress
-            self.smooth_y = self.prev_y + (self.grid_pos[1] - self.prev_y) * progress
+            self.smooth_x = (
+                self.prev_x + (self.grid_pos[0] - self.prev_x) * progress
+            )
+            self.smooth_y = (
+                self.prev_y + (self.grid_pos[1] - self.prev_y) * progress
+            )
 
     def update(self, delta_time):
         self.anim_time += delta_time
@@ -186,20 +190,46 @@ class Ghost:
         if not self.edible:
             # Body
             arcade.draw_arc_filled(
-                cx, cy + 15 * scale, 240 * scale, 240 * scale, self.color, 0, 180
+                cx,
+                cy + 15 * scale,
+                240 * scale,
+                240 * scale,
+                self.color,
+                0,
+                180,
             )
-            rect = arcade.rect.XYWH(cx, cy - 30 * scale, 240 * scale, 90 * scale)
+            rect = arcade.rect.XYWH(
+                cx, cy - 30 * scale, 240 * scale, 90 * scale
+            )
             arcade.draw_rect_filled(rect, self.color)
 
             # Skirt
             arcade.draw_arc_filled(
-                cx, cy - 75 * scale, 80 * scale, 80 * scale, self.color, 180, 360
+                cx,
+                cy - 75 * scale,
+                80 * scale,
+                80 * scale,
+                self.color,
+                180,
+                360,
             )
             arcade.draw_arc_filled(
-                cx - 80 * scale, cy - 75 * scale, 80 * scale, 80 * scale, self.color, 180, 360
+                cx - 80 * scale,
+                cy - 75 * scale,
+                80 * scale,
+                80 * scale,
+                self.color,
+                180,
+                360,
             )
             arcade.draw_arc_filled(
-                cx + 80 * scale, cy - 75 * scale, 80 * scale, 80 * scale, self.color, 180, 360
+                cx + 80 * scale,
+                cy - 75 * scale,
+                80 * scale,
+                80 * scale,
+                self.color,
+                180,
+                360,
             )
 
             # Eyes
@@ -212,7 +242,11 @@ class Ghost:
                     num_segments=32,
                 )
                 arcade.draw_circle_filled(
-                    eye_x, cy + 15 * scale, 20 * scale, normal_pupil, num_segments=32
+                    eye_x,
+                    cy + 15 * scale,
+                    20 * scale,
+                    normal_pupil,
+                    num_segments=32,
                 )
                 arcade.draw_circle_filled(
                     eye_x,
@@ -223,9 +257,13 @@ class Ghost:
                 )
         else:
             if self.edible_timer < 3.0:
-                is_flashing_white = (self.flash_index % 2 == 1)
-                edible_color = flash_body if is_flashing_white else base_edible_color
-                pupil_color = flash_pupil if is_flashing_white else base_edible_pupil
+                is_flashing_white = self.flash_index % 2 == 1
+                edible_color = (
+                    flash_body if is_flashing_white else base_edible_color
+                )
+                pupil_color = (
+                    flash_pupil if is_flashing_white else base_edible_pupil
+                )
                 mouth_color = flash_mouth if is_flashing_white else white
             else:
                 edible_color = base_edible_color
@@ -233,9 +271,17 @@ class Ghost:
                 mouth_color = white
 
             arcade.draw_arc_filled(
-                cx, cy + 15 * scale, 240 * scale, 240 * scale, edible_color, 0, 180
+                cx,
+                cy + 15 * scale,
+                240 * scale,
+                240 * scale,
+                edible_color,
+                0,
+                180,
             )
-            rect = arcade.rect.XYWH(cx, cy - 30 * scale, 240 * scale, 90 * scale)
+            rect = arcade.rect.XYWH(
+                cx, cy - 30 * scale, 240 * scale, 90 * scale
+            )
             arcade.draw_rect_filled(rect, edible_color)
 
             eye_x = math.cos(self.eye_time) * 3
@@ -261,13 +307,23 @@ class Ghost:
             mouth = []
             for i in range(20):
                 xs = mouth_x + i * 8 * scale
-                y = cy - 40 * scale + 16 * scale * math.sin(i + self.anim_time * 5)
+                y = (
+                    cy
+                    - 40 * scale
+                    + 16 * scale * math.sin(i + self.anim_time * 5)
+                )
                 mouth.append((xs, y))
 
             arcade.draw_line_strip(mouth, mouth_color, max(2, int(6 * scale)))
 
             arcade.draw_arc_filled(
-                cx, cy - 75 * scale, 80 * scale, 80 * scale, edible_color, 180, 360
+                cx,
+                cy - 75 * scale,
+                80 * scale,
+                80 * scale,
+                edible_color,
+                180,
+                360,
             )
             arcade.draw_arc_filled(
                 cx - 80 * scale,

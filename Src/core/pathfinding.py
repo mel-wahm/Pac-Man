@@ -15,26 +15,28 @@ def neighbor_coordinates(x, y, maze):
         neighbors.append((x, y + 1))
     return neighbors
 
+
 def shortest_path(start, end, maze):
-	if start == end:
-		return {}
-	px, py = start
-	ex, ey = end
-	final_path = {}
-	queue = deque()
-	queue.append((px, py))
-	visited = set()
-	visited.add((px, py))
-	while queue:
-		cx, cy = queue.popleft()
-		for nx, ny in neighbor_coordinates(cx, cy, maze):
-			if (nx, ny) in visited:
-				continue
-			visited.add((nx, ny))
-			queue.append((nx, ny))
-			final_path[(nx, ny)] = (cx, cy)
-			if (nx, ny) == (ex, ey):
-				return final_path
+    if start == end:
+        return {}
+    px, py = start
+    ex, ey = end
+    final_path = {}
+    queue = deque()
+    queue.append((px, py))
+    visited = set()
+    visited.add((px, py))
+    while queue:
+        cx, cy = queue.popleft()
+        for nx, ny in neighbor_coordinates(cx, cy, maze):
+            if (nx, ny) in visited:
+                continue
+            visited.add((nx, ny))
+            queue.append((nx, ny))
+            final_path[(nx, ny)] = (cx, cy)
+            if (nx, ny) == (ex, ey):
+                return final_path
+
 
 def construct_path(end, start, final):
     ex, ey = end

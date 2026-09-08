@@ -5,6 +5,7 @@ from ..config import keys
 from ..ui import Menu, Selection
 import json
 
+
 class Control(arcade.View):
     def __init__(self, previous_view):
         super().__init__()
@@ -16,19 +17,28 @@ class Control(arcade.View):
 
         key_symbol = pyglet.window.key.symbol_string
         self.left_option = Selection(
-            f"Move left:   {key_symbol(keys['LEFT'])}", lambda: self.start_listening("LEFT")
+            f"Move left:   {key_symbol(keys['LEFT'])}",
+            lambda: self.start_listening("LEFT"),
         )
         self.right_option = Selection(
-            f"Move right:   {key_symbol(keys['RIGHT'])}", lambda: self.start_listening("RIGHT")
+            f"Move right:   {key_symbol(keys['RIGHT'])}",
+            lambda: self.start_listening("RIGHT"),
         )
         self.up_option = Selection(
-            f"Move up:   {key_symbol(keys['UP'])}", lambda: self.start_listening("UP")
+            f"Move up:   {key_symbol(keys['UP'])}",
+            lambda: self.start_listening("UP"),
         )
         self.down_option = Selection(
-            f"Move down:   {key_symbol(keys['DOWN'])}", lambda: self.start_listening("DOWN")
+            f"Move down:   {key_symbol(keys['DOWN'])}",
+            lambda: self.start_listening("DOWN"),
         )
         self.menu = Menu(
-            [self.up_option, self.down_option, self.right_option, self.left_option],
+            [
+                self.up_option,
+                self.down_option,
+                self.right_option,
+                self.left_option,
+            ],
             self.width / 2,
             self.height / 2,
             gap=80,
@@ -75,7 +85,7 @@ class Control(arcade.View):
             js = f.read()
         js = json.loads(js)
         js[key] = value
-        with open(json_file, 'w') as f:
+        with open(json_file, "w") as f:
             f.write(json.dumps(js, indent=4))
 
     def on_key_press(self, symbol, modifiers):
@@ -84,15 +94,21 @@ class Control(arcade.View):
                 self.is_listening = False
                 return
             if 97 <= symbol <= 122 or 65361 <= symbol <= 65364:
-                if symbol in keys.values() and symbol != keys[self.current_action]:
+                if (
+                    symbol in keys.values()
+                    and symbol != keys[self.current_action]
+                ):
                     self.error_timer = 1.0
                     self.error_key_text.text = "Key Already Used"
                     return
                 keys[self.current_action] = symbol
                 self.is_listening = False
                 key_name = pyglet.window.key.symbol_string(symbol)
-                self.update_json("Src/config/keys.json",
-                                 self.current_action, 'arcade.key.' + key_name)
+                self.update_json(
+                    "Src/config/keys.json",
+                    self.current_action,
+                    "arcade.key." + key_name,
+                )
                 action_name = self.current_action.lower()
                 menu_item = self.menu.labels[self.menu.selected_index]
                 menu_item.text = f"Move {action_name}:   {key_name}"

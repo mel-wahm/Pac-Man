@@ -1,14 +1,22 @@
 import arcade
 import json
 
+
 class Selection:
     def __init__(self, name: str, action):
         self.name = name
         self.action = action
 
+
 class Menu:
-    def __init__(self, items: list[Selection], x: float, y: float,
-                 gap: float = 65, font_size: int = 35):
+    def __init__(
+        self,
+        items: list[Selection],
+        x: float,
+        y: float,
+        gap: float = 65,
+        font_size: int = 35,
+    ):
         self.menus = items
         self.x = x
         self.y = y
@@ -57,7 +65,7 @@ class Menu:
         self.menus[self.selected_index].action()
 
     def draw(
-        self,   
+        self,
         color=arcade.color.WHITE,
         selected_color=arcade.color.YELLOW,
     ):
@@ -75,8 +83,8 @@ class AudioControl:
     def __init__(self, x, y, text_color=arcade.color.WHITE):
         self.x = x
         self.y = y
-        with open ("Src/config/audio_and_theme.json") as f:
-                    ant_dict = json.load(f)
+        with open("Src/config/audio_and_theme.json") as f:
+            ant_dict = json.load(f)
         self.volume = ant_dict["volume"]
         self.text_color = text_color
         self._rebuild_label()
@@ -84,17 +92,20 @@ class AudioControl:
     def _rebuild_label(self):
         self.label = arcade.Text(
             f"< {self.volume} >",
-            self.x, self.y, self.text_color, 35,
-            anchor_x="center", font_name="Renogare",
+            self.x,
+            self.y,
+            self.text_color,
+            35,
+            anchor_x="center",
+            font_name="Renogare",
         )
 
     def update_json(self, volume):
-        with open ("Src/config/audio_and_theme.json") as f:
+        with open("Src/config/audio_and_theme.json") as f:
             ant_dict = json.load(f)
         ant_dict["volume"] = volume
-        with open ("Src/config/audio_and_theme.json", "w") as f:
+        with open("Src/config/audio_and_theme.json", "w") as f:
             json.dump(ant_dict, f, indent=4)
-        
 
     def volume_up(self):
         self.volume = min(10, self.volume + 1)
@@ -116,22 +127,31 @@ class ThemeToggle:
         self.y = y
         self.selection = 0 if current_theme == "dark" else 1
         self.dark_text = arcade.Text(
-            "Dark", x - 80, y, arcade.color.WHITE, 35,
-            anchor_x="center", font_name="Renogare",
+            "Dark",
+            x - 80,
+            y,
+            arcade.color.WHITE,
+            35,
+            anchor_x="center",
+            font_name="Renogare",
         )
         self.light_text = arcade.Text(
-            "Light", x + 80, y, arcade.color.WHITE, 35,
-            anchor_x="center", font_name="Renogare",
+            "Light",
+            x + 80,
+            y,
+            arcade.color.WHITE,
+            35,
+            anchor_x="center",
+            font_name="Renogare",
         )
         self._update_display(current_theme)
 
     def update_json(self, theme):
-        with open ("Src/config/audio_and_theme.json") as f:
+        with open("Src/config/audio_and_theme.json") as f:
             ant_dict = json.load(f)
         ant_dict["theme"] = theme
-        with open ("Src/config/audio_and_theme.json", "w") as f:
+        with open("Src/config/audio_and_theme.json", "w") as f:
             json.dump(ant_dict, f, indent=4)
-
 
     def _update_display(self, theme):
         self.update_json(theme)

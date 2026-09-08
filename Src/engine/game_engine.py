@@ -9,7 +9,9 @@ from ..objects import Ghost, Pacman
 
 
 class GameEngine:
-    def __init__(self, maze: list, center_func, cell_size: float, theme: str = "dark"):
+    def __init__(
+        self, maze: list, center_func, cell_size: float, theme: str = "dark"
+    ):
         self.center = center_func
         self.cell_size = cell_size
         self.theme = theme if theme in THEMES else "dark"
@@ -30,8 +32,6 @@ class GameEngine:
         self.maze = maze
         self.cols = len(self.maze[0])
         self.rows = len(self.maze)
-        self.half_width = (self.cols - 1) / 2
-        self.half_height = (self.rows - 1) / 2
 
         self.pacman = Pacman(maze)
         self.pacman.score_text.color = self.theme_colors["hud_text"]
@@ -161,7 +161,8 @@ class GameEngine:
                     self.valid_dot_coords.append((c, r))
 
         self.spawned_dot_coords = sample(
-            self.valid_dot_coords, min(len(self.valid_dot_coords), self.max_dots)
+            self.valid_dot_coords,
+            min(len(self.valid_dot_coords), self.max_dots),
         )
         for cell in self.spawned_dot_coords:
             c, r = cell
@@ -203,13 +204,16 @@ class GameEngine:
         self.dots = arcade.SpriteList()
         self.dots_grid = {}
         self.spawned_dot_coords = sample(
-            self.valid_dot_coords, min(len(self.valid_dot_coords), self.max_dots)
+            self.valid_dot_coords,
+            min(len(self.valid_dot_coords), self.max_dots),
         )
         for cell in self.spawned_dot_coords:
             c, r = cell
             real_x, real_y = self.center(c, r)
             dot_r = int(self.cell_size * 0.05)
-            dot = arcade.SpriteCircle(radius=dot_r, color=self.theme_colors["dot"])
+            dot = arcade.SpriteCircle(
+                radius=dot_r, color=self.theme_colors["dot"]
+            )
             dot.center_x = real_x
             dot.center_y = real_y
             self.dots.append(dot)
@@ -290,7 +294,9 @@ class GameEngine:
                     ghost.prev_y = float(ghost.spawn_pos[1])
                     ghost.step_time = 0.0
                     ghost.is_teleporting = False
-                    ghost.draw_coords = self.center(ghost.smooth_x, ghost.smooth_y)
+                    ghost.draw_coords = self.center(
+                        ghost.smooth_x, ghost.smooth_y
+                    )
                     ghost.eaten_timer = 5
                     ghost.ghost_freeze = 5
                     ghost.edible_timer = 0.0
@@ -316,7 +322,9 @@ class GameEngine:
                         ghost.choose_target(self.pacman)
                     ghost.smooth_animation(delta_time, ghost_step_interval)
                     ghost.update(delta_time)
-                    ghost.draw_coords = self.center(ghost.smooth_x, ghost.smooth_y)
+                    ghost.draw_coords = self.center(
+                        ghost.smooth_x, ghost.smooth_y
+                    )
 
             if self.pacman_step_timer > pacman_step_interval:
                 self.pacman_step_timer = 0.0
@@ -337,4 +345,3 @@ class GameEngine:
                         ghost.edible = True
                         ghost.edible_timer = 6.0
                 dot.remove_from_sprite_lists()
-

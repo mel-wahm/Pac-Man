@@ -9,7 +9,6 @@ from ..ui import Menu, Selection
 class InGameSettings(arcade.View):
     def __init__(self, game_view, screen_view):
         super().__init__()
-        self.settings_wallpaper = arcade.load_texture("photos/settings.png")
         arcade.load_font("fonts/Renogare-Regular.otf")
 
         self.game_view = game_view
@@ -18,10 +17,17 @@ class InGameSettings(arcade.View):
         self.resume_option = Selection("Resume", lambda: self.resume_game())
         self.retry_option = Selection("Retry", lambda: self.retry_game())
         self.options_option = Selection("Options", lambda: self.open_options())
-        self.main_menu_option = Selection("Main menu", lambda: self.return_to_main_menu())
+        self.main_menu_option = Selection(
+            "Main menu", lambda: self.return_to_main_menu()
+        )
 
         self.menu = Menu(
-            [self.resume_option, self.retry_option, self.options_option, self.main_menu_option],
+            [
+                self.resume_option,
+                self.retry_option,
+                self.options_option,
+                self.main_menu_option,
+            ],
             self.width / 2,
             self.height / 2,
         )
@@ -33,9 +39,7 @@ class InGameSettings(arcade.View):
         maze = MazeGenerator(MAZE_SIZE).maze
         from .game_view import Game
 
-        game_view = Game(
-            maze, self.screen_view
-        )
+        game_view = Game(maze, self.screen_view)
         self.window.show_view(game_view)
 
     def open_options(self):
@@ -70,9 +74,6 @@ class InGameSettings(arcade.View):
     def on_draw(self):
         self.clear()
         self.game_view.on_draw()
-        # image = arcade.get_image()
-        # image.show()
-        # exit()
         dim_rect = arcade.rect.XYWH(
             self.width / 2, self.height / 2, self.width, self.height
         )
@@ -82,5 +83,5 @@ class InGameSettings(arcade.View):
             arcade.color.YELLOW
             if self.game_view.theme == "dark"
             else arcade.color.RED
-            )
+        )
         self.menu.draw(menu_color, sel_color)
