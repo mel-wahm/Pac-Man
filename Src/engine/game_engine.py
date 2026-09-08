@@ -36,11 +36,14 @@ class GameEngine:
         self.pacman = Pacman(maze)
         self.pacman.score_text.color = self.theme_colors["hud_text"]
         self.pacman.lives_text.color = self.theme_colors["hud_text"]
-        self.max_dots = 7100
+        color = self.theme_colors["hud_text"]
+        self.max_dots = 15
         self.state = 0
         self.pause = 0
         self.progress = 0
-        self.elapsed_time = 0.0
+        self.elapsed_time = 0
+        self.elapsed_time = 0
+        self.sec = 0
         self.ghost_step_timer = 0.0
         self.pacman_step_timer = 0.0
         self.win_timer = 0.0
@@ -187,10 +190,15 @@ class GameEngine:
             self.dots.append(super_gum)
             self.dots_grid[(c, r)] = super_gum
 
+        self.time_text = arcade.Text(
+            "Time left: " + str(90 - self.sec),
+            20, 770, color, 24, font_name="Renogare"
+        )
     def reset_game(self):
         self.state = 0
         self.pause = 0
-        self.elapsed_time = 0.0
+        self.elapsed_time = 0
+
         self.progress = 0
         self.ghost_step_timer = 0.0
         self.pacman_step_timer = 0.0
@@ -305,6 +313,15 @@ class GameEngine:
 
         if not self.pause:
             self.elapsed_time += delta_time
+            if self.elapsed_time > 1:
+                self.elapsed_time = 0
+                self.sec += 1
+                self.time_text.text = "Time left: " + str(90 - self.sec)
+                if not 3 - self.sec:
+                    self.state = 1
+                    self.pause = 1
+                    return
+
             self.progress += 6 * delta_time
             self.ghost_step_timer += delta_time
             self.pacman_step_timer += delta_time

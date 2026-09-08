@@ -274,12 +274,9 @@ class Game(arcade.View):
 
         # Draw Sidebar HUD (Score & Lives)
         sidebar_x = 20
-        self.engine.pacman.score_text.x = sidebar_x
-        self.engine.pacman.score_text.y = self.height - 100
         self.engine.pacman.score_text.draw()
-        self.engine.pacman.lives_text.x = sidebar_x
-        self.engine.pacman.lives_text.y = self.height - 170
         self.engine.pacman.lives_text.draw()
+        self.engine.time_text.draw()
 
         lives_remaining = 3 - self.engine.pacman.death_count
         for i in range(lives_remaining):

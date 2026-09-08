@@ -28,16 +28,16 @@ class Pacman:
 
         self.score_text = arcade.Text(
             f"SCORE: {self.score}",
-            x=60,
-            y=50,
+            x=20,
+            y=980,
             color=arcade.color.YELLOW,
             font_size=24,
             font_name="Renogare",
         )
         self.lives_text = arcade.Text(
             "LIVES:",
-            x=300,
-            y=50,
+            x=20,
+            y=910,
             color=arcade.color.YELLOW,
             font_name="Renogare",
             font_size=24,
