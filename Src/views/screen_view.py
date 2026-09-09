@@ -61,7 +61,7 @@ class Screen(arcade.View):
         self.window.show_view(self.game_view)
 
     def show_leaderboard(self):
-        board = Board(self)
+        board = Board(self, self.game_view.theme)
         self.window.show_view(board)
 
     def show_credits(self):

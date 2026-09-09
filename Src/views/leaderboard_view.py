@@ -3,7 +3,7 @@ import json
 
 
 class Board(arcade.View):
-    def __init__(self, previous_view):
+    def __init__(self, previous_view, theme):
         super().__init__()
         self.previous_view = previous_view
         arcade.load_font("fonts/Renogare-Regular.otf")
@@ -12,6 +12,7 @@ class Board(arcade.View):
         self.background_color = (0, 0, 15)
         self.path = "Src/config/leaderboard.json"
         self.scroller = 0
+        self.theme = theme
         self.board = self.load_json()
         self.texts = self.board_texts()
         self.leaderboard_text1 = arcade.Text(
@@ -44,15 +45,18 @@ class Board(arcade.View):
             anchor_x="center",
             anchor_y="center",
         )
-        self.background = arcade.load_texture("wallpaper/dark_wallpaper.png")
+        self.backgrounds = [arcade.load_texture("wallpaper/dark_wallpaper.png"),
+                            arcade.load_texture("wallpaper/light_wallpaper.png")]
+        self.background = self.backgrounds[0] if theme == "dark" else self.backgrounds[1]
         self.pointer_text = arcade.Text(
-            ">", self.cx - 350, self.cy, arcade.color.YELLOW, 24, bold=True
+            ">", self.cx - 350, self.cy, arcade.color.YELLOW if theme == "dark" else arcade.color.RED
+            , 24, bold=True
         )
         self.empty_board = arcade.Text(
             "The leaderboard is empty",
             self.cx,
             self.cy,
-            (220, 220, 200, 120),
+            (220, 220, 200, 120) if theme == "dark" else (10, 10, 10, 150),
             30,
             font_name="Renogare",
             anchor_x="center",
@@ -119,9 +123,10 @@ class Board(arcade.View):
             k = 0.6
             d = idx - self.scroller
             alpha = 255 * (2.5 ** (-k * abs(d)))
-            color = (255, 255, 255, int(alpha))
+            color = (255, 255, 255, int(alpha)) if self.theme == "dark" else (0, 0, 0, int(alpha))
+                
             if idx == self.scroller:
-                color = arcade.color.YELLOW
+                color = arcade.color.YELLOW if self.theme == "dark" else arcade.color.RED
 
             y = self.cy - gap * idx + self.scroller * 50
             name_text = arcade.Text(
