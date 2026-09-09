@@ -149,6 +149,7 @@ class Game(arcade.View):
         self.won_text.color = self.theme_colors["won_text"]
         self.engine.pacman.score_text.color = self.theme_colors["hud_text"]
         self.engine.pacman.lives_text.color = self.theme_colors["hud_text"]
+        self.engine.time_text.color = self.theme_colors["hud_text"]
         ghost_colors = self.theme_colors["ghosts"]
         for i, ghost in enumerate(self.engine.ghosts):
             ghost.color = ghost_colors[i % len(ghost_colors)]

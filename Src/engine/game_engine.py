@@ -42,7 +42,6 @@ class GameEngine:
         self.pause = 0
         self.progress = 0
         self.elapsed_time = 0
-        self.elapsed_time = 0
         self.sec = 0
         self.ghost_step_timer = 0.0
         self.pacman_step_timer = 0.0
@@ -194,11 +193,13 @@ class GameEngine:
             "Time left: " + str(90 - self.sec),
             20, 770, color, 24, font_name="Renogare"
         )
-
+    
     def reset_game(self):
         self.state = 0
         self.pause = 0
         self.elapsed_time = 0
+        self.sec = 0
+        self.time_text.text = "Time left: " + str(90 - self.sec)
 
         self.progress = 0
         self.ghost_step_timer = 0.0
@@ -314,11 +315,13 @@ class GameEngine:
 
         if not self.pause:
             self.elapsed_time += delta_time
-            if self.elapsed_time > 1:
-                self.elapsed_time = 0
+            if self.elapsed_time >= 1:
+                self.elapsed_time -= 1
                 self.sec += 1
                 self.time_text.text = "Time left: " + str(90 - self.sec)
-                if not 3 - self.sec:
+                if self.sec >= 3:
+                    self.pacman.final_score = self.pacman.score
+                    self.reset_game()
                     self.state = 1
                     self.pause = 1
                     return

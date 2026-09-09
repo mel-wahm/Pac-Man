@@ -84,12 +84,12 @@ class Board(arcade.View):
 
     def on_key_press(self, symbol, modifiers):
         if symbol == arcade.key.UP:
-            self.scroller = max(0, self.scroller - 1)
+            self.scroller = (self.scroller - 1) % len(self.board)
             self.texts = self.board_texts()
             self.scrolling_up = True
         if symbol == arcade.key.DOWN:
             self.scrolling_down = True
-            self.scroller = min(len(self.board) - 1, self.scroller + 1)
+            self.scroller = (self.scroller + 1) % len(self.board)
             self.texts = self.board_texts()
         if symbol == arcade.key.ESCAPE:
             self.window.show_view(self.previous_view)
@@ -104,10 +104,10 @@ class Board(arcade.View):
 
     def on_mouse_scroll(self, x, y, scroll_x, scroll_y):
         if scroll_y > 0:
-            self.scroller = max(0, self.scroller - 1)
+            self.scroller = (self.scroller - 1) % len(self.board)
             self.texts = self.board_texts()
         elif scroll_y < 0:
-            self.scroller = min(len(self.board) - 1, self.scroller + 1)
+            self.scroller = (self.scroller + 1) % len(self.board)
             self.texts = self.board_texts()
 
     def board_texts(self):
@@ -147,12 +147,13 @@ class Board(arcade.View):
 
     def on_update(self, delta_time):
         if self.scrolling_down and self.scrolling_timer > 0.2:
-            self.scroller = min(len(self.board) - 1, self.scroller + 1)
+            self.scroller = (self.scroller + 1) % len(self.board)
             self.texts = self.board_texts()
 
         if self.scrolling_up and self.scrolling_timer > 0.2:
-            self.scroller = max(0, self.scroller - 1)
+            self.scroller = (self.scroller - 1) % len(self.board)
             self.texts = self.board_texts()
+
         if self.scrolling_timer > 0.2:
             self.scrolling_timer = 0
         if self.scrolling_down or self.scrolling_up:
