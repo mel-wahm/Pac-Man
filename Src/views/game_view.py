@@ -129,6 +129,9 @@ class Game(arcade.View):
             anchor_x="center",
             font_name="Renogare",
         )
+        self.on_remove = False
+        self.on_remove_timer = 0
+        
 
     @property
     def progress(self):
@@ -183,6 +186,11 @@ class Game(arcade.View):
         self.engine.reset_game()
         self.won_text.font_size = 280
 
+    def on_key_release(self, symbol, modifiers):
+        if self.engine.state == 1:
+            if symbol == arcade.key.BACKSPACE:
+                self.on_remove = False
+                self.on_remove_timer = 0
     def on_key_press(self, symbol, modifiers):
         if self.engine.state == 1:
             if symbol == arcade.key.ENTER:
@@ -191,6 +199,7 @@ class Game(arcade.View):
                     self.back_to_menu()
             if symbol == arcade.key.BACKSPACE:
                 if self.text.name:
+                    self.on_remove = True
                     self.text.name = self.text.name[:-1]
                     self.text.update_text()
             return
@@ -212,6 +221,12 @@ class Game(arcade.View):
             self.engine.pause = not (self.engine.pause)
 
     def on_update(self, delta_time):
+        if self.on_remove:
+            self.on_remove_timer += delta_time
+            if self.on_remove_timer > 0.05:
+                self.on_remove_timer = 0
+                self.text.name = self.text.name[:-1]
+                self.text.update_text()
         self.engine.update(delta_time)
         self.pointer_text.x = self.text.text_name.right + 7
         if self.engine.state == 1:

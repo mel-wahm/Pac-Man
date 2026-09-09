@@ -319,7 +319,7 @@ class GameEngine:
                 self.elapsed_time -= 1
                 self.sec += 1
                 self.time_text.text = "Time left: " + str(90 - self.sec)
-                if self.sec >= 3:
+                if self.sec >= 90:
                     self.pacman.final_score = self.pacman.score
                     self.reset_game()
                     self.state = 1
