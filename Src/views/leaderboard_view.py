@@ -3,7 +3,7 @@ import json
 
 
 class Board(arcade.View):
-    def __init__(self, previous_view, theme):
+    def __init__(self, previous_view, theme="dark"):
         super().__init__()
         self.previous_view = previous_view
         arcade.load_font("fonts/Renogare-Regular.otf")
@@ -45,12 +45,14 @@ class Board(arcade.View):
             anchor_x="center",
             anchor_y="center",
         )
-        self.backgrounds = [arcade.load_texture("wallpaper/dark_wallpaper.png"),
-                            arcade.load_texture("wallpaper/light_wallpaper.png")]
-        self.background = self.backgrounds[0] if theme == "dark" else self.backgrounds[1]
+
+        self.background = arcade.load_texture("wallpaper/dark_wallpaper.png")\
+              if theme == "dark" else\
+                arcade.load_texture("wallpaper/light_wallpaper.png")
         self.pointer_text = arcade.Text(
-            ">", self.cx - 350, self.cy, arcade.color.YELLOW if theme == "dark" else arcade.color.RED
-            , 24, bold=True
+            ">", self.cx - 350, self.cy,
+            arcade.color.YELLOW if theme == "dark" else arcade.color.RED,
+            24, bold=True
         )
         self.empty_board = arcade.Text(
             "The leaderboard is empty",
@@ -87,16 +89,18 @@ class Board(arcade.View):
             json.dump(board, f, indent=4)
 
     def on_key_press(self, symbol, modifiers):
+        if symbol == arcade.key.ESCAPE:
+            self.window.show_view(self.previous_view)
+        if not self.board:
+            return
         if symbol == arcade.key.UP:
             self.scroller = (self.scroller - 1) % len(self.board)
             self.texts = self.board_texts()
             self.scrolling_up = True
         if symbol == arcade.key.DOWN:
-            self.scrolling_down = True
             self.scroller = (self.scroller + 1) % len(self.board)
             self.texts = self.board_texts()
-        if symbol == arcade.key.ESCAPE:
-            self.window.show_view(self.previous_view)
+            self.scrolling_down = True
 
     def on_key_release(self, symbol: int, modifiers: int) -> bool | None:
         if symbol == arcade.key.UP:
@@ -107,6 +111,8 @@ class Board(arcade.View):
             self.scrolling_down = False
 
     def on_mouse_scroll(self, x, y, scroll_x, scroll_y):
+        if not self.board:
+            return
         if scroll_y > 0:
             self.scroller = (self.scroller - 1) % len(self.board)
             self.texts = self.board_texts()
