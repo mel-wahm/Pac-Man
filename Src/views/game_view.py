@@ -132,6 +132,7 @@ class Game(arcade.View):
         )
         self.on_remove = False
         self.on_remove_timer = 0.0
+        self.on_remove_delay = 0.0
 
     @property
     def progress(self) -> float:
@@ -191,6 +192,7 @@ class Game(arcade.View):
             if symbol == arcade.key.BACKSPACE:
                 self.on_remove = False
                 self.on_remove_timer = 0
+                self.on_remove_delay = 0
 
     def on_key_press(self, symbol: int, modifiers: int) -> None:
         if self.engine.state == 1:
@@ -204,6 +206,7 @@ class Game(arcade.View):
                     self.text.name = self.text.name[:-1]
                     self.text.update_text()
             return
+
         if symbol == arcade.key.C and modifiers & arcade.key.MOD_CTRL:
             exit()
         if symbol == keys["UP"]:
@@ -224,7 +227,8 @@ class Game(arcade.View):
     def on_update(self, delta_time: float) -> None:
         if self.on_remove:
             self.on_remove_timer += delta_time
-            if self.on_remove_timer > 0.055:
+            self.on_remove_delay += delta_time
+            if self.on_remove_timer > 0.045 and self.on_remove_delay > 0.3:
                 self.on_remove_timer = 0
                 self.text.name = self.text.name[:-1]
                 self.text.update_text()
