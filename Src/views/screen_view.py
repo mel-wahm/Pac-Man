@@ -18,7 +18,7 @@ if MAZE_SIZE[0] > 40 or MAZE_SIZE[1] > 40:
 
 
 class Screen(arcade.View):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.wallpapers = {
             "dark": arcade.load_texture("wallpaper/dark_wallpaper.png"),
@@ -55,30 +55,30 @@ class Screen(arcade.View):
         maze = MazeGenerator(MAZE_SIZE).maze
         self.game_view = Game(maze, self)
 
-    def start_game(self):
+    def start_game(self) -> None:
         maze = MazeGenerator(MAZE_SIZE).maze
         self.game_view = Game(maze, self)
         self.window.show_view(self.game_view)
 
-    def show_leaderboard(self):
+    def show_leaderboard(self) -> None:
         board = Board(self, self.game_view.theme)
         self.window.show_view(board)
 
-    def show_credits(self):
+    def show_credits(self) -> None:
         self.window.show_view(Credits(self))
 
-    def enter_settings(self):
+    def enter_settings(self) -> None:
         settings_view = Settings(self, self.game_view)
         self.window.show_view(settings_view)
 
-    def exit_game(self):
+    def exit_game(self) -> None:
         self.window.close()
 
-    def on_update(self, delta_time):
+    def on_update(self, delta_time: float) -> None:
         if self.menu.scale < 1.3:
             self.menu.scale += delta_time * 3
 
-    def on_key_press(self, symbol, modifiers):
+    def on_key_press(self, symbol: int, modifiers: int) -> None:
         if symbol == arcade.key.DOWN:
             self.menu.move_down()
         if symbol == arcade.key.UP:
@@ -86,13 +86,17 @@ class Screen(arcade.View):
         if symbol == arcade.key.ENTER:
             self.menu.action()
 
-    def on_mouse_motion(self, x, y, dx, dy):
+    def on_mouse_motion(
+        self, x: float, y: float, dx: float, dy: float
+    ) -> None:
         self.menu.mouse_motion(x, y)
 
-    def on_mouse_press(self, x, y, button, modifiers):
+    def on_mouse_press(
+        self, x: float, y: float, button: int, modifiers: int
+    ) -> None:
         self.menu.mouse_press(x, y)
 
-    def on_draw(self):
+    def on_draw(self) -> None:
         self.clear()
         screen_rect = arcade.rect.XYWH(
             self.width / 2, self.height / 2, self.width, self.height

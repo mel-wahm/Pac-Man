@@ -3,6 +3,8 @@ from random import sample
 
 import arcade
 
+from typing import Any
+
 from ..config import THEMES
 from ..core import Directions
 from ..objects import Ghost, Pacman
@@ -10,8 +12,12 @@ from ..objects import Ghost, Pacman
 
 class GameEngine:
     def __init__(
-        self, maze: list, center_func, cell_size: float, theme: str = "dark"
-    ):
+        self,
+        maze: list[list[int]],
+        center_func: Any,
+        cell_size: float,
+        theme: str = "dark",
+    ) -> None:
         self.center = center_func
         self.cell_size = cell_size
         self.theme = theme if theme in THEMES else "dark"
@@ -40,8 +46,8 @@ class GameEngine:
         self.max_dots = 15
         self.state = 0
         self.pause = 0
-        self.progress = 0
-        self.elapsed_time = 0
+        self.progress = 0.0
+        self.elapsed_time = 0.0
         self.sec = 0
         self.ghost_step_timer = 0.0
         self.pacman_step_timer = 0.0
@@ -115,10 +121,10 @@ class GameEngine:
                 (mid_x + 6, mid_y + 4),
             }
 
-        self.wall_lines = []
-        self.dots = arcade.SpriteList()
-        self.dots_grid = {}
-        self.valid_dot_coords = []
+        self.wall_lines: list[tuple[float, float]] = []
+        self.dots: arcade.SpriteList = arcade.SpriteList()
+        self.dots_grid: dict[tuple[Any, Any], arcade.Sprite] = {}
+        self.valid_dot_coords: list[tuple[int, int]] = []
 
         for r in range(self.rows):
             for c in range(self.cols):
@@ -193,15 +199,15 @@ class GameEngine:
             "Time left: " + str(90 - self.sec),
             20, 770, color, 24, font_name="Renogare"
         )
-    
-    def reset_game(self):
+
+    def reset_game(self) -> None:
         self.state = 0
         self.pause = 0
-        self.elapsed_time = 0
+        self.elapsed_time = 0.0
         self.sec = 0
         self.time_text.text = "Time left: " + str(90 - self.sec)
 
-        self.progress = 0
+        self.progress = 0.0
         self.ghost_step_timer = 0.0
         self.pacman_step_timer = 0.0
         self.win_timer = 0.0
@@ -240,7 +246,7 @@ class GameEngine:
             self.dots.append(super_gum)
             self.dots_grid[(c, r)] = super_gum
 
-    def update(self, delta_time):
+    def update(self, delta_time: float) -> None:
         ghost_step_interval = 0.4
         pacman_step_interval = 0.2
 

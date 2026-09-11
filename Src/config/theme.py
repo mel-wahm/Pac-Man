@@ -1,4 +1,6 @@
-THEMES = {
+from typing import Any
+
+THEMES: dict[str, dict[str, Any]] = {
     "dark": {
         "background": (18, 18, 28),
         "wall": (50, 85, 255),

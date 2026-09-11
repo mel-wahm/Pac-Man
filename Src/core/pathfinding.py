@@ -1,8 +1,10 @@
 from collections import deque
 
 
-def neighbor_coordinates(x, y, maze):
-    neighbors = []
+def neighbor_coordinates(
+    x: int, y: int, maze: list[list[int]]
+) -> list[tuple[int, int]]:
+    neighbors: list[tuple[int, int]] = []
     c = len(maze[0]) - 1
     r = len(maze) - 1
     if x and not maze[y][x] & 8:
@@ -16,15 +18,17 @@ def neighbor_coordinates(x, y, maze):
     return neighbors
 
 
-def shortest_path(start, end, maze):
+def shortest_path(
+    start: tuple[int, int], end: tuple[int, int], maze: list[list[int]]
+) -> dict[tuple[int, int], tuple[int, int]]:
     if start == end:
         return {}
     px, py = start
     ex, ey = end
-    final_path = {}
-    queue = deque()
+    final_path: dict[tuple[int, int], tuple[int, int]] = {}
+    queue: deque[tuple[int, int]] = deque()
     queue.append((px, py))
-    visited = set()
+    visited: set[tuple[int, int]] = set()
     visited.add((px, py))
     while queue:
         cx, cy = queue.popleft()
@@ -36,13 +40,18 @@ def shortest_path(start, end, maze):
             final_path[(nx, ny)] = (cx, cy)
             if (nx, ny) == (ex, ey):
                 return final_path
+    return {}
 
 
-def construct_path(end, start, final):
+def construct_path(
+    end: tuple[int, int],
+    start: tuple[int, int],
+    final: dict[tuple[int, int], tuple[int, int]],
+) -> list[tuple[int, int]]:
     ex, ey = end
     if not final:
         return [start]
-    final_path = []
+    final_path: list[tuple[int, int]] = []
     final_path.append(end)
     while (ex, ey) != start:
         ex, ey = final[(ex, ey)]

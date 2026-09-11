@@ -1,3 +1,4 @@
+from typing import Any
 import arcade
 import pyglet
 
@@ -7,7 +8,7 @@ import json
 
 
 class Control(arcade.View):
-    def __init__(self, previous_view):
+    def __init__(self, previous_view: Any) -> None:
         super().__init__()
         self.previous_view = previous_view
         self.wallpapers = {
@@ -74,13 +75,13 @@ class Control(arcade.View):
         self.current_action = ""
         self.error_timer = 0.0
 
-    def on_update(self, delta_time):
+    def on_update(self, delta_time: float) -> None:
         if self.error_timer > 0:
             self.error_timer -= delta_time
         if self.menu.scale < 1.3:
             self.menu.scale += delta_time * 3
 
-    def update_json(self, json_file, key, value):
+    def update_json(self, json_file: str, key: str, value: str) -> None:
         with open(json_file) as f:
             js = f.read()
         js = json.loads(js)
@@ -88,7 +89,7 @@ class Control(arcade.View):
         with open(json_file, "w") as f:
             f.write(json.dumps(js, indent=4))
 
-    def on_key_press(self, symbol, modifiers):
+    def on_key_press(self, symbol: int, modifiers: int) -> None:
         if self.is_listening:
             if symbol == arcade.key.ESCAPE:
                 self.is_listening = False
@@ -128,18 +129,22 @@ class Control(arcade.View):
             if not self.is_listening:
                 self.menu.action()
 
-    def start_listening(self, action_key):
+    def start_listening(self, action_key: str) -> None:
         self.selected_action_text.text = action_key
         self.current_action = action_key
         self.is_listening = not self.is_listening
 
-    def on_mouse_motion(self, x, y, dx, dy):
+    def on_mouse_motion(
+        self, x: float, y: float, dx: float, dy: float
+    ) -> None:
         self.menu.mouse_motion(x, y)
 
-    def on_mouse_press(self, x, y, button, modifiers):
+    def on_mouse_press(
+        self, x: float, y: float, button: int, modifiers: int
+    ) -> None:
         self.menu.mouse_press(x, y)
 
-    def on_draw(self):
+    def on_draw(self) -> None:
         self.clear()
         screen_rect = arcade.rect.XYWH(
             self.width / 2, self.height / 2, self.width, self.height

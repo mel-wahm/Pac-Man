@@ -1,3 +1,4 @@
+from typing import Any
 import arcade
 
 from mazegenerator import MazeGenerator
@@ -7,7 +8,7 @@ from ..ui import Menu, Selection
 
 
 class InGameSettings(arcade.View):
-    def __init__(self, game_view, screen_view):
+    def __init__(self, game_view: Any, screen_view: Any) -> None:
         super().__init__()
         arcade.load_font("fonts/Renogare-Regular.otf")
 
@@ -32,30 +33,30 @@ class InGameSettings(arcade.View):
             self.height / 2,
         )
 
-    def resume_game(self):
+    def resume_game(self) -> None:
         self.window.show_view(self.game_view)
 
-    def retry_game(self):
+    def retry_game(self) -> None:
         maze = MazeGenerator(MAZE_SIZE).maze
         from .game_view import Game
 
         game_view = Game(maze, self.screen_view)
         self.window.show_view(game_view)
 
-    def open_options(self):
+    def open_options(self) -> None:
         from .settings_view import Settings
 
         set_view = Settings(self, self.game_view)
         self.window.show_view(set_view)
 
-    def return_to_main_menu(self):
+    def return_to_main_menu(self) -> None:
         self.window.show_view(self.screen_view)
 
-    def on_update(self, delta_time):
+    def on_update(self, delta_time: float) -> None:
         if self.menu.scale < 1.3:
             self.menu.scale += delta_time * 3
 
-    def on_key_press(self, symbol, modifiers):
+    def on_key_press(self, symbol: int, modifiers: int) -> None:
         if symbol == arcade.key.UP:
             self.menu.move_up()
         if symbol == arcade.key.DOWN:
@@ -65,13 +66,17 @@ class InGameSettings(arcade.View):
         if symbol == arcade.key.ENTER:
             self.menu.action()
 
-    def on_mouse_motion(self, x, y, dx, dy):
+    def on_mouse_motion(
+        self, x: float, y: float, dx: float, dy: float
+    ) -> None:
         self.menu.mouse_motion(x, y)
 
-    def on_mouse_press(self, x, y, button, modifiers):
+    def on_mouse_press(
+        self, x: float, y: float, button: int, modifiers: int
+    ) -> None:
         self.menu.mouse_press(x, y)
 
-    def on_draw(self):
+    def on_draw(self) -> None:
         self.clear()
         self.game_view.on_draw()
         dim_rect = arcade.rect.XYWH(

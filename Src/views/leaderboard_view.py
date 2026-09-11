@@ -1,9 +1,12 @@
+from typing import Any
 import arcade
 import json
 
 
 class Board(arcade.View):
-    def __init__(self, previous_view, theme="dark"):
+    def __init__(
+        self, previous_view: arcade.View, theme: str = "dark"
+    ) -> None:
         super().__init__()
         self.previous_view = previous_view
         arcade.load_font("fonts/Renogare-Regular.otf")
@@ -46,9 +49,14 @@ class Board(arcade.View):
             anchor_y="center",
         )
 
-        self.background = arcade.load_texture("wallpaper/dark_wallpaper.png")\
-              if theme == "dark" else\
-                arcade.load_texture("wallpaper/light_wallpaper.png")
+        if theme == "dark":
+            self.background = arcade.load_texture(
+                "wallpaper/dark_wallpaper.png"
+            )
+        else:
+            self.background = arcade.load_texture(
+                "wallpaper/light_wallpaper.png"
+            )
         self.pointer_text = arcade.Text(
             ">", self.cx - 350, self.cy,
             arcade.color.YELLOW if theme == "dark" else arcade.color.RED,
@@ -65,9 +73,9 @@ class Board(arcade.View):
         )
         self.scrolling_up = False
         self.scrolling_down = False
-        self.scrolling_timer = 0
+        self.scrolling_timer = 0.0
 
-    def load_json(self):
+    def load_json(self) -> list[dict[str, Any]]:
         with open(self.path) as f:
             if not f.read().strip():
                 return []
@@ -76,7 +84,7 @@ class Board(arcade.View):
         return sorted(board, key=lambda x: x["score"], reverse=True)
 
     @staticmethod
-    def update_json(path, name, score):
+    def update_json(path: str, name: str, score: int) -> None:
         new_score = {"name": name, "score": score}
         with open(path) as f:
             if not f.read().strip():
@@ -88,7 +96,7 @@ class Board(arcade.View):
         with open(path, "w") as f:
             json.dump(board, f, indent=4)
 
-    def on_key_press(self, symbol, modifiers):
+    def on_key_press(self, symbol: int, modifiers: int) -> None:
         if symbol == arcade.key.ESCAPE:
             self.window.show_view(self.previous_view)
         if not self.board:
@@ -104,13 +112,16 @@ class Board(arcade.View):
 
     def on_key_release(self, symbol: int, modifiers: int) -> bool | None:
         if symbol == arcade.key.UP:
-            self.scrolling_timer = 0
+            self.scrolling_timer = 0.0
             self.scrolling_up = False
         if symbol == arcade.key.DOWN:
-            self.scrolling_timer = 0
+            self.scrolling_timer = 0.0
             self.scrolling_down = False
+        return None
 
-    def on_mouse_scroll(self, x, y, scroll_x, scroll_y):
+    def on_mouse_scroll(
+        self, x: float, y: float, scroll_x: float, scroll_y: float
+    ) -> None:
         if not self.board:
             return
         if scroll_y > 0:
@@ -120,7 +131,7 @@ class Board(arcade.View):
             self.scroller = (self.scroller + 1) % len(self.board)
             self.texts = self.board_texts()
 
-    def board_texts(self):
+    def board_texts(self) -> list[tuple[arcade.Text, arcade.Text]]:
         board = []
         gap = 50
         for idx, object in enumerate(self.board):
@@ -129,10 +140,17 @@ class Board(arcade.View):
             k = 0.6
             d = idx - self.scroller
             alpha = 255 * (2.5 ** (-k * abs(d)))
-            color = (255, 255, 255, int(alpha)) if self.theme == "dark" else (0, 0, 0, int(alpha))
-                
+            if self.theme == "dark":
+                color = (255, 255, 255, int(alpha))
+            else:
+                color = (0, 0, 0, int(alpha))
+
             if idx == self.scroller:
-                color = arcade.color.YELLOW if self.theme == "dark" else arcade.color.RED
+                color = (
+                    arcade.color.YELLOW
+                    if self.theme == "dark"
+                    else arcade.color.RED
+                )
 
             y = self.cy - gap * idx + self.scroller * 50
             name_text = arcade.Text(
@@ -156,7 +174,7 @@ class Board(arcade.View):
             board.append((name_text, score_text))
         return board
 
-    def on_update(self, delta_time):
+    def on_update(self, delta_time: float) -> None:
         if self.scrolling_down and self.scrolling_timer > 0.2:
             self.scroller = (self.scroller + 1) % len(self.board)
             self.texts = self.board_texts()
@@ -166,11 +184,11 @@ class Board(arcade.View):
             self.texts = self.board_texts()
 
         if self.scrolling_timer > 0.2:
-            self.scrolling_timer = 0
+            self.scrolling_timer = 0.0
         if self.scrolling_down or self.scrolling_up:
             self.scrolling_timer += delta_time
 
-    def on_draw(self):
+    def on_draw(self) -> None:
         self.clear()
         r = arcade.rect.XYWH(self.cx, self.cy, self.width, self.height)
         arcade.draw_texture_rect(self.background, r)

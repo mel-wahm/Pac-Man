@@ -2,7 +2,7 @@ import arcade
 
 
 class Credits(arcade.View):
-    def __init__(self, prev_view):
+    def __init__(self, prev_view: arcade.View) -> None:
         super().__init__()
         self.prev_view = prev_view
         arcade.load_font("fonts/Renogare-Regular.otf")
@@ -34,11 +34,11 @@ class Credits(arcade.View):
             font_name="Renogare",
         )
 
-    def on_key_press(self, symbol, modifiers):
+    def on_key_press(self, symbol: int, modifiers: int) -> None:
         if symbol == arcade.key.ESCAPE:
             self.window.show_view(self.prev_view)
 
-    def on_draw(self):
+    def on_draw(self) -> None:
         self.clear()
         r = arcade.rect.XYWH(
             self.width / 2, self.height / 2, self.width, self.height

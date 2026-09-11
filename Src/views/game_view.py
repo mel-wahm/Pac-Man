@@ -1,3 +1,4 @@
+from typing import Any
 import arcade
 import json
 
@@ -9,7 +10,7 @@ from .leaderboard_view import Board
 
 
 class Text:
-    def __init__(self, cx, cy):
+    def __init__(self, cx: float, cy: float) -> None:
         self.cx = cx
         self.cy = cy
         self.name = ""
@@ -25,7 +26,7 @@ class Text:
         )
         self.path = "Src/config/leaderboard.json"
 
-    def update_text(self):
+    def update_text(self) -> None:
         white = arcade.color.WHITE
         self.text_name = arcade.Text(
             self.name,
@@ -37,12 +38,12 @@ class Text:
             font_name="Renogare",
         )
 
-    def on_text(self, key):
+    def on_text(self, key: str) -> None:
         if key.isalnum() and len(self.name) < 10:
             self.name += key
             self.update_text()
 
-    def on_finish(self, score):
+    def on_finish(self, score: int) -> int:
         if self.name.strip():
             Board.update_json(self.path, self.name, score)
             return 1
@@ -50,14 +51,14 @@ class Text:
 
 
 class Game(arcade.View):
-    def __init__(self, maze: list, screen_view):
+    def __init__(self, maze: list[list[int]], screen_view: Any) -> None:
         super().__init__()
         self.audio_engine = AudioEngine()
         with open("Src/config/audio_and_theme.json") as f:
             ant_dict = json.load(f)
         self.volume = ant_dict["volume"] / 10
         self.theme = ant_dict["theme"]
-        self.music_player = None
+        self.music_player: Any = None
         self.screen_view = screen_view
         self.theme = self.theme if self.theme in THEMES else "dark"
         self.theme_colors = THEMES.get(self.theme, THEMES["dark"])
@@ -87,11 +88,11 @@ class Game(arcade.View):
             anchor_x="center",
             font_name="Renogare",
         )
-        self.sec = 0
+        self.sec = 0.0
 
         # Initialize Game Engine
         self.engine = GameEngine(
-            maze, self.center, self.cell_size, theme=self.theme
+            maze, self.cell_center, self.cell_size, theme=self.theme
         )
 
         # UI & Fonts
@@ -130,21 +131,20 @@ class Game(arcade.View):
             font_name="Renogare",
         )
         self.on_remove = False
-        self.on_remove_timer = 0
-        
+        self.on_remove_timer = 0.0
 
     @property
-    def progress(self):
+    def progress(self) -> float:
         return self.engine.progress
 
-    def back_to_menu(self):
+    def back_to_menu(self) -> None:
         self.window.show_view(self.screen_view)
 
-    def on_text(self, text):
+    def on_text(self, text: str) -> None:
         if self.on_name:
             self.text.on_text(text)
 
-    def toggle_theme(self, new_theme):
+    def toggle_theme(self, new_theme: str) -> None:
         self.theme = new_theme if new_theme in THEMES else "dark"
         self.theme_colors = THEMES.get(self.theme, THEMES["dark"])
         self.background_color = self.theme_colors["background"]
@@ -160,7 +160,7 @@ class Game(arcade.View):
             if isinstance(dot, arcade.SpriteCircle):
                 dot.color = self.theme_colors["dot"]
 
-    def on_show_view(self):
+    def on_show_view(self) -> None:
         if self.music_player is None:
             self.music_player = self.audio_engine.music.play(
                 self.volume, loop=True
@@ -168,11 +168,11 @@ class Game(arcade.View):
         elif not self.music_player.playing:
             self.music_player.play()
 
-    def on_hide_view(self):
+    def on_hide_view(self) -> None:
         if self.music_player and self.music_player.playing:
             self.music_player.pause()
 
-    def center(self, grid_x, grid_y):
+    def cell_center(self, grid_x: float, grid_y: float) -> tuple[float, float]:
         sidebar_width = 170
         padding = 20
         cx = sidebar_width + (self.width - sidebar_width - padding) / 2
@@ -182,16 +182,17 @@ class Game(arcade.View):
         screen_y = cy - (grid_y - self.half_height) * self.cell_size
         return (screen_x, screen_y)
 
-    def reset_game(self):
+    def reset_game(self) -> None:
         self.engine.reset_game()
         self.won_text.font_size = 280
 
-    def on_key_release(self, symbol, modifiers):
+    def on_key_release(self, symbol: int, modifiers: int) -> None:
         if self.engine.state == 1:
             if symbol == arcade.key.BACKSPACE:
                 self.on_remove = False
                 self.on_remove_timer = 0
-    def on_key_press(self, symbol, modifiers):
+
+    def on_key_press(self, symbol: int, modifiers: int) -> None:
         if self.engine.state == 1:
             if symbol == arcade.key.ENTER:
                 if self.text.on_finish(self.engine.pacman.final_score):
@@ -220,10 +221,10 @@ class Game(arcade.View):
             self.engine.state = 2
             self.engine.pause = not (self.engine.pause)
 
-    def on_update(self, delta_time):
+    def on_update(self, delta_time: float) -> None:
         if self.on_remove:
             self.on_remove_timer += delta_time
-            if self.on_remove_timer > 0.05:
+            if self.on_remove_timer > 0.055:
                 self.on_remove_timer = 0
                 self.text.name = self.text.name[:-1]
                 self.text.update_text()
@@ -231,14 +232,14 @@ class Game(arcade.View):
         self.pointer_text.x = self.text.text_name.right + 7
         if self.engine.state == 1:
             if self.sec > 1.5:
-                self.sec = 0
+                self.sec = 0.0
             self.sec += delta_time
         if self.engine.state == 3:
             t = self.engine.win_timer
             ease_out = t * (2 - t)
             self.won_text.font_size = int(280 - (280 - 60) * ease_out)
 
-    def on_draw(self):
+    def on_draw(self) -> None:
         self.clear()
 
         # Draw Walls (Outer Outline + Inner Core)
@@ -266,7 +267,7 @@ class Game(arcade.View):
             "center_block_outline", self.theme_colors["wall_outline"]
         )
         for c, r in self.engine.forty_two_coords:
-            real_x, real_y = self.center(c, r)
+            real_x, real_y = self.cell_center(c, r)
             sqr_outer = arcade.rect.XYWH(
                 real_x,
                 real_y,
@@ -314,8 +315,8 @@ class Game(arcade.View):
             arcade.draw_rect_filled(shade, self.theme_colors["dim_overlay"])
             if self.engine.state == 1:
                 self.on_name = True
-                r = arcade.rect.XYWH(cx, cy, self.width, self.height)
-                arcade.draw_rect_filled(r, (10, 10, 10, 200))
+                name_rect = arcade.rect.XYWH(cx, cy, self.width, self.height)
+                arcade.draw_rect_filled(name_rect, (10, 10, 10, 200))
                 self.enter_text.draw()
                 self.text.text_name.draw()
                 if self.sec < 0.75:

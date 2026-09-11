@@ -1,4 +1,5 @@
 from math import sin
+from typing import Any
 
 import arcade
 
@@ -6,7 +7,7 @@ from ..core import DIR_DATA, Directions
 
 
 class Pacman:
-    def __init__(self, maze):
+    def __init__(self, maze: list[list[int]]) -> None:
         self.init_x = (len(maze[0]) - 1) // 2
         self.x = self.init_x
         self.init_y = (len(maze) - 1) // 2
@@ -43,7 +44,7 @@ class Pacman:
             font_size=24,
         )
 
-    def reset_game(self):
+    def reset_game(self) -> None:
         self.death_count = 0
         self.score = 0
         self.score_text.text = "SCORE: 0"
@@ -57,17 +58,17 @@ class Pacman:
         self.next_direction = Directions.DOWN
         self.path = {(self.init_x, self.init_y)}
 
-    def can_turn(self, x, y, direction):
+    def can_turn(self, x: int, y: int, direction: Directions) -> bool:
         mask, _, _, _ = DIR_DATA[direction]
         return not (self.maze[y][x] & mask)
 
-    def set_next_direction(self, new_dir):
+    def set_next_direction(self, new_dir: Directions) -> None:
         self.next_direction = new_dir
         if self.can_turn(self.x, self.y, new_dir):
             self.direction = new_dir
             self.angle = DIR_DATA[new_dir][3]
 
-    def update(self):
+    def update(self) -> None:
         self.is_teleporting = False
         self.prev_x = self.smooth_x
         self.prev_y = self.smooth_y
@@ -106,14 +107,16 @@ class Pacman:
                 self.y = 0
                 self.smooth_y = 0.0
 
-    def smooth_animation(self, delta_time, duration=0.15):
+    def smooth_animation(
+        self, delta_time: float, duration: float = 0.15
+    ) -> None:
         self.step_time += delta_time
         progress = min(1.0, self.step_time / duration)
         self.smooth_x = self.prev_x + (self.x - self.prev_x) * progress
         self.smooth_y = self.prev_y + (self.y - self.prev_y) * progress
 
-    def draw(self, game_view):
-        cx, cy = game_view.center(self.smooth_x, self.smooth_y)
+    def draw(self, game_view: Any) -> None:
+        cx, cy = game_view.cell_center(self.smooth_x, self.smooth_y)
         radius = 15 * 0.025 * game_view.cell_size
         color = game_view.theme_colors.get("pacman", arcade.color.YELLOW)
         arcade.draw_arc_filled(

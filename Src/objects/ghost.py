@@ -3,6 +3,8 @@ import random
 
 import arcade
 
+from typing import Any
+
 from ..core import (
     DIR_DATA,
     Directions,
@@ -13,8 +15,14 @@ from ..core import (
 
 class Ghost:
     def __init__(
-        self, grid_pos, draw_coords, maze, color, cell_size, theme_colors
-    ):
+        self,
+        grid_pos: tuple[int, int],
+        draw_coords: tuple[float, float],
+        maze: list[list[int]],
+        color: Any,
+        cell_size: float,
+        theme_colors: dict[str, Any],
+    ) -> None:
         self.grid_pos = grid_pos
         self.spawn_pos = grid_pos
         self.smooth_x = float(grid_pos[0])
@@ -23,19 +31,19 @@ class Ghost:
         self.prev_y = float(grid_pos[1])
         self.step_time = 0.0
         self.is_teleporting = False
-        self.ghost_freeze = 1
+        self.ghost_freeze = 1.0
         self.draw_coords = draw_coords
         self.maze = maze
         self.color = color
         self.cell_size = cell_size
-        self.path = []
+        self.path: list[tuple[int, int]] = []
         self.direction = Directions.LEFT
         self.next_direction = Directions.RIGHT
         self.edible_timer = 0.0
         self.flash_timer = 0.0
         self.flash_index = 0
         self.flash_speed = 0.3
-        self.eaten_timer = 0
+        self.eaten_timer: float = 0.0
         self.choices = [
             Directions.LEFT,
             Directions.RIGHT,
@@ -52,9 +60,9 @@ class Ghost:
         self.anim_time = 0.0
         self.eye_time = 0.0
 
-    def reset_game(self):
-        self.ghost_freeze = 2
-        self.eaten_timer = 0
+    def reset_game(self) -> None:
+        self.ghost_freeze = 2.0
+        self.eaten_timer = 0.0
         self.grid_pos = self.spawn_pos
         self.smooth_x = float(self.spawn_pos[0])
         self.smooth_y = float(self.spawn_pos[1])
@@ -68,7 +76,7 @@ class Ghost:
         self.flash_timer = 0.0
         self.flash_index = 0
 
-    def choose_target(self, pacman):
+    def choose_target(self, pacman: Any) -> None:
         self.is_teleporting = False
         self.prev_x = float(self.grid_pos[0])
         self.prev_y = float(self.grid_pos[1])
@@ -149,7 +157,9 @@ class Ghost:
 
         self.grid_pos = (gx, gy)
 
-    def smooth_animation(self, delta_time, duration=0.20):
+    def smooth_animation(
+        self, delta_time: float, duration: float = 0.20
+    ) -> None:
         if not self.is_teleporting:
             self.step_time += delta_time
             progress = min(1.0, self.step_time / duration)
@@ -160,7 +170,7 @@ class Ghost:
                 self.prev_y + (self.grid_pos[1] - self.prev_y) * progress
             )
 
-    def update(self, delta_time):
+    def update(self, delta_time: float) -> None:
         self.anim_time += delta_time
         self.eye_time += delta_time * 8.0
         self.edible_timer = max(0.0, self.edible_timer - delta_time)
@@ -174,7 +184,7 @@ class Ghost:
             self.flash_timer = 0.0
             self.flash_index += 1
 
-    def draw(self, theme):
+    def draw(self, theme: dict[str, Any]) -> None:
         white = arcade.color.WHITE
         tc = theme
         normal_pupil = tc.get("ghost_pupil", (33, 33, 255))

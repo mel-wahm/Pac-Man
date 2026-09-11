@@ -1,3 +1,4 @@
+from typing import Any
 import arcade
 
 from ..ui import Menu, Selection, AudioControl, ThemeToggle
@@ -5,7 +6,7 @@ from .key_bindings_view import Control
 
 
 class Settings(arcade.View):
-    def __init__(self, previous_view, game_view):
+    def __init__(self, previous_view: Any, game_view: Any) -> None:
         super().__init__()
         self.theme = 0 if game_view.theme == "dark" else 1
         self.wallpapers = [
@@ -49,24 +50,24 @@ class Settings(arcade.View):
             cy,
         )
 
-    def open_audio(self):
+    def open_audio(self) -> None:
         self.on_audio = True
 
-    def open_theme(self):
+    def open_theme(self) -> None:
         self.on_theme = True
 
-    def return_to_previous(self):
+    def return_to_previous(self) -> None:
         self.window.show_view(self.previous_view)
 
-    def open_controls(self):
+    def open_controls(self) -> None:
         control_view = Control(self)
         self.window.show_view(control_view)
 
-    def on_update(self, delta_time):
+    def on_update(self, delta_time: float) -> None:
         if self.menu.scale < 1.3:
             self.menu.scale += delta_time * 3
 
-    def on_key_press(self, symbol, modifiers):
+    def on_key_press(self, symbol: int, modifiers: int) -> None:
         if self.on_audio:
             if symbol == arcade.key.ESCAPE:
                 self.on_audio = False
@@ -106,20 +107,24 @@ class Settings(arcade.View):
         if symbol == arcade.key.ESCAPE:
             self.window.show_view(self.previous_view)
 
-    def on_mouse_motion(self, x, y, dx, dy):
+    def on_mouse_motion(
+        self, x: float, y: float, dx: float, dy: float
+    ) -> None:
         if not self.on_audio and not self.on_theme:
             self.menu.mouse_motion(x, y)
 
-    def on_mouse_press(self, x, y, button, modifiers):
+    def on_mouse_press(
+        self, x: float, y: float, button: int, modifiers: int
+    ) -> None:
         if not self.on_audio and not self.on_theme:
             self.menu.mouse_press(x, y)
 
-    def _apply_volume(self):
+    def _apply_volume(self) -> None:
         vol = self.audio_control.volume / 10
         if self.game_view.music_player:
             self.game_view.music_player.volume = vol
 
-    def on_draw(self):
+    def on_draw(self) -> None:
         self.clear()
         screen_rect = arcade.rect.XYWH(
             self.width / 2,
