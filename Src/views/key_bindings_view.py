@@ -95,8 +95,14 @@ class Control(arcade.View):
                 self.is_listening = False
                 return
             if 97 <= symbol <= 122 or 65361 <= symbol <= 65364:
+                used_keys = set(keys.values()) | {
+                    arcade.key.W,
+                    arcade.key.A,
+                    arcade.key.S,
+                    arcade.key.D,
+                }
                 if (
-                    symbol in keys.values()
+                    symbol in used_keys
                     and symbol != keys[self.current_action]
                 ):
                     self.error_timer = 1.0

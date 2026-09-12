@@ -203,6 +203,7 @@ class Game(arcade.View):
         saved_deaths = self.engine.pacman.death_count
 
         self.current_level_index += 1
+        self.level_text.text = f"LEVEL: {self.current_level_index + 1}"
         new_maze = self.mazes[self.current_level_index]
         self.update_dimensions(new_maze)
 
@@ -306,7 +307,6 @@ class Game(arcade.View):
         if symbol == arcade.key.C and modifiers & arcade.key.MOD_CTRL:
             exit()
         if symbol == arcade.key.S and modifiers & arcade.key.MOD_CTRL:
-            self.level_text.text = f"LEVEL: {self.current_level_index + 2}"
             self.next_level()
         if symbol in (keys.get("UP", arcade.key.UP), arcade.key.W):
             self.engine.pacman.set_next_direction(Directions.UP)
@@ -332,7 +332,6 @@ class Game(arcade.View):
                 self.text.update_text()
         self.engine.update(delta_time)
         if self.engine.level_cleared:
-            self.level_text.text = f"LEVEL: {self.current_level_index + 2}"
             self.engine.level_cleared = False
             self.next_level()
         self.pointer_text.x = self.text.text_name.right + 7
