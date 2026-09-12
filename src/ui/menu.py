@@ -5,12 +5,16 @@ import arcade
 
 
 class Selection:
+    """Represents a selectable menu item and its trigger callback."""
+
     def __init__(self, name: str, action: Callable[[], Any]) -> None:
         self.name = name
         self.action = action
 
 
 class Menu:
+    """Interactive navigation menu with keyboard and mouse support."""
+
     def __init__(
         self,
         items: list[Selection],
@@ -86,6 +90,8 @@ class Menu:
 
 
 class AudioControl:
+    """UI component for displaying and adjusting game volume settings."""
+
     def __init__(
         self, x: float, y: float, text_color: Any = arcade.color.WHITE
     ) -> None:
@@ -130,6 +136,8 @@ class AudioControl:
 
 
 class ThemeToggle:
+    """UI component for toggling between visual themes."""
+
     def __init__(
         self, x: float, y: float, current_theme: str = "dark"
     ) -> None:

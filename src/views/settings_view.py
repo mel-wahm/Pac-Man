@@ -7,6 +7,8 @@ from .key_bindings_view import Control
 
 
 class Settings(arcade.View):
+    """View providing audio, theme, control, and cheat settings menus."""
+
     def __init__(self, previous_view: Any, game_view: Any) -> None:
         super().__init__()
         self.theme = 0 if game_view.theme == "dark" else 1

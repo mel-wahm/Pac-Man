@@ -9,6 +9,8 @@ from .settings_view import Settings
 
 
 class Screen(arcade.View):
+    """Main start menu view providing game navigation and sub-menus."""
+
     def __init__(self, config: Dict[str, Any]) -> None:
         super().__init__()
         self.config = config

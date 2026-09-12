@@ -10,6 +10,8 @@ from ..objects import Ghost, Pacman
 
 
 class GameEngine:
+    """Core game state manager handling entities, collisions, and rules."""
+
     def __init__(
         self,
         maze: list[list[int]],
@@ -18,6 +20,15 @@ class GameEngine:
         theme: str = "dark",
         game_config: Optional[Dict[str, Any]] = None,
     ) -> None:
+        """Initialize game state, actors, dots, and configuration.
+
+        Args:
+            maze: 2D matrix describing level walls and paths.
+            center_func: Coordinate conversion function (grid to pixels).
+            cell_size: Pixel dimensions of each grid cell.
+            theme: Active color theme name.
+            game_config: Optional dictionary containing gameplay settings.
+        """
         self.config: Dict[str, Any] = game_config or {}
         self.center = center_func
         self.cell_size = cell_size
@@ -208,6 +219,7 @@ class GameEngine:
         )
 
     def reset_game(self) -> None:
+        """Reset score, timers, actors, and regenerate collectible dots."""
         self.state = 0
         self.pause = 0
         self.elapsed_time = 0.0
@@ -256,6 +268,11 @@ class GameEngine:
             self.dots_grid[(c, r)] = super_gum
 
     def update(self, delta_time: float) -> None:
+        """Advance game physics, handle collisions, and update timer states.
+
+        Args:
+            delta_time: Elapsed frame time in seconds.
+        """
         ghost_step_interval = self.config.get("ghost_step_interval", 0.4)
         pacman_step_interval = self.config.get("pacman_step_interval", 0.2)
 

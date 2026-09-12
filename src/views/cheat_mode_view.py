@@ -5,6 +5,8 @@ from ..config import parser
 
 
 class CheatMode(arcade.View):
+    """View allowing toggling of invincibility and ghost freeze cheats."""
+
     def __init__(self, game_engine: Any, previous_view: arcade.View) -> None:
         super().__init__()
         self.game_engine = game_engine

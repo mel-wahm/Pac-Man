@@ -9,6 +9,14 @@ ghost_freeze = False
 
 
 def load_keys() -> Dict[str, int]:
+    """Load key binding configurations from JSON file.
+
+    Returns:
+        Dictionary mapping directional action names to arcade key codes.
+
+    Raises:
+        ValueError: If key mappings are missing or invalid.
+    """
     try:
         key_path = "src/config/keys.json"
         with open(key_path) as f:
@@ -67,9 +75,22 @@ SAFE_DEFAULTS: Dict[str, Any] = {
 
 
 class ConfigParser:
+    """Parser and validator for Pac-Man game configuration files."""
 
     @classmethod
     def load(cls) -> Dict[str, Any]:
+        """Parse, validate, and return game configuration settings.
+
+        Reads the JSON configuration file specified in command-line arguments,
+        strips comments, validates value types/bounds, and supplies defaults.
+
+        Returns:
+            Dictionary of validated game configuration parameters.
+
+        Raises:
+            ValueError: If command line arguments or config values are invalid.
+            FileNotFoundError: If the specified configuration file is missing.
+        """
         try:
             len_args = len(sys.argv)
             if len_args != 2:

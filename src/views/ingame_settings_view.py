@@ -5,6 +5,8 @@ from ..ui import Menu, Selection
 
 
 class InGameSettings(arcade.View):
+    """Pause menu view allowing resume, retry, settings, and main menu exit."""
+
     def __init__(self, game_view: Any, screen_view: Any) -> None:
         super().__init__()
         arcade.load_font("fonts/Renogare-Regular.otf")

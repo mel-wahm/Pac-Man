@@ -12,6 +12,8 @@ from mazegenerator import MazeGenerator
 
 
 class Text:
+    """Manages player name entry text input and submission for highscores."""
+
     def __init__(self, cx: float, cy: float, config: Dict[str, Any]) -> None:
         self.cx = cx
         self.cy = cy
@@ -58,6 +60,8 @@ class Text:
 
 
 class Game(arcade.View):
+    """Main gameplay view handling rendering, levels, and user inputs."""
+
     def __init__(self, screen_view: Any, config: Dict[str, Any]) -> None:
         super().__init__()
         self.config = config

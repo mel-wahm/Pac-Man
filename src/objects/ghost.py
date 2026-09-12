@@ -14,6 +14,8 @@ from ..core import (
 
 
 class Ghost:
+    """Represents an AI-driven enemy ghost character."""
+
     def __init__(
         self,
         grid_pos: tuple[int, int],
@@ -23,6 +25,16 @@ class Ghost:
         cell_size: float,
         theme_colors: Any = None,
     ) -> None:
+        """Initialize ghost position, AI state, timers, and visual attributes.
+
+        Args:
+            grid_pos: Starting grid coordinates (x, y).
+            draw_coords: Screen coordinates (cx, cy) for rendering.
+            maze: 2D grid matrix of the level layout.
+            color: Color tuple or arcade color of the ghost.
+            cell_size: Dimension of a single maze cell in pixels.
+            theme_colors: Optional color theme palette dictionary.
+        """
         self.grid_pos = grid_pos
         self.spawn_pos = grid_pos
         self.smooth_x = float(grid_pos[0])
@@ -61,6 +73,7 @@ class Ghost:
         self.eye_time = 0.0
 
     def reset_game(self) -> None:
+        """Reset ghost to initial spawn position and clear status effects."""
         self.ghost_freeze = 2.0
         self.eaten_timer = 0.0
         self.grid_pos = self.spawn_pos
@@ -77,6 +90,11 @@ class Ghost:
         self.flash_index = 0
 
     def choose_target(self, pacman: Any) -> None:
+        """Select next grid cell to navigate toward or flee from player.
+
+        Args:
+            pacman: Player object instance providing target position.
+        """
         self.is_teleporting = False
         self.prev_x = float(self.grid_pos[0])
         self.prev_y = float(self.grid_pos[1])
@@ -171,6 +189,11 @@ class Ghost:
             )
 
     def update(self, delta_time: float) -> None:
+        """Update animation, edible effect durations, and flashing state.
+
+        Args:
+            delta_time: Elapsed frame time in seconds.
+        """
         self.anim_time += delta_time
         self.eye_time += delta_time * 8.0
         self.edible_timer = max(0.0, self.edible_timer - delta_time)
@@ -185,6 +208,11 @@ class Ghost:
             self.flash_index += 1
 
     def draw(self, theme: dict[str, Any]) -> None:
+        """Render ghost body, eyes, pupils, and animation effects.
+
+        Args:
+            theme: Palette dictionary specifying colors for themes.
+        """
         white = arcade.color.WHITE
         tc = theme
         normal_pupil = tc.get("ghost_pupil", (33, 33, 255))

@@ -4,6 +4,16 @@ from collections import deque
 def neighbor_coordinates(
     x: int, y: int, maze: list[list[int]]
 ) -> list[tuple[int, int]]:
+    """Get valid accessible adjacent cells in the maze grid.
+
+    Args:
+        x: Current horizontal cell coordinate.
+        y: Current vertical cell coordinate.
+        maze: 2D grid matrix containing bitmask wall information.
+
+    Returns:
+        List of accessible (x, y) neighbor coordinates.
+    """
     neighbors: list[tuple[int, int]] = []
     c = len(maze[0]) - 1
     r = len(maze) - 1
@@ -21,6 +31,16 @@ def neighbor_coordinates(
 def shortest_path(
     start: tuple[int, int], end: tuple[int, int], maze: list[list[int]]
 ) -> dict[tuple[int, int], tuple[int, int]]:
+    """Compute shortest path tree between two points using BFS.
+
+    Args:
+        start: Starting (x, y) coordinates.
+        end: Target (x, y) coordinates.
+        maze: 2D grid matrix containing bitmask wall information.
+
+    Returns:
+        Mapping of reached nodes to their predecessor in the path.
+    """
     if start == end:
         return {}
     px, py = start
@@ -48,6 +68,16 @@ def construct_path(
     start: tuple[int, int],
     final: dict[tuple[int, int], tuple[int, int]],
 ) -> list[tuple[int, int]]:
+    """Reconstruct coordinate sequence from predecessor map.
+
+    Args:
+        end: Destination (x, y) coordinates.
+        start: Origin (x, y) coordinates.
+        final: Predecessor mapping produced by shortest_path.
+
+    Returns:
+        Ordered list of coordinates representing the path from start to end.
+    """
     ex, ey = end
     if not final:
         return [start]

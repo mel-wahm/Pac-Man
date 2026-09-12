@@ -2,6 +2,8 @@ import arcade
 
 
 class Credits(arcade.View):
+    """View presenting project authorship and contributor credits."""
+
     def __init__(self, prev_view: arcade.View) -> None:
         super().__init__()
         self.prev_view = prev_view

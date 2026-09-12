@@ -4,6 +4,8 @@ import json
 
 
 class Board(arcade.View):
+    """View displaying highscores leaderboard with scrolling support."""
+
     def __init__(
         self,
         previous_view: arcade.View,

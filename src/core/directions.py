@@ -2,6 +2,8 @@ from enum import Enum
 
 
 class Directions(Enum):
+    """Enumeration of movement directions in the game grid."""
+
     LEFT = "left"
     RIGHT = "right"
     UP = "up"

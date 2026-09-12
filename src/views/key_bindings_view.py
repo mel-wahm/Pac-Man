@@ -8,6 +8,8 @@ import json
 
 
 class Control(arcade.View):
+    """View allowing users to remap gameplay control keys."""
+
     def __init__(self, previous_view: Any) -> None:
         super().__init__()
         self.previous_view = previous_view
