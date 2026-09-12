@@ -19,11 +19,11 @@ def load_keys():
         allow_list = ["UP", "DOWN", "LEFT", "RIGHT"]
 
         if len(keys) != len(allow_list):
-            raise ValueError("The file 'keys.json' is empty.")
+            raise ValueError(f"The file '{key_path}' is not Valid.")
 
         for key in keys:
             if key not in allow_list:
-                raise ValueError("The file 'keys.json' not Valid.")
+                raise ValueError(f"The Key: '{key}' not Valid.")
 
         return keys
     except FileNotFoundError:
