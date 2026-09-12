@@ -8,8 +8,16 @@
         "score": 5100
     },
     {
+        "name": "loser",
+        "score": 960
+    },
+    {
         "name": "wow",
         "score": 810
+    },
+    {
+        "name": "winner",
+        "score": 610
     },
     {
         "name": "lvl",
@@ -22,5 +30,13 @@
     {
         "name": "222",
         "score": 50
+    },
+    {
+        "name": "pppp",
+        "score": 10
+    },
+    {
+        "name": "loser",
+        "score": 0
     }
 ]

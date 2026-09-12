@@ -65,6 +65,7 @@ class Game(arcade.View):
         self, screen_view: Any, config: Dict[str, Any]
     ) -> None:
         super().__init__()
+        
         self.config = config
         self.audio_engine = AudioEngine()
         options_path = "Src/config/options.json"
@@ -107,8 +108,17 @@ class Game(arcade.View):
         )
         self.update_dimensions(first_maze)
 
+
+        # Initialize Game Engine
+        self.engine = GameEngine(
+            first_maze,
+            self.cell_center,
+            self.cell_size,
+            theme=self.theme,
+            game_config=config,
+        )
         self.enter_text = arcade.Text(
-            "Please enter your name for the highscore",
+            f"Please enter your name for the highscore",
             cx,
             cy + 100,
             (80, 80, 80, 180),
@@ -126,14 +136,6 @@ class Game(arcade.View):
         )
         self.sec = 0.0
 
-        # Initialize Game Engine
-        self.engine = GameEngine(
-            first_maze,
-            self.cell_center,
-            self.cell_size,
-            theme=self.theme,
-            game_config=config,
-        )
 
         # UI & Fonts
         arcade.load_font("fonts/Renogare-Regular.otf")
@@ -332,6 +334,8 @@ class Game(arcade.View):
             self.next_level()
         self.pointer_text.x = self.text.text_name.right + 7
         if self.engine.state in (1, 3):
+            self.enter_text.text = f"score : {self.engine.pacman.final_score}    Enter name for leaderboard"
+            self.enter_text.color = arcade.color.RED if self.engine.state == 1 else arcade.color.GREEN
             if self.sec > 1.5:
                 self.sec = 0.0
             self.sec += delta_time
