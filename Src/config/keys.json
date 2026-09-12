@@ -1,6 +1,6 @@
 {
-    "UP": "arcade.key.U",
-    "DOWN": "arcade.key.J",
-    "LEFT": "arcade.key.H",
-    "RIGHT": "arcade.key.K"
+    "UP": "arcade.key.UP",
+    "DOWN": "arcade.key.DOWN",
+    "LEFT": "arcade.key.LEFT",
+    "RIGHT": "arcade.key.RIGHT"
 }

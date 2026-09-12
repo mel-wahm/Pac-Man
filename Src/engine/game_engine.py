@@ -305,7 +305,9 @@ class GameEngine:
                         self.reset_game()
                         self.state = 1
                         self.pause = 1
-                        self.pacman.death_count = 0
+                        self.pacman.death_count = max_lives
+                        self.pacman.score = self.pacman.final_score
+                        self.pacman.score_text.text = f"SCORE: {self.pacman.final_score}"
                         self.pacman.path = {(self.pacman.x, self.pacman.y)}
                     break
                 elif ghost.edible:
@@ -339,9 +341,13 @@ class GameEngine:
                 self.time_text.text = "Time left: " + str(max_time - self.sec)
                 if self.sec >= max_time:
                     self.pacman.final_score = self.pacman.score
+                    max_lives = self.config.get("lives", 3)
                     self.reset_game()
                     self.state = 1
                     self.pause = 1
+                    self.pacman.death_count = max_lives
+                    self.pacman.score = self.pacman.final_score
+                    self.pacman.score_text.text = f"SCORE: {self.pacman.final_score}"
                     return
 
             self.progress += 6 * delta_time

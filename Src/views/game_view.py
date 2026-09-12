@@ -326,10 +326,10 @@ class Game(arcade.View):
     def on_update(self, delta_time: float) -> None:
         if self.on_remove:
             self.on_remove_timer += delta_time
-            if self.on_remove_timer > 0.05:
-                self.on_remove_timer = 0.0
+            if self.on_remove_timer > 0.4:
                 self.text.name = self.text.name[:-1]
                 self.text.update_text()
+                self.on_remove_timer = 0.35
         self.engine.update(delta_time)
         if self.engine.level_cleared:
             self.engine.level_cleared = False

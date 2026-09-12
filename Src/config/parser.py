@@ -91,25 +91,11 @@ class ConfigParser:
                 raise FileNotFoundError(f"Error: File '{filepath}' not found.")
 
             clean_lines: list[str] = []
-            line_comment = False
             for line in content.splitlines():
-                strip_line = line.strip()
-                if not strip_line:
+                if "#" in line:
+                    line = line.split("#")[0]
+                if not line.strip():
                     continue
-
-                if line_comment:
-                    if "*/" in strip_line:
-                        line_comment = False
-                    continue
-
-                if strip_line.startswith("/*"):
-                    if "*/" not in strip_line:
-                        line_comment = True
-                    continue
-
-                if strip_line.startswith(("#", "//")):
-                    continue
-
                 clean_lines.append(line)
 
             clean_json = "\n".join(clean_lines)

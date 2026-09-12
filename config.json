@@ -3,7 +3,7 @@
 # ==============================================================================
 {
     # Random seed for Level 1
-    "seed": 42,
+    "seed": 42, #seed for first level
 
     # Player stats & rules
     "lives": 3,
@@ -15,14 +15,14 @@
 	"ghost.ghost_freeze": 5,
 
     # Scores
-    "points_per_pacgum": 10,
+    "points_per_pacgum": 10, #inline comment
     "points_per_super_pacgum": 50,
     "points_per_ghost": 200,
 
     # Data file paths
     "highscore_filename": "Src/config/leaderboard.json",
-
     # Levels progression (at least 10 levels required by subject)
+    
     "levels": [
         {"level": 1,  "width": 8,  "height": 9},
         {"level": 2,  "width": 11, "height": 13},
