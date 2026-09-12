@@ -3,15 +3,37 @@ import json
 import sys
 from typing import Any, Dict
 
-with open("Src/config/keys.json") as f:
-    keys = json.load(f)
-keys = {
-    key: getattr(arcade.key, value.split(".")[2])
-    for key, value in keys.items()
-}
 MAZE_SIZE = (9, 11)
 pacman_inv = False
 ghost_freeze = False
+
+def load_keys():
+    try:
+        key_path = "Src/config/keys.json"
+        with open(key_path) as f:
+            keys = json.load(f)
+        keys = {
+            key: getattr(arcade.key, value.split(".")[2])
+            for key, value in keys.items()
+            }
+        allow_list = ["UP", "DOWN", "LEFT", "RIGHT"]
+
+        if len(keys) != len(allow_list):
+            raise ValueError("The file 'keys.json' is empty.")
+
+        for key in keys:
+            if key not in allow_list:
+                raise ValueError("The file 'keys.json' not Valid.")
+
+        return keys
+    except FileNotFoundError:
+        print(f"Error: File '{key_path}' not found.")
+        sys.exit(1)
+    except Exception as e:
+        print(f"Error loading keys: {e}")
+        sys.exit(1)
+
+keys = load_keys()
 
 SAFE_DEFAULTS: Dict[str, Any] = {
     "seed": 42,
@@ -39,7 +61,6 @@ SAFE_DEFAULTS: Dict[str, Any] = {
         {"level": 10, "width": 21, "height": 23}
     ]
 }
-
 
 class ConfigParser:
 
