@@ -31,7 +31,7 @@ class Text:
             font_name="Renogare",
         )
         self.path = config.get(
-            "highscore_filename", "Src/config/leaderboard.json"
+            "highscore_filename", "src/config/leaderboard.json"
         )
 
     def update_text(self) -> None:
@@ -68,7 +68,7 @@ class Game(arcade.View):
         
         self.config = config
         self.audio_engine = AudioEngine()
-        options_path = "Src/config/options.json"
+        options_path = "src/config/options.json"
         try:
             with open(options_path) as f:
                 ant_dict = json.load(f)

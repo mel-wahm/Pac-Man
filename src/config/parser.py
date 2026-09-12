@@ -9,7 +9,7 @@ ghost_freeze = False
 
 def load_keys():
     try:
-        key_path = "Src/config/keys.json"
+        key_path = "src/config/keys.json"
         with open(key_path) as f:
             keys = json.load(f)
         keys = {
@@ -47,7 +47,7 @@ SAFE_DEFAULTS: Dict[str, Any] = {
     "points_per_pacgum": 10,
     "points_per_super_pacgum": 50,
     "points_per_ghost": 200,
-    "highscore_filename": "Src/config/leaderboard.json",
+    "highscore_filename": "src/config/leaderboard.json",
     "levels": [
         {"level": 1, "width": 9, "height": 11},
         {"level": 2, "width": 11, "height": 13},
@@ -239,8 +239,8 @@ class ConfigParser:
             if "highscore_filename" in data:
                 h_file = data["highscore_filename"]
                 if isinstance(h_file, str) and h_file.strip():
-                    if h_file.startswith("src/"):
-                        h_file = "Src/" + h_file[4:]
+                    if h_file.startswith("Src/"):
+                        h_file = "src/" + h_file[4:]
                     config["highscore_filename"] = h_file
             return config
 

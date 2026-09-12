@@ -18,7 +18,7 @@ class Board(arcade.View):
         self.background_color = (0, 0, 15)
         self.config = config or {}
         self.path = self.config.get(
-            "highscore_filename", "Src/config/leaderboard.json"
+            "highscore_filename", "src/config/leaderboard.json"
         )
         self.scroller = 0
         self.theme = theme

@@ -112,7 +112,7 @@ class Control(arcade.View):
                 self.is_listening = False
                 key_name = pyglet.window.key.symbol_string(symbol)
                 self.update_json(
-                    "Src/config/keys.json",
+                    "src/config/keys.json",
                     self.current_action,
                     "arcade.key." + key_name,
                 )

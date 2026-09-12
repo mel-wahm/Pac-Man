@@ -6,5 +6,9 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "arcade>=3.3.3",
+    "mazegenerator",
     "pyclean>=3.7.0",
 ]
+
+[tool.uv.sources]
+mazegenerator = { path = "mazegenerator-2.1.0-py3-none-any.whl" }
