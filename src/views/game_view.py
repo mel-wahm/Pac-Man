@@ -1,6 +1,5 @@
 from typing import Any, Dict
 import json
-import random
 
 import arcade
 
@@ -13,9 +12,7 @@ from mazegenerator import MazeGenerator
 
 
 class Text:
-    def __init__(
-        self, cx: float, cy: float, config: Dict[str, Any]
-    ) -> None:
+    def __init__(self, cx: float, cy: float, config: Dict[str, Any]) -> None:
         self.cx = cx
         self.cy = cy
         self.name = ""
@@ -61,11 +58,8 @@ class Text:
 
 
 class Game(arcade.View):
-    def __init__(
-        self, screen_view: Any, config: Dict[str, Any]
-    ) -> None:
+    def __init__(self, screen_view: Any, config: Dict[str, Any]) -> None:
         super().__init__()
-        
         self.config = config
         self.audio_engine = AudioEngine()
         options_path = "src/config/options.json"
@@ -102,12 +96,9 @@ class Game(arcade.View):
             self.mazes.append(maze)
 
         first_maze = (
-            self.mazes[0]
-            if self.mazes
-            else MazeGenerator((9, 11)).maze
+            self.mazes[0] if self.mazes else MazeGenerator((9, 11)).maze
         )
         self.update_dimensions(first_maze)
-
 
         # Initialize Game Engine
         self.engine = GameEngine(
@@ -118,7 +109,7 @@ class Game(arcade.View):
             game_config=config,
         )
         self.enter_text = arcade.Text(
-            f"Please enter your name for the highscore",
+            "Please enter your name for the highscore",
             cx,
             cy + 100,
             (80, 80, 80, 180),
@@ -135,7 +126,6 @@ class Game(arcade.View):
             font_size=24,
         )
         self.sec = 0.0
-
 
         # UI & Fonts
         arcade.load_font("fonts/Renogare-Regular.otf")
@@ -253,9 +243,7 @@ class Game(arcade.View):
         if self.music_player and self.music_player.playing:
             self.music_player.pause()
 
-    def cell_center(
-        self, grid_x: float, grid_y: float
-    ) -> tuple[float, float]:
+    def cell_center(self, grid_x: float, grid_y: float) -> tuple[float, float]:
         sidebar_width = 170
         padding = 20
         cx = sidebar_width + (self.width - sidebar_width - padding) / 2
@@ -336,8 +324,15 @@ class Game(arcade.View):
             self.next_level()
         self.pointer_text.x = self.text.text_name.right + 7
         if self.engine.state in (1, 3):
-            self.enter_text.text = f"score : {self.engine.pacman.final_score}    Enter name for leaderboard"
-            self.enter_text.color = arcade.color.RED if self.engine.state == 1 else arcade.color.GREEN
+            score = self.engine.pacman.final_score
+            self.enter_text.text = (
+                f"score : {score}  Enter name for leaderboard"
+            )
+            self.enter_text.color = (
+                arcade.color.RED
+                if self.engine.state == 1
+                else arcade.color.GREEN
+            )
             if self.sec > 1.5:
                 self.sec = 0.0
             self.sec += delta_time

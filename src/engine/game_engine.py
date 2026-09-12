@@ -200,7 +200,11 @@ class GameEngine:
         max_time = self.config.get("level_max_time", 90)
         self.time_text = arcade.Text(
             "Time left: " + str(max_time - self.sec),
-            20, 770, color, 24, font_name="Renogare"
+            20,
+            770,
+            color,
+            24,
+            font_name="Renogare",
         )
 
     def reset_game(self) -> None:
@@ -307,7 +311,9 @@ class GameEngine:
                         self.pause = 1
                         self.pacman.death_count = max_lives
                         self.pacman.score = self.pacman.final_score
-                        self.pacman.score_text.text = f"SCORE: {self.pacman.final_score}"
+                        self.pacman.score_text.text = (
+                            f"SCORE: {self.pacman.final_score}"
+                        )
                         self.pacman.path = {(self.pacman.x, self.pacman.y)}
                     break
                 elif ghost.edible:
@@ -347,7 +353,9 @@ class GameEngine:
                     self.pause = 1
                     self.pacman.death_count = max_lives
                     self.pacman.score = self.pacman.final_score
-                    self.pacman.score_text.text = f"SCORE: {self.pacman.final_score}"
+                    self.pacman.score_text.text = (
+                        f"SCORE: {self.pacman.final_score}"
+                    )
                     return
 
             self.progress += 6 * delta_time

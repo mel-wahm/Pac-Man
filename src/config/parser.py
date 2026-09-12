@@ -7,7 +7,8 @@ MAZE_SIZE = (9, 11)
 pacman_inv = False
 ghost_freeze = False
 
-def load_keys():
+
+def load_keys() -> Dict[str, int]:
     try:
         key_path = "src/config/keys.json"
         with open(key_path) as f:
@@ -33,7 +34,9 @@ def load_keys():
         print(f"Error loading keys: {e}")
         sys.exit(1)
 
+
 keys = load_keys()
+
 
 SAFE_DEFAULTS: Dict[str, Any] = {
     "seed": 42,
@@ -61,6 +64,7 @@ SAFE_DEFAULTS: Dict[str, Any] = {
         {"level": 10, "width": 21, "height": 23}
     ]
 }
+
 
 class ConfigParser:
 

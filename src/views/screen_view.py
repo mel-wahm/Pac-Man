@@ -216,9 +216,7 @@ class Screen(arcade.View):
     def on_draw(self) -> None:
         self.clear()
         w, h = self.width, self.height
-        screen_rect = arcade.rect.XYWH(
-            w / 2, h / 2, w, h
-        )
+        screen_rect = arcade.rect.XYWH(w / 2, h / 2, w, h)
         wallpaper = self.wallpapers.get(
             self.game_view.theme, self.wallpapers["dark"]
         )
@@ -262,7 +260,8 @@ class Screen(arcade.View):
                         bold=True,
                     ),
                     arcade.Text(
-                        "Move: Arrow Keys (Defualt, can be changed based on your liking)",
+                        "Move: Arrow Keys "
+                        "(Defualt, can be changed based on your liking)",
                         cx,
                         cy + 135,
                         arcade.color.WHITE,
