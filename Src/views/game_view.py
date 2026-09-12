@@ -91,7 +91,7 @@ class Game(arcade.View):
             lvl_seed = (
                 self.config["seed"]
                 if idx == 0 and "seed" in self.config
-                else random.randint(1, 999999)
+                else 0
             )
             maze = MazeGenerator(
                 (lvl["width"], lvl["height"]),
@@ -115,6 +115,14 @@ class Game(arcade.View):
             32,
             anchor_x="center",
             font_name="Renogare",
+        )
+        self.level_text = arcade.Text(
+            f"LEVEL: {self.current_level_index + 1}",
+            x=20,
+            y=1040,
+            color=arcade.color.YELLOW,
+            font_name="Renogare",
+            font_size=24,
         )
         self.sec = 0.0
 
@@ -318,7 +326,8 @@ class Game(arcade.View):
                 self.text.name = self.text.name[:-1]
                 self.text.update_text()
         self.engine.update(delta_time)
-        if getattr(self.engine, "level_cleared", False):
+        if self.engine.level_cleared:
+            self.level_text.text = f"LEVEL: {self.current_level_index + 2}"
             self.engine.level_cleared = False
             self.next_level()
         self.pointer_text.x = self.text.text_name.right + 7
@@ -390,6 +399,7 @@ class Game(arcade.View):
         sidebar_x = 20
         self.engine.pacman.score_text.draw()
         self.engine.pacman.lives_text.draw()
+        self.level_text.draw()
         self.engine.time_text.draw()
 
         max_lives = self.config.get("lives", 3)

@@ -30,7 +30,9 @@ class Screen(arcade.View):
             "Leaderboard", lambda: self.show_leaderboard()
         )
         self.credits_option = Selection("Credits", lambda: self.show_credits())
-        self.instructions_option = Selection("instructions", lambda: self.instructions())
+        self.instructions_option = Selection(
+            "instructions", lambda: self.instructions()
+        )
         self.exit_option = Selection("Exit", lambda: self.exit_game())
 
         self.menu = Menu(
@@ -48,6 +50,122 @@ class Screen(arcade.View):
         self.game_view = Game(self, self.config)
         self.in_instuctions = 0
 
+        cx = center_x
+        cy = center_y
+        self.instruction_texts = [
+            arcade.Text(
+                "HOW TO PLAY",
+                cx,
+                cy + 260,
+                arcade.color.YELLOW,
+                44,
+                anchor_x="center",
+                font_name="Renogare",
+            ),
+            arcade.Text(
+                "CONTROLS",
+                cx,
+                cy + 180,
+                arcade.color.BLUE_YONDER,
+                26,
+                anchor_x="center",
+                font_name="Renogare",
+                bold=True,
+            ),
+            arcade.Text(
+                "Move: Arrow Keys "
+                "(Defualt, can be changed based on your liking)",
+                cx,
+                cy + 135,
+                arcade.color.WHITE,
+                20,
+                anchor_x="center",
+                font_name="Renogare",
+            ),
+            arcade.Text(
+                "Pause / Resume: SPACE",
+                cx,
+                cy + 95,
+                arcade.color.WHITE,
+                20,
+                anchor_x="center",
+                font_name="Renogare",
+            ),
+            arcade.Text(
+                "In-Game Settings: ESCAPE",
+                cx,
+                cy + 55,
+                arcade.color.WHITE,
+                20,
+                anchor_x="center",
+                font_name="Renogare",
+            ),
+            arcade.Text(
+                "HOW TO PLAY",
+                cx,
+                cy - 5,
+                arcade.color.BLUE_YONDER,
+                26,
+                anchor_x="center",
+                font_name="Renogare",
+                bold=True,
+            ),
+            arcade.Text(
+                "- Eat all pacgums on the board to clear the level.",
+                cx,
+                cy - 50,
+                arcade.color.WHITE,
+                19,
+                anchor_x="center",
+                font_name="Renogare",
+            ),
+            arcade.Text(
+                "- Avoid ghosts! Touching one costs 1 life.",
+                cx,
+                cy - 85,
+                arcade.color.WHITE,
+                19,
+                anchor_x="center",
+                font_name="Renogare",
+            ),
+            arcade.Text(
+                "- Eat Super Pacgums to make ghosts edible.",
+                cx,
+                cy - 120,
+                arcade.color.WHITE,
+                19,
+                anchor_x="center",
+                font_name="Renogare",
+            ),
+            arcade.Text(
+                "- Eat edible ghosts to earn bonus points!",
+                cx,
+                cy - 155,
+                arcade.color.WHITE,
+                19,
+                anchor_x="center",
+                font_name="Renogare",
+            ),
+            arcade.Text(
+                "- Beat all 10 levels before the timer runs out!",
+                cx,
+                cy - 190,
+                arcade.color.WHITE,
+                19,
+                anchor_x="center",
+                font_name="Renogare",
+            ),
+            arcade.Text(
+                "Press ESCAPE to return to Menu",
+                cx,
+                cy - 250,
+                (200, 200, 200),
+                18,
+                anchor_x="center",
+                font_name="Renogare",
+            ),
+        ]
+
     def start_game(self) -> None:
         self.game_view = Game(self, self.config)
         self.window.show_view(self.game_view)
@@ -56,7 +174,7 @@ class Screen(arcade.View):
         board = Board(self, self.game_view.theme, self.config)
         self.window.show_view(board)
 
-    def instructions(self):
+    def instructions(self) -> None:
         self.in_instuctions = 1
 
     def show_credits(self) -> None:
@@ -120,3 +238,5 @@ class Screen(arcade.View):
         if self.in_instuctions:
             r = arcade.rect.XYWH(w / 2, h / 2, w, h)
             arcade.draw_rect_filled(r, (0, 0, 0, 240))
+            for t in self.instruction_texts:
+                t.draw()
