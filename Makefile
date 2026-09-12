@@ -1,10 +1,9 @@
 run:
 	@uv run pac-man.py config.json
 install:
-	@pip install arcade
-	@pip install pyclean
-it: run
-	@clear
+	@uv sync
+debug:
+	@uv run python -m pdb pac-man.py config.json
 clean:
 	@pyclean .
 	@rm -rf .mypy_cache

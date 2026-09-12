@@ -16,6 +16,10 @@
         "score": 810
     },
     {
+        "name": "wow",
+        "score": 810
+    },
+    {
         "name": "winner",
         "score": 610
     },
@@ -34,9 +38,5 @@
     {
         "name": "pppp",
         "score": 10
-    },
-    {
-        "name": "loser",
-        "score": 0
     }
 ]

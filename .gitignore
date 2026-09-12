@@ -12,12 +12,3 @@ __pycache__/
 .idea/
 *.swp
 *~
-
-# OS generated files
-.DS_Store
-Thumbs.db
-
-# Project-specific non-code assets / scratch files
-subject_text.txt
-ghost_sketch.py
-*.pdf
