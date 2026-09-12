@@ -91,7 +91,7 @@ class AudioControl:
     ) -> None:
         self.x = x
         self.y = y
-        with open("Src/config/audio_and_theme.json") as f:
+        with open("Src/config/options.json") as f:
             ant_dict = json.load(f)
         self.volume: int = ant_dict["volume"]
         self.text_color = text_color
@@ -109,10 +109,10 @@ class AudioControl:
         )
 
     def update_json(self, volume: int) -> None:
-        with open("Src/config/audio_and_theme.json") as f:
+        with open("Src/config/options.json") as f:
             ant_dict = json.load(f)
         ant_dict["volume"] = volume
-        with open("Src/config/audio_and_theme.json", "w") as f:
+        with open("Src/config/options.json", "w") as f:
             json.dump(ant_dict, f, indent=4)
 
     def volume_up(self) -> None:
@@ -157,10 +157,10 @@ class ThemeToggle:
         self._update_display(current_theme)
 
     def update_json(self, theme: str) -> None:
-        with open("Src/config/audio_and_theme.json") as f:
+        with open("Src/config/options.json") as f:
             ant_dict = json.load(f)
         ant_dict["theme"] = theme
-        with open("Src/config/audio_and_theme.json", "w") as f:
+        with open("Src/config/options.json", "w") as f:
             json.dump(ant_dict, f, indent=4)
 
     def _update_display(self, theme: str) -> None:

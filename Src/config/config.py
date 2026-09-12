@@ -8,3 +8,5 @@ keys = {
     for key, value in keys.items()
 }
 MAZE_SIZE = (9, 11)
+pacman_inv = False
+ghost_freeze = False

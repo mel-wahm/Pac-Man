@@ -54,7 +54,7 @@ class Game(arcade.View):
     def __init__(self, maze: list[list[int]], screen_view: Any) -> None:
         super().__init__()
         self.audio_engine = AudioEngine()
-        with open("Src/config/audio_and_theme.json") as f:
+        with open("Src/config/options.json") as f:
             ant_dict = json.load(f)
         self.volume = ant_dict["volume"] / 10
         self.theme = ant_dict["theme"]

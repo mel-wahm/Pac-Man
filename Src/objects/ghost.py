@@ -21,7 +21,6 @@ class Ghost:
         maze: list[list[int]],
         color: Any,
         cell_size: float,
-        theme_colors: dict[str, Any],
     ) -> None:
         self.grid_pos = grid_pos
         self.spawn_pos = grid_pos

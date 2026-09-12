@@ -5,7 +5,6 @@ import arcade
 
 from ..core import DIR_DATA, Directions
 
-
 class Pacman:
     def __init__(self, maze: list[list[int]]) -> None:
         self.init_x = (len(maze[0]) - 1) // 2

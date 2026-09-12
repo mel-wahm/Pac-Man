@@ -5,7 +5,7 @@ import arcade
 
 from typing import Any
 
-from ..config import THEMES
+from ..config import THEMES, config
 from ..core import Directions
 from ..objects import Ghost, Pacman
 
@@ -68,7 +68,6 @@ class GameEngine:
                 self.maze,
                 ghost_colors[0],
                 self.cell_size,
-                self.theme_colors,
             ),
             Ghost(
                 (self.cols - 1, 0),
@@ -76,7 +75,6 @@ class GameEngine:
                 self.maze,
                 ghost_colors[1],
                 self.cell_size,
-                self.theme_colors,
             ),
             Ghost(
                 (0, self.rows - 1),
@@ -84,7 +82,6 @@ class GameEngine:
                 self.maze,
                 ghost_colors[2],
                 self.cell_size,
-                self.theme_colors,
             ),
             Ghost(
                 (self.cols - 1, self.rows - 1),
@@ -92,7 +89,6 @@ class GameEngine:
                 self.maze,
                 ghost_colors[3],
                 self.cell_size,
-                self.theme_colors,
             ),
         }
 
@@ -268,7 +264,7 @@ class GameEngine:
                 (ghost.smooth_y - self.pacman.smooth_y),
             )
             if distance_to_pacman < 0.5:
-                if not ghost.edible:
+                if not ghost.edible and not config.pacman_inv:
                     self.pacman.death_count += 1
                     self.pacman.x = self.pacman.init_x
                     self.pacman.smooth_x = float(self.pacman.init_x)
@@ -300,7 +296,7 @@ class GameEngine:
                         self.pacman.death_count = 0
                         self.pacman.path = {(self.pacman.x, self.pacman.y)}
                     break
-                else:
+                elif ghost.edible:
                     self.pacman.score += 100
                     self.pacman.score_text.text = f"SCORE: {self.pacman.score}"
                     ghost.grid_pos = ghost.spawn_pos
@@ -343,6 +339,8 @@ class GameEngine:
 
             for ghost in self.ghosts:
                 if ghost.eaten_timer:
+                    continue
+                if config.ghost_freeze:
                     continue
                 if ghost.ghost_freeze <= 0:
                     if should_choose_target:

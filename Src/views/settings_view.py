@@ -2,6 +2,7 @@ from typing import Any
 import arcade
 
 from ..ui import Menu, Selection, AudioControl, ThemeToggle
+from .cheat_mode_view import CheatMode
 from .key_bindings_view import Control
 
 
@@ -36,6 +37,7 @@ class Settings(arcade.View):
         self.controls_option = Selection(
             "Key Binding", lambda: self.open_controls()
         )
+        self.cheat_option = Selection("Cheat Mode", lambda: self.cheat())
         self.return_option = Selection(
             "Return", lambda: self.return_to_previous()
         )
@@ -44,11 +46,16 @@ class Settings(arcade.View):
                 self.audio_option,
                 self.theme_option,
                 self.controls_option,
+                self.cheat_option,
                 self.return_option,
             ],
             cx,
             cy,
         )
+
+    def cheat(self) -> None:
+        cheat = CheatMode(self.game_view.engine, self)
+        self.window.show_view(cheat)
 
     def open_audio(self) -> None:
         self.on_audio = True
