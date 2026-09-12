@@ -1,54 +1,18 @@
 [
     {
-        "name": "0",
-        "score": 0
+        "name": "finished2",
+        "score": 9200
     },
     {
-<<<<<<< HEAD
-        "name": "qqq",
-        "score": 20
+        "name": "lvl",
+        "score": 280
     },
     {
-        "name": "ddd",
-        "score": 0
+        "name": "idied",
+        "score": 110
     },
     {
-        "name": "d",
-        "score": 20
-    },
-    {
-        "name": "dd",
+        "name": "222",
         "score": 50
-    },
-    {
-        "name": "ss",
-        "score": 70
-    },
-    {
-        "name": "ddd",
-        "score": 20
-    },
-    {
-        "name": "eee",
-        "score": 40
-    },
-    {
-        "name": "ffff",
-        "score": 10
-    },
-    {
-        "name": "hhh",
-        "score": 10
-    },
-    {
-        "name": "wha",
-        "score": 40
-    },
-    {
-        "name": "ff",
-=======
-        "name": "doobie",
->>>>>>> 72b8c618602323fc99ac9ec7375a6862180bbdc6
-        "score": 10
     }
 ]

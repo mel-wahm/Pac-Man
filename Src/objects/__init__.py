@@ -1,4 +1,4 @@
 from .ghost import Ghost
-from .pacman import Pacman
+from .player import Pacman
 
 __all__ = ["Ghost", "Pacman"]

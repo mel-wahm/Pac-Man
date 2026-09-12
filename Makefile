@@ -1,5 +1,5 @@
 run:
-	@python3 -m Src
+	@uv run pac-man.py config.json
 install:
 	@pip install arcade
 	@pip install pyclean

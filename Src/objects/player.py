@@ -5,6 +5,7 @@ import arcade
 
 from ..core import DIR_DATA, Directions
 
+
 class Pacman:
     def __init__(self, maze: list[list[int]]) -> None:
         self.init_x = (len(maze[0]) - 1) // 2
@@ -107,7 +108,7 @@ class Pacman:
                 self.smooth_y = 0.0
 
     def smooth_animation(
-        self, delta_time: float, duration: float = 0.15
+        self, delta_time: float, duration: float = 0.20
     ) -> None:
         self.step_time += delta_time
         progress = min(1.0, self.step_time / duration)
@@ -124,6 +125,6 @@ class Pacman:
             radius,
             radius,
             color,
-            30 + self.angle + 15 * sin(game_view.progress),
-            330 + self.angle - 15 * sin(game_view.progress),
+            30 + self.angle + 15 * sin(game_view.progress * 3),
+            330 + self.angle - 15 * sin(game_view.progress * 3),
         )

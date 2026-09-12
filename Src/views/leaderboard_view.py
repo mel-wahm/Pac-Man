@@ -1,11 +1,14 @@
-from typing import Any
+from typing import Any, Dict, Optional
 import arcade
 import json
 
 
 class Board(arcade.View):
     def __init__(
-        self, previous_view: arcade.View, theme: str = "dark"
+        self,
+        previous_view: arcade.View,
+        theme: str = "dark",
+        config: Optional[Dict[str, Any]] = None,
     ) -> None:
         super().__init__()
         self.previous_view = previous_view
@@ -13,7 +16,10 @@ class Board(arcade.View):
         self.cx = self.width / 2
         self.cy = self.height / 2
         self.background_color = (0, 0, 15)
-        self.path = "Src/config/leaderboard.json"
+        self.config = config or {}
+        self.path = self.config.get(
+            "highscore_filename", "Src/config/leaderboard.json"
+        )
         self.scroller = 0
         self.theme = theme
         self.board = self.load_json()
@@ -58,9 +64,12 @@ class Board(arcade.View):
                 "wallpaper/light_wallpaper.png"
             )
         self.pointer_text = arcade.Text(
-            ">", self.cx - 350, self.cy,
+            ">",
+            self.cx - 350,
+            self.cy,
             arcade.color.YELLOW if theme == "dark" else arcade.color.RED,
-            24, bold=True
+            24,
+            bold=True,
         )
         self.empty_board = arcade.Text(
             "The leaderboard is empty",
@@ -76,25 +85,43 @@ class Board(arcade.View):
         self.scrolling_timer = 0.0
 
     def load_json(self) -> list[dict[str, Any]]:
-        with open(self.path) as f:
-            if not f.read().strip():
-                return []
-            f.seek(0)
-            board = json.load(f)
-        return sorted(board, key=lambda x: x["score"], reverse=True)
+        try:
+            with open(self.path, "r") as f:
+                content = f.read().strip()
+                if not content:
+                    return []
+                f.seek(0)
+                board: list[dict[str, Any]] = json.load(f)
+            return sorted(board, key=lambda x: x["score"], reverse=True)[:10]
+        except (FileNotFoundError, json.JSONDecodeError, Exception):
+            try:
+                with open(self.path, "w") as f:
+                    json.dump([], f, indent=4)
+            except Exception:
+                pass
+            return []
 
     @staticmethod
     def update_json(path: str, name: str, score: int) -> None:
-        new_score = {"name": name, "score": score}
-        with open(path) as f:
-            if not f.read().strip():
+        try:
+            new_score = {"name": name, "score": score}
+            board: list[dict[str, Any]] = []
+            try:
+                with open(path, "r") as f:
+                    content = f.read().strip()
+                    if content:
+                        f.seek(0)
+                        board = json.load(f)
+            except (FileNotFoundError, json.JSONDecodeError):
                 board = []
-            else:
-                f.seek(0)
-                board = json.load(f)
-        board.append(new_score)
-        with open(path, "w") as f:
-            json.dump(board, f, indent=4)
+            board.append(new_score)
+            sorted_board = sorted(
+                board, key=lambda x: x["score"], reverse=True
+            )[:10]
+            with open(path, "w") as f:
+                json.dump(sorted_board, f, indent=4)
+        except Exception as e:
+            print(f"[Highscore Warning] Could not save highscore: {e}")
 
     def on_key_press(self, symbol: int, modifiers: int) -> None:
         if symbol == arcade.key.ESCAPE:
@@ -132,16 +159,16 @@ class Board(arcade.View):
             self.texts = self.board_texts()
 
     def board_texts(self) -> list[tuple[arcade.Text, arcade.Text]]:
-        board = []
+        board: list[tuple[arcade.Text, arcade.Text]] = []
         gap = 50
-        for idx, object in enumerate(self.board):
-            name = object["name"]
-            score = object["score"]
+        for idx, obj in enumerate(self.board):
+            name = obj["name"]
+            score = obj["score"]
             k = 0.6
             d = idx - self.scroller
             alpha = 255 * (2.5 ** (-k * abs(d)))
             if self.theme == "dark":
-                color = (255, 255, 255, int(alpha))
+                color: Any = (255, 255, 255, int(alpha))
             else:
                 color = (0, 0, 0, int(alpha))
 
@@ -197,8 +224,8 @@ class Board(arcade.View):
             self.leaderboard_text2.draw()
             self.leaderboard_text3.draw()
             self.pointer_text.draw()
-            for name, score in self.texts:
-                name.draw()
-                score.draw()
+            for name_item, score_item in self.texts:
+                name_item.draw()
+                score_item.draw()
         else:
             self.empty_board.draw()

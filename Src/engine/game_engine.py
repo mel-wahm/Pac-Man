@@ -1,11 +1,10 @@
 from math import hypot
 from random import sample
+from typing import Any, Dict, Optional
 
 import arcade
 
-from typing import Any
-
-from ..config import THEMES, config
+from ..config import THEMES, parser
 from ..core import Directions
 from ..objects import Ghost, Pacman
 
@@ -17,7 +16,9 @@ class GameEngine:
         center_func: Any,
         cell_size: float,
         theme: str = "dark",
+        game_config: Optional[Dict[str, Any]] = None,
     ) -> None:
+        self.config: Dict[str, Any] = game_config or {}
         self.center = center_func
         self.cell_size = cell_size
         self.theme = theme if theme in THEMES else "dark"
@@ -43,7 +44,7 @@ class GameEngine:
         self.pacman.score_text.color = self.theme_colors["hud_text"]
         self.pacman.lives_text.color = self.theme_colors["hud_text"]
         color = self.theme_colors["hud_text"]
-        self.max_dots = 15
+        self.max_dots = self.config.get("pacgum", 25)
         self.state = 0
         self.pause = 0
         self.progress = 0.0
@@ -52,6 +53,7 @@ class GameEngine:
         self.ghost_step_timer = 0.0
         self.pacman_step_timer = 0.0
         self.win_timer = 0.0
+        self.level_cleared = False
 
         self.corners = {
             (0, 0),
@@ -68,6 +70,7 @@ class GameEngine:
                 self.maze,
                 ghost_colors[0],
                 self.cell_size,
+                self.theme_colors,
             ),
             Ghost(
                 (self.cols - 1, 0),
@@ -75,6 +78,7 @@ class GameEngine:
                 self.maze,
                 ghost_colors[1],
                 self.cell_size,
+                self.theme_colors,
             ),
             Ghost(
                 (0, self.rows - 1),
@@ -82,6 +86,7 @@ class GameEngine:
                 self.maze,
                 ghost_colors[2],
                 self.cell_size,
+                self.theme_colors,
             ),
             Ghost(
                 (self.cols - 1, self.rows - 1),
@@ -89,6 +94,7 @@ class GameEngine:
                 self.maze,
                 ghost_colors[3],
                 self.cell_size,
+                self.theme_colors,
             ),
         }
 
@@ -191,8 +197,9 @@ class GameEngine:
             self.dots.append(super_gum)
             self.dots_grid[(c, r)] = super_gum
 
+        max_time = self.config.get("level_max_time", 90)
         self.time_text = arcade.Text(
-            "Time left: " + str(90 - self.sec),
+            "Time left: " + str(max_time - self.sec),
             20, 770, color, 24, font_name="Renogare"
         )
 
@@ -201,12 +208,14 @@ class GameEngine:
         self.pause = 0
         self.elapsed_time = 0.0
         self.sec = 0
-        self.time_text.text = "Time left: " + str(90 - self.sec)
+        max_time = self.config.get("level_max_time", 90)
+        self.time_text.text = "Time left: " + str(max_time - self.sec)
 
         self.progress = 0.0
         self.ghost_step_timer = 0.0
         self.pacman_step_timer = 0.0
         self.win_timer = 0.0
+        self.level_cleared = False
 
         self.pacman.reset_game()
 
@@ -243,12 +252,14 @@ class GameEngine:
             self.dots_grid[(c, r)] = super_gum
 
     def update(self, delta_time: float) -> None:
-        ghost_step_interval = 0.4
-        pacman_step_interval = 0.2
+        ghost_step_interval = self.config.get("ghost_step_interval", 0.4)
+        pacman_step_interval = self.config.get("pacman_step_interval", 0.2)
 
         if len(self.dots) == 0:
+            if self.state != 3:
+                self.pacman.final_score = self.pacman.score
             self.pause = 1
-            self.state = 3
+            self.level_cleared = True
 
         if self.state == 3:
             self.win_timer = min(1.0, self.win_timer + delta_time * 2.0)
@@ -264,7 +275,7 @@ class GameEngine:
                 (ghost.smooth_y - self.pacman.smooth_y),
             )
             if distance_to_pacman < 0.5:
-                if not ghost.edible and not config.pacman_inv:
+                if not ghost.edible and not parser.pacman_inv:
                     self.pacman.death_count += 1
                     self.pacman.x = self.pacman.init_x
                     self.pacman.smooth_x = float(self.pacman.init_x)
@@ -287,8 +298,9 @@ class GameEngine:
                         g.step_time = 0.0
                         g.is_teleporting = False
                         g.draw_coords = self.center(g.smooth_x, g.smooth_y)
-                        g.ghost_freeze = 1
-                    if self.pacman.death_count == 1:
+                        g.ghost_freeze = 1.0
+                    max_lives = self.config.get("lives", 3)
+                    if self.pacman.death_count >= max_lives:
                         self.pacman.final_score = self.pacman.score
                         self.reset_game()
                         self.state = 1
@@ -297,7 +309,8 @@ class GameEngine:
                         self.pacman.path = {(self.pacman.x, self.pacman.y)}
                     break
                 elif ghost.edible:
-                    self.pacman.score += 100
+                    pts = self.config.get("points_per_ghost", 200)
+                    self.pacman.score += pts
                     self.pacman.score_text.text = f"SCORE: {self.pacman.score}"
                     ghost.grid_pos = ghost.spawn_pos
                     ghost.smooth_x = float(ghost.spawn_pos[0])
@@ -309,8 +322,10 @@ class GameEngine:
                     ghost.draw_coords = self.center(
                         ghost.smooth_x, ghost.smooth_y
                     )
-                    ghost.eaten_timer = 5
-                    ghost.ghost_freeze = 5
+                    ghost.eaten_timer = 5.0
+                    ghost.ghost_freeze = float(
+                        self.config.get("ghost.ghost_freeze", 5.0)
+                    )
                     ghost.edible_timer = 0.0
                     ghost.edible = False
                     break
@@ -320,8 +335,9 @@ class GameEngine:
             if self.elapsed_time >= 1:
                 self.elapsed_time -= 1
                 self.sec += 1
-                self.time_text.text = "Time left: " + str(90 - self.sec)
-                if self.sec >= 90:
+                max_time = self.config.get("level_max_time", 90)
+                self.time_text.text = "Time left: " + str(max_time - self.sec)
+                if self.sec >= max_time:
                     self.pacman.final_score = self.pacman.score
                     self.reset_game()
                     self.state = 1
@@ -340,7 +356,7 @@ class GameEngine:
             for ghost in self.ghosts:
                 if ghost.eaten_timer:
                     continue
-                if config.ghost_freeze:
+                if parser.ghost_freeze:
                     continue
                 if ghost.ghost_freeze <= 0:
                     if should_choose_target:
@@ -362,11 +378,21 @@ class GameEngine:
                 self.pacman.smooth_y,
             )
             if smooth_cell in self.dots_grid:
-                self.pacman.score += 10
+                if smooth_cell in self.corners:
+                    self.pacman.score += self.config.get(
+                        "points_per_super_pacgum", 50
+                    )
+                else:
+                    self.pacman.score += self.config.get(
+                        "points_per_pacgum", 10
+                    )
                 self.pacman.score_text.text = f"SCORE: {self.pacman.score}"
                 dot = self.dots_grid.pop(smooth_cell)
                 if smooth_cell in self.corners:
+                    edible_dur = float(
+                        self.config.get("ghost.edible_timer", 6.0)
+                    )
                     for ghost in self.ghosts:
                         ghost.edible = True
-                        ghost.edible_timer = 6.0
+                        ghost.edible_timer = edible_dur
                 dot.remove_from_sprite_lists()

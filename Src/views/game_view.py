@@ -1,19 +1,25 @@
-from typing import Any
-import arcade
+from typing import Any, Dict
 import json
+import random
+
+import arcade
 
 from ..config import THEMES, keys
 from ..core import Directions
-from ..engine import GameEngine, AudioEngine
+from ..engine import AudioEngine, GameEngine
 from .ingame_settings_view import InGameSettings
 from .leaderboard_view import Board
+from mazegenerator import MazeGenerator
 
 
 class Text:
-    def __init__(self, cx: float, cy: float) -> None:
+    def __init__(
+        self, cx: float, cy: float, config: Dict[str, Any]
+    ) -> None:
         self.cx = cx
         self.cy = cy
         self.name = ""
+        self.config = config
         white = arcade.color.WHITE
         self.text_name = arcade.Text(
             self.name,
@@ -24,7 +30,9 @@ class Text:
             anchor_x="center",
             font_name="Renogare",
         )
-        self.path = "Src/config/leaderboard.json"
+        self.path = config.get(
+            "highscore_filename", "Src/config/leaderboard.json"
+        )
 
     def update_text(self) -> None:
         white = arcade.color.WHITE
@@ -39,25 +47,35 @@ class Text:
         )
 
     def on_text(self, key: str) -> None:
-        if key.isalnum() and len(self.name) < 10:
+        if (key.isalnum() or key == " ") and len(self.name) < 10:
             self.name += key
             self.update_text()
 
     def on_finish(self, score: int) -> int:
         if self.name.strip():
             Board.update_json(self.path, self.name, score)
+            self.name = ""
+            self.update_text()
             return 1
         return 0
 
 
 class Game(arcade.View):
-    def __init__(self, maze: list[list[int]], screen_view: Any) -> None:
+    def __init__(
+        self, screen_view: Any, config: Dict[str, Any]
+    ) -> None:
         super().__init__()
+        self.config = config
         self.audio_engine = AudioEngine()
-        with open("Src/config/options.json") as f:
-            ant_dict = json.load(f)
-        self.volume = ant_dict["volume"] / 10
-        self.theme = ant_dict["theme"]
+        options_path = "Src/config/options.json"
+        try:
+            with open(options_path) as f:
+                ant_dict = json.load(f)
+        except Exception:
+            ant_dict = {"volume": 0, "theme": "dark"}
+
+        self.volume = ant_dict.get("volume", 0) / 10
+        self.theme = ant_dict.get("theme", "dark")
         self.music_player: Any = None
         self.screen_view = screen_view
         self.theme = self.theme if self.theme in THEMES else "dark"
@@ -65,20 +83,30 @@ class Game(arcade.View):
         self.background_color = self.theme_colors["background"]
         cx = self.width / 2
         cy = self.height / 2
+        self.current_level_index = 0
+        self.levels: list[dict[str, int]] = self.config.get("levels", [])
+        self.mazes: list[list[list[int]]] = []
 
-        # View and Layout Configuration
-        sidebar_width = 170
-        padding = 20
-        self.cols = len(maze[0])
-        self.rows = len(maze)
-        self.half_width = (self.cols - 1) / 2
-        self.half_height = (self.rows - 1) / 2
-        available_width = self.width - sidebar_width - padding
-        available_height = self.height - padding
-        self.cell_size = min(
-            available_width / self.cols, available_height / self.rows
+        for idx, lvl in enumerate(self.levels):
+            lvl_seed = (
+                self.config["seed"]
+                if idx == 0 and "seed" in self.config
+                else random.randint(1, 999999)
+            )
+            maze = MazeGenerator(
+                (lvl["width"], lvl["height"]),
+                perfect=False,
+                seed=lvl_seed,
+            ).maze
+            self.mazes.append(maze)
+
+        first_maze = (
+            self.mazes[0]
+            if self.mazes
+            else MazeGenerator((9, 11)).maze
         )
-        self.wall_thickness = max(1, int(self.cell_size * 0.03))
+        self.update_dimensions(first_maze)
+
         self.enter_text = arcade.Text(
             "Please enter your name for the highscore",
             cx,
@@ -92,7 +120,11 @@ class Game(arcade.View):
 
         # Initialize Game Engine
         self.engine = GameEngine(
-            maze, self.cell_center, self.cell_size, theme=self.theme
+            first_maze,
+            self.cell_center,
+            self.cell_size,
+            theme=self.theme,
+            game_config=config,
         )
 
         # UI & Fonts
@@ -119,7 +151,7 @@ class Game(arcade.View):
             font_name="Renogare",
         )
         self.on_name = False
-        self.text = Text(self.center_x, self.center_y)
+        self.text = Text(self.center_x, self.center_y, config)
 
         self.pointer_text = arcade.Text(
             "|",
@@ -132,11 +164,48 @@ class Game(arcade.View):
         )
         self.on_remove = False
         self.on_remove_timer = 0.0
-        self.on_remove_delay = 0.0
 
     @property
     def progress(self) -> float:
         return self.engine.progress
+
+    def update_dimensions(self, maze: list[list[int]]) -> None:
+        sidebar_width = 170
+        padding = 20
+        self.cols = len(maze[0])
+        self.rows = len(maze)
+        self.half_width = (self.cols - 1) / 2
+        self.half_height = (self.rows - 1) / 2
+        available_width = self.width - sidebar_width - padding
+        available_height = self.height - padding
+        self.cell_size = min(
+            available_width / self.cols, available_height / self.rows
+        )
+        self.wall_thickness = max(1, int(self.cell_size * 0.03))
+
+    def next_level(self) -> None:
+        if self.current_level_index + 1 >= len(self.levels):
+            self.engine.pacman.final_score = self.engine.pacman.score
+            self.engine.state = 3
+            self.engine.pause = 1
+            return
+        saved_score = self.engine.pacman.score
+        saved_deaths = self.engine.pacman.death_count
+
+        self.current_level_index += 1
+        new_maze = self.mazes[self.current_level_index]
+        self.update_dimensions(new_maze)
+
+        self.engine = GameEngine(
+            new_maze,
+            self.cell_center,
+            self.cell_size,
+            theme=self.theme,
+            game_config=self.config,
+        )
+        self.engine.pacman.score = saved_score
+        self.engine.pacman.score_text.text = f"SCORE: {saved_score}"
+        self.engine.pacman.death_count = saved_deaths
 
     def back_to_menu(self) -> None:
         self.window.show_view(self.screen_view)
@@ -173,7 +242,9 @@ class Game(arcade.View):
         if self.music_player and self.music_player.playing:
             self.music_player.pause()
 
-    def cell_center(self, grid_x: float, grid_y: float) -> tuple[float, float]:
+    def cell_center(
+        self, grid_x: float, grid_y: float
+    ) -> tuple[float, float]:
         sidebar_width = 170
         padding = 20
         cx = sidebar_width + (self.width - sidebar_width - padding) / 2
@@ -186,18 +257,30 @@ class Game(arcade.View):
     def reset_game(self) -> None:
         self.engine.reset_game()
         self.won_text.font_size = 280
+        self.won_text.y = self.height / 2
+        self.enter_text.y = self.height / 2 + 100
+        self.text.cy = self.height / 2
+        self.text.text_name.y = self.height / 2
+        self.pointer_text.y = self.height / 2
+        self.text.name = ""
+        self.text.update_text()
+        self.on_name = False
 
     def on_key_release(self, symbol: int, modifiers: int) -> None:
-        if self.engine.state == 1:
+        if self.engine.state in (1, 3):
             if symbol == arcade.key.BACKSPACE:
                 self.on_remove = False
-                self.on_remove_timer = 0
-                self.on_remove_delay = 0
+                self.on_remove_timer = 0.0
 
     def on_key_press(self, symbol: int, modifiers: int) -> None:
-        if self.engine.state == 1:
+        if self.engine.state in (1, 3):
             if symbol == arcade.key.ENTER:
-                if self.text.on_finish(self.engine.pacman.final_score):
+                score = (
+                    self.engine.pacman.final_score
+                    if self.engine.pacman.final_score
+                    else self.engine.pacman.score
+                )
+                if self.text.on_finish(score):
                     self.on_name = False
                     self.back_to_menu()
             if symbol == arcade.key.BACKSPACE:
@@ -205,17 +288,20 @@ class Game(arcade.View):
                     self.on_remove = True
                     self.text.name = self.text.name[:-1]
                     self.text.update_text()
+            if symbol == arcade.key.ESCAPE:
+                self.on_name = False
+                self.back_to_menu()
             return
 
         if symbol == arcade.key.C and modifiers & arcade.key.MOD_CTRL:
             exit()
-        if symbol == keys["UP"]:
+        if symbol in (keys.get("UP", arcade.key.UP), arcade.key.W):
             self.engine.pacman.set_next_direction(Directions.UP)
-        if symbol == keys["DOWN"]:
+        elif symbol in (keys.get("DOWN", arcade.key.DOWN), arcade.key.S):
             self.engine.pacman.set_next_direction(Directions.DOWN)
-        if symbol == keys["RIGHT"]:
+        elif symbol in (keys.get("RIGHT", arcade.key.RIGHT), arcade.key.D):
             self.engine.pacman.set_next_direction(Directions.RIGHT)
-        if symbol == keys["LEFT"]:
+        elif symbol in (keys.get("LEFT", arcade.key.LEFT), arcade.key.A):
             self.engine.pacman.set_next_direction(Directions.LEFT)
         if symbol == arcade.key.ESCAPE:
             set_view = InGameSettings(self, self.screen_view)
@@ -227,14 +313,16 @@ class Game(arcade.View):
     def on_update(self, delta_time: float) -> None:
         if self.on_remove:
             self.on_remove_timer += delta_time
-            self.on_remove_delay += delta_time
-            if self.on_remove_timer > 0.045 and self.on_remove_delay > 0.3:
-                self.on_remove_timer = 0
+            if self.on_remove_timer > 0.05:
+                self.on_remove_timer = 0.0
                 self.text.name = self.text.name[:-1]
                 self.text.update_text()
         self.engine.update(delta_time)
+        if getattr(self.engine, "level_cleared", False):
+            self.engine.level_cleared = False
+            self.next_level()
         self.pointer_text.x = self.text.text_name.right + 7
-        if self.engine.state == 1:
+        if self.engine.state in (1, 3):
             if self.sec > 1.5:
                 self.sec = 0.0
             self.sec += delta_time
@@ -242,6 +330,11 @@ class Game(arcade.View):
             t = self.engine.win_timer
             ease_out = t * (2 - t)
             self.won_text.font_size = int(280 - (280 - 60) * ease_out)
+            self.won_text.y = self.height / 2 + 130 * ease_out
+            self.enter_text.y = self.height / 2 + 40
+            self.text.cy = self.height / 2 - 30
+            self.text.text_name.y = self.height / 2 - 30
+            self.pointer_text.y = self.height / 2 - 30
 
     def on_draw(self) -> None:
         self.clear()
@@ -299,7 +392,8 @@ class Game(arcade.View):
         self.engine.pacman.lives_text.draw()
         self.engine.time_text.draw()
 
-        lives_remaining = 3 - self.engine.pacman.death_count
+        max_lives = self.config.get("lives", 3)
+        lives_remaining = max_lives - self.engine.pacman.death_count
         for i in range(lives_remaining):
             arcade.draw_arc_filled(
                 sidebar_x + 20 + (i * 45),
@@ -317,10 +411,12 @@ class Game(arcade.View):
             cy = self.height / 2
             shade = arcade.rect.XYWH(cx, cy, self.width, self.height)
             arcade.draw_rect_filled(shade, self.theme_colors["dim_overlay"])
-            if self.engine.state == 1:
+            if self.engine.state in (1, 3):
                 self.on_name = True
                 name_rect = arcade.rect.XYWH(cx, cy, self.width, self.height)
                 arcade.draw_rect_filled(name_rect, (10, 10, 10, 200))
+                if self.engine.state == 3:
+                    self.won_text.draw()
                 self.enter_text.draw()
                 self.text.text_name.draw()
                 if self.sec < 0.75:
@@ -328,5 +424,3 @@ class Game(arcade.View):
 
             if self.engine.state == 2:
                 self.pause_text.draw()
-            if self.engine.state == 3:
-                self.won_text.draw()

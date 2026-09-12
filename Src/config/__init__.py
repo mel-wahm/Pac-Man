@@ -1,5 +1,19 @@
-from .config import MAZE_SIZE, keys, pacman_inv, ghost_freeze
-from . import config
+from .parser import (
+    ConfigParser,
+    MAZE_SIZE,
+    ghost_freeze,
+    keys,
+    pacman_inv,
+)
+from . import parser
 from .theme import THEMES
 
-__all__ = ["MAZE_SIZE", "keys", "THEMES", "config", "pacman_inv", "ghost_freeze"]
+__all__ = [
+    "ConfigParser",
+    "MAZE_SIZE",
+    "THEMES",
+    "parser",
+    "ghost_freeze",
+    "keys",
+    "pacman_inv",
+]

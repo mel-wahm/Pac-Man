@@ -1,25 +1,17 @@
+from typing import Any, Dict
 import arcade
 
-from mazegenerator import MazeGenerator
-
-from ..config import MAZE_SIZE
 from ..ui import Menu, Selection
 from .credits_view import Credits
 from .game_view import Game
-from .settings_view import Settings
 from .leaderboard_view import Board
-
-if MAZE_SIZE[0] < 8 or MAZE_SIZE[1] < 8:
-    print("Maze coordinates are too small!")
-    exit(1)
-if MAZE_SIZE[0] > 40 or MAZE_SIZE[1] > 40:
-    print("Maze coordinates are too big!")
-    exit(1)
+from .settings_view import Settings
 
 
 class Screen(arcade.View):
-    def __init__(self) -> None:
+    def __init__(self, config: Dict[str, Any]) -> None:
         super().__init__()
+        self.config = config
         self.wallpapers = {
             "dark": arcade.load_texture("wallpaper/dark_wallpaper.png"),
             "light": arcade.load_texture("wallpaper/light_wallpaper.png"),
@@ -38,12 +30,14 @@ class Screen(arcade.View):
             "Leaderboard", lambda: self.show_leaderboard()
         )
         self.credits_option = Selection("Credits", lambda: self.show_credits())
+        self.instructions_option = Selection("instructions", lambda: self.instructions())
         self.exit_option = Selection("Exit", lambda: self.exit_game())
 
         self.menu = Menu(
             [
                 self.start_option,
                 self.settings_option,
+                self.instructions,
                 self.leaderboard,
                 self.credits_option,
                 self.exit_option,
@@ -51,17 +45,14 @@ class Screen(arcade.View):
             center_x,
             center_y,
         )
-
-        maze = MazeGenerator(MAZE_SIZE).maze
-        self.game_view = Game(maze, self)
+        self.game_view = Game(self, self.config)
 
     def start_game(self) -> None:
-        maze = MazeGenerator(MAZE_SIZE).maze
-        self.game_view = Game(maze, self)
+        self.game_view = Game(self, self.config)
         self.window.show_view(self.game_view)
 
     def show_leaderboard(self) -> None:
-        board = Board(self, self.game_view.theme)
+        board = Board(self, self.game_view.theme, self.config)
         self.window.show_view(board)
 
     def show_credits(self) -> None:

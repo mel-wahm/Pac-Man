@@ -1,9 +1,6 @@
 from typing import Any
 import arcade
 
-from mazegenerator import MazeGenerator
-
-from ..config import MAZE_SIZE
 from ..ui import Menu, Selection
 
 
@@ -37,10 +34,9 @@ class InGameSettings(arcade.View):
         self.window.show_view(self.game_view)
 
     def retry_game(self) -> None:
-        maze = MazeGenerator(MAZE_SIZE).maze
         from .game_view import Game
 
-        game_view = Game(maze, self.screen_view)
+        game_view = Game(self.screen_view, self.screen_view.config)
         self.window.show_view(game_view)
 
     def open_options(self) -> None:
