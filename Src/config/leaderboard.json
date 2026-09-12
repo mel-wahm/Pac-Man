@@ -4,6 +4,7 @@
         "score": 0
     },
     {
+<<<<<<< HEAD
         "name": "qqq",
         "score": 20
     },
@@ -45,6 +46,9 @@
     },
     {
         "name": "ff",
+=======
+        "name": "doobie",
+>>>>>>> 72b8c618602323fc99ac9ec7375a6862180bbdc6
         "score": 10
     }
 ]
