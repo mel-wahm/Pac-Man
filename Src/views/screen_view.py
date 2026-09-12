@@ -46,6 +46,7 @@ class Screen(arcade.View):
             center_y,
         )
         self.game_view = Game(self, self.config)
+        self.in_instuctions = 0
 
     def start_game(self) -> None:
         self.game_view = Game(self, self.config)
@@ -56,7 +57,7 @@ class Screen(arcade.View):
         self.window.show_view(board)
 
     def instructions(self):
-        pass
+        self.in_instuctions = 1
 
     def show_credits(self) -> None:
         self.window.show_view(Credits(self))
@@ -73,6 +74,10 @@ class Screen(arcade.View):
             self.menu.scale += delta_time * 3
 
     def on_key_press(self, symbol: int, modifiers: int) -> None:
+        if self.in_instuctions:
+            if symbol == arcade.key.ESCAPE:
+                self.in_instuctions = 0
+            return
         if symbol == arcade.key.DOWN:
             self.menu.move_down()
         if symbol == arcade.key.UP:
@@ -92,8 +97,9 @@ class Screen(arcade.View):
 
     def on_draw(self) -> None:
         self.clear()
+        w, h = self.width, self.height
         screen_rect = arcade.rect.XYWH(
-            self.width / 2, self.height / 2, self.width, self.height
+            w / 2, h / 2, w, h
         )
         wallpaper = self.wallpapers.get(
             self.game_view.theme, self.wallpapers["dark"]
@@ -111,3 +117,6 @@ class Screen(arcade.View):
         )
 
         self.menu.draw(menu_color, sel_color)
+        if self.in_instuctions:
+            r = arcade.rect.XYWH(w / 2, h / 2, w, h)
+            arcade.draw_rect_filled(r, (0, 0, 0, 240))
