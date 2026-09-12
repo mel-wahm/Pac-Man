@@ -305,6 +305,8 @@ class Game(arcade.View):
 
         if symbol == arcade.key.C and modifiers & arcade.key.MOD_CTRL:
             exit()
+        if symbol == arcade.key.S and modifiers & arcade.key.MOD_CTRL:
+            self.next_level()
         if symbol in (keys.get("UP", arcade.key.UP), arcade.key.W):
             self.engine.pacman.set_next_direction(Directions.UP)
         elif symbol in (keys.get("DOWN", arcade.key.DOWN), arcade.key.S):
