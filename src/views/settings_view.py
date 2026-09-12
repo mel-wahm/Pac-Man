@@ -105,6 +105,7 @@ class Settings(arcade.View):
                 self.audio_control.text_color = text_color
                 self.audio_control._rebuild_label()
                 self.theme_toggle._update_display(new_theme)
+                self.on_theme = False
             return
 
         if symbol == arcade.key.UP:
