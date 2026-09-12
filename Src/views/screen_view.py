@@ -37,7 +37,7 @@ class Screen(arcade.View):
             [
                 self.start_option,
                 self.settings_option,
-                self.instructions,
+                self.instructions_option,
                 self.leaderboard,
                 self.credits_option,
                 self.exit_option,
@@ -54,6 +54,9 @@ class Screen(arcade.View):
     def show_leaderboard(self) -> None:
         board = Board(self, self.game_view.theme, self.config)
         self.window.show_view(board)
+
+    def instructions(self):
+        pass
 
     def show_credits(self) -> None:
         self.window.show_view(Credits(self))
