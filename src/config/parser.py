@@ -8,6 +8,7 @@ MAZE_SIZE = (9, 11)
 pacman_inv = False
 ghost_freeze = False
 
+
 def save_options(data: dict[str, Any], filepath: str) -> None:
     """Save options dictionary to JSON file."""
     with open(filepath, "w") as f:
@@ -24,11 +25,11 @@ def load_keys() -> dict[str, int]:
         ValueError: If key mappings are missing or invalid.
     """
     DEFAULT = {
-            "UP": "arcade.key.UP",
-            "DOWN": "arcade.key.DOWN",
-            "LEFT": "arcade.key.LEFT",
-            "RIGHT": "arcade.key.RIGHT"
-        }
+        "UP": "arcade.key.UP",
+        "DOWN": "arcade.key.DOWN",
+        "LEFT": "arcade.key.LEFT",
+        "RIGHT": "arcade.key.RIGHT",
+    }
     KEY_PATH = "src/config/keys.json"
     try:
         raw_keys: dict[str, str] = {}
@@ -64,6 +65,7 @@ def load_keys() -> dict[str, int]:
 
 keys = load_keys()
 
+
 def load_options() -> dict[str, Any]:
     """Load option configurations from JSON file.
 
@@ -88,8 +90,10 @@ def load_options() -> dict[str, Any]:
             with open(CONFIG_PATH) as f:
                 option = json.load(f)
         except (FileNotFoundError, json.JSONDecodeError, OSError):
-            print(f"Warning: Config file '{CONFIG_PATH}' missing or invalid.\
-                  Creating with defaults.")
+            print(
+                f"Warning: Config file '{CONFIG_PATH}' missing or invalid.\
+                  Creating with defaults."
+            )
             save_options(DEFAULTS, CONFIG_PATH)
             return DEFAULTS.copy()
 
@@ -102,8 +106,9 @@ def load_options() -> dict[str, Any]:
         for key, default_val in DEFAULTS.items():
             expected_type = EXPECTED_TYPES[key]
             val = option.get(key)
-            if isinstance(val, expected_type)\
-                and not (expected_type is int and isinstance(val, bool)):
+            if isinstance(val, expected_type) and not (
+                expected_type is int and isinstance(val, bool)
+            ):
                 clean_options[key] = val
             else:
                 print(f"Key '{key}' invalid or missing. Using default.")
@@ -117,6 +122,7 @@ def load_options() -> dict[str, Any]:
     except Exception as e:
         print(f"Error loading options: {e}")
         sys.exit(1)
+
 
 SAFE_DEFAULTS: dict[str, Any] = {
     "seed": 42,
@@ -167,11 +173,14 @@ class ConfigParser:
             len_args = len(sys.argv)
             if len_args != 2:
                 cmd = " ".join(sys.argv)
-                raise ValueError(
-                    "Expected: python3 pac-man.py config.json\n"
-                    f"Got: python3 {cmd}"
+                print(
+                    "Expected: python3 pac-man.py config.json "
+                    f"Got: python3 {cmd}\n"
+                    "But no config file was provided. Using defaults."
                 )
-            filepath = sys.argv[-1]
+                filepath = "config.json"
+            else:
+                filepath = sys.argv[-1]
 
             if not filepath.endswith(".json"):
                 raise FileExistsError(

@@ -168,7 +168,6 @@ class ThemeToggle:
         options["theme"] = theme
         save_options(options, "src/config/options.json")
 
-
     def _update_display(self, theme: str) -> None:
         self.update_json(theme)
         if theme == "light":

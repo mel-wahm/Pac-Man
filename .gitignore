@@ -8,3 +8,9 @@ __pycache__/
 .idea/
 *.swp
 *~
+
+# Packaging & Build artifacts
+build/
+dist/
+*.spec
+*.zip
