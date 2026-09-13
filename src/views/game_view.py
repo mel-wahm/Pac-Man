@@ -169,6 +169,7 @@ class Game(arcade.View):
         )
         self.on_remove = False
         self.on_remove_timer = 0.0
+        self.delay = 2
 
     @property
     def progress(self) -> float:
@@ -189,6 +190,7 @@ class Game(arcade.View):
         self.wall_thickness = max(1, int(self.cell_size * 0.03))
 
     def next_level(self) -> None:
+        self.delay = 2
         if self.current_level_index + 1 >= len(self.levels):
             self.engine.pacman.final_score = self.engine.pacman.score
             self.engine.state = 3
@@ -318,6 +320,9 @@ class Game(arcade.View):
             self.engine.pause = not (self.engine.pause)
 
     def on_update(self, delta_time: float) -> None:
+        self.delay = max(0, self.delay - delta_time)
+        if self.delay and not self.engine.state == 3:
+            return
         if self.on_remove:
             self.on_remove_timer += delta_time
             if self.on_remove_timer > 0.4:

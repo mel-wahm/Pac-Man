@@ -1,13 +1,9 @@
-# Byte-compiled / Python artifacts
 __pycache__/
 *.py[cod]
 *$py.class
 
-# Caches
 .mypy_cache/
-.pytest_cache/
 
-# IDEs and Editors
 .vscode/
 .idea/
 *.swp

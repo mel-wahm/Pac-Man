@@ -7,6 +7,7 @@ debug:
 clean:
 	@uv run pyclean .
 	@rm -rf .mypy_cache
+	@rm -rf .flake8
 
 lint:
 	@uv run flake8 .
