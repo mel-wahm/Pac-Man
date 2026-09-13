@@ -16,4 +16,5 @@ __all__ = [
     "ghost_freeze",
     "keys",
     "pacman_inv",
+    "load_options"
 ]

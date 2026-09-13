@@ -1,8 +1,9 @@
-import json
 from collections.abc import Callable
 from typing import Any, Optional
 
 import arcade
+
+from src.config.parser import load_options, save_options
 
 
 class Selection:
@@ -98,9 +99,8 @@ class AudioControl:
     ) -> None:
         self.x = x
         self.y = y
-        with open("src/config/options.json") as f:
-            ant_dict = json.load(f)
-        self.volume: int = ant_dict["volume"]
+        options = load_options()
+        self.volume: int = options["volume"]
         self.text_color = text_color
         self._rebuild_label()
 
@@ -116,11 +116,9 @@ class AudioControl:
         )
 
     def update_json(self, volume: int) -> None:
-        with open("src/config/options.json") as f:
-            ant_dict = json.load(f)
-        ant_dict["volume"] = volume
-        with open("src/config/options.json", "w") as f:
-            json.dump(ant_dict, f, indent=4)
+        options = load_options()
+        options["volume"] = volume
+        save_options(options, "src/config/options.json")
 
     def volume_up(self) -> None:
         self.volume = min(10, self.volume + 1)
@@ -166,11 +164,10 @@ class ThemeToggle:
         self._update_display(current_theme)
 
     def update_json(self, theme: str) -> None:
-        with open("src/config/options.json") as f:
-            ant_dict = json.load(f)
-        ant_dict["theme"] = theme
-        with open("src/config/options.json", "w") as f:
-            json.dump(ant_dict, f, indent=4)
+        options = load_options()
+        options["theme"] = theme
+        save_options(options, "src/config/options.json")
+
 
     def _update_display(self, theme: str) -> None:
         self.update_json(theme)

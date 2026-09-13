@@ -8,6 +8,11 @@ MAZE_SIZE = (9, 11)
 pacman_inv = False
 ghost_freeze = False
 
+def save_options(data: dict[str, Any], filepath: str) -> None:
+    """Save options dictionary to JSON file."""
+    with open(filepath, "w") as f:
+        json.dump(data, f, indent=4)
+
 
 def load_keys() -> dict[str, int]:
     """Load key binding configurations from JSON file.
@@ -18,26 +23,39 @@ def load_keys() -> dict[str, int]:
     Raises:
         ValueError: If key mappings are missing or invalid.
     """
+    DEFAULT = {
+            "UP": "arcade.key.UP",
+            "DOWN": "arcade.key.DOWN",
+            "LEFT": "arcade.key.LEFT",
+            "RIGHT": "arcade.key.RIGHT"
+        }
+    KEY_PATH = "src/config/keys.json"
     try:
-        key_path = "src/config/keys.json"
-        with open(key_path) as f:
-            keys = json.load(f)
+        raw_keys: dict[str, str] = {}
+        try:
+            with open(KEY_PATH, "r") as f:
+                raw_keys = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError, OSError):
+            print(f"Warning:'{KEY_PATH}' missing or invalid. Using default.")
+            raw_keys = DEFAULT
+
+        for key, default_val in DEFAULT.items():
+            val = raw_keys.get(key)
+            if isinstance(val, str) and val.startswith("arcade.key."):
+                raw_keys[key] = val
+            else:
+                print(f"Key '{key}' invalid or missing. Using default.")
+                raw_keys[key] = default_val
+
         keys = {
             key: getattr(arcade.key, value.split(".")[2])
-            for key, value in keys.items()
+            for key, value in raw_keys.items()
         }
-        allow_list = ["UP", "DOWN", "LEFT", "RIGHT"]
 
-        if len(keys) != len(allow_list):
-            raise ValueError(f"The file '{key_path}' is not Valid.")
-
-        for key in keys:
-            if key not in allow_list:
-                raise ValueError(f"The Key: '{key}' not Valid.")
-
+        save_options(raw_keys, KEY_PATH)
         return keys
     except FileNotFoundError:
-        print(f"Error: File '{key_path}' not found.")
+        print(f"Error: File '{KEY_PATH}' not found.")
         sys.exit(1)
     except Exception as e:
         print(f"Error loading keys: {e}")
@@ -46,6 +64,59 @@ def load_keys() -> dict[str, int]:
 
 keys = load_keys()
 
+def load_options() -> dict[str, Any]:
+    """Load option configurations from JSON file.
+
+    Returns:
+        Dictionary mapping option names to their values.
+
+    Raises:
+        ValueError: If option mappings are missing or invalid.
+    """
+    DEFAULTS: dict[str, Any] = {
+        "volume": 0,
+        "theme": "dark",
+    }
+    EXPECTED_TYPES = {
+        "volume": int,
+        "theme": str,
+    }
+    CONFIG_PATH = "src/config/options.json"
+    try:
+        option: dict[str, Any] = {}
+        try:
+            with open(CONFIG_PATH) as f:
+                option = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError, OSError):
+            print(f"Warning: Config file '{CONFIG_PATH}' missing or invalid.\
+                  Creating with defaults.")
+            save_options(DEFAULTS, CONFIG_PATH)
+            return DEFAULTS.copy()
+
+        if not isinstance(option, dict):
+            print(f"Root config in '{CONFIG_PATH}' must be an object.")
+            save_options(DEFAULTS, CONFIG_PATH)
+            return DEFAULTS.copy()
+
+        clean_options: dict[str, Any] = {}
+        for key, default_val in DEFAULTS.items():
+            expected_type = EXPECTED_TYPES[key]
+            val = option.get(key)
+            if isinstance(val, expected_type)\
+                and not (expected_type is int and isinstance(val, bool)):
+                clean_options[key] = val
+            else:
+                print(f"Key '{key}' invalid or missing. Using default.")
+                clean_options[key] = default_val
+
+        save_options(clean_options, CONFIG_PATH)
+        return clean_options
+    except FileNotFoundError:
+        print(f"Error: File '{CONFIG_PATH}' not found.")
+        sys.exit(1)
+    except Exception as e:
+        print(f"Error loading options: {e}")
+        sys.exit(1)
 
 SAFE_DEFAULTS: dict[str, Any] = {
     "seed": 42,
