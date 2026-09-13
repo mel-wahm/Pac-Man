@@ -1,0 +1,22 @@
+============================================================
+                     PAC-MAN GAME
+============================================================
+
+1. HOW TO RUN:
+   Open a terminal in this folder and execute:
+   ./Pacman config.json
+
+2. CONTROLS:
+   - Movement: Arrow Keys (Up, Down, Left, Right) or WASD
+   - Pause: ESC / P
+   - Cheat Mode: C (Invincibility / Speed / Ghost Freeze)
+
+3. OPTIONS & CONFIGURATION:
+   - Edit 'config.json' to customize game settings:
+     * lives: Starting lives count
+     * pacgum / points_per_pacgum: Gum scores
+     * points_per_ghost: Score when eating vulnerable ghosts
+     * level_max_time: Time limit per level
+   - Custom key bindings can be adjusted in 'src/config/keys.json'
+
+============================================================
