@@ -132,7 +132,7 @@ class Control(arcade.View):
         if symbol == arcade.key.DOWN and not self.is_listening:
             self.menu.move_down()
         if symbol == arcade.key.ENTER and not self.is_listening:
-                self.menu.action()
+            self.menu.action()
 
     def start_listening(self, action_key: str) -> None:
         self.selected_action_text.text = action_key
