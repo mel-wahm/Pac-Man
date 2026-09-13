@@ -126,7 +126,7 @@ class Game(arcade.View):
             f"LEVEL: {self.current_level_index + 1}",
             x=20,
             y=1040,
-            color=arcade.color.YELLOW,
+            color=arcade.color.YELLOW if self.engine.theme == "dark" else arcade.color.BLACK,
             font_name="Renogare",
             font_size=24,
         )

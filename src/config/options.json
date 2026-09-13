@@ -1,6 +1,4 @@
 {
     "volume": 0,
-    "theme": "light",
-    "pacman_inv": 0,
-    "ghost_freeze": 0
+    "theme": "dark"
 }

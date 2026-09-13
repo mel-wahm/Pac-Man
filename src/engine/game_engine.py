@@ -35,10 +35,10 @@ class GameEngine:
         self.theme = theme if theme in THEMES else "dark"
         self.theme_colors = THEMES.get(self.theme, THEMES["dark"])
         self.super_gum_textures = [
-            arcade.load_texture("fruits/super_fruit_yellow.png"),
-            arcade.load_texture("fruits/super_fruit_pink.png"),
-            arcade.load_texture("fruits/super_fruit_cyan.png"),
-            arcade.load_texture("fruits/super_fruit_green.png"),
+            arcade.load_texture("gums/super_fruit_yellow.png"),
+            arcade.load_texture("gums/super_fruit_pink.png"),
+            arcade.load_texture("gums/super_fruit_cyan.png"),
+            arcade.load_texture("gums/super_fruit_green.png"),
         ]
 
         # Open warp tunnels on the 4 border edges

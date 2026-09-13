@@ -7,7 +7,7 @@
 
     # Player stats & rules
     "lives": 3,
-    "level_max_time": 90,
+    "level_max_time": 10,
     "pacgum": 37,
 	"ghost_step_interval": 0.4,
 	"pacman_step_interval": 0.2,
