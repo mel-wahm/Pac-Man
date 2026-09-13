@@ -81,7 +81,6 @@ class GameEngine:
                 self.maze,
                 ghost_colors[0],
                 self.cell_size,
-                self.theme_colors,
             ),
             Ghost(
                 (self.cols - 1, 0),
@@ -89,7 +88,6 @@ class GameEngine:
                 self.maze,
                 ghost_colors[1],
                 self.cell_size,
-                self.theme_colors,
             ),
             Ghost(
                 (0, self.rows - 1),
@@ -97,7 +95,6 @@ class GameEngine:
                 self.maze,
                 ghost_colors[2],
                 self.cell_size,
-                self.theme_colors,
             ),
             Ghost(
                 (self.cols - 1, self.rows - 1),
@@ -105,7 +102,6 @@ class GameEngine:
                 self.maze,
                 ghost_colors[3],
                 self.cell_size,
-                self.theme_colors,
             ),
         }
 

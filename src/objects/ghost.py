@@ -22,8 +22,7 @@ class Ghost:
         draw_coords: tuple[float, float],
         maze: list[list[int]],
         color: Any,
-        cell_size: float,
-        theme_colors: Any = None,
+        cell_size: float
     ) -> None:
         """Initialize ghost position, AI state, timers, and visual attributes.
 
