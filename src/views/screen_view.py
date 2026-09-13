@@ -19,7 +19,6 @@ class Screen(arcade.View):
             "dark": arcade.load_texture("wallpaper/dark_wallpaper.png"),
             "light": arcade.load_texture("wallpaper/light_wallpaper.png"),
         }
-        arcade.load_font("fonts/arcade_font.ttf")
         arcade.load_font("fonts/Renogare-Regular.otf")
 
         center_x = self.width / 2
