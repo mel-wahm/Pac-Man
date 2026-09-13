@@ -171,6 +171,14 @@ class Game(arcade.View):
         self.on_remove_timer = 0.0
         self.delay = 2
 
+        self.bonus_text =  arcade.Text(
+                        "2",
+                        440,
+                        self.height - 200,
+                        self.theme_colors["pacman"],
+                        16,
+                        font_name="Renogare",
+                    )
     @property
     def progress(self) -> float:
         return self.engine.progress
@@ -323,6 +331,8 @@ class Game(arcade.View):
         self.delay = max(0, self.delay - delta_time)
         if self.delay and not self.engine.state == 3:
             return
+        max_lives = self.config.get("lives", 3)
+        bonus = (max_lives - self.engine.pacman.death_count) - 10
         if self.on_remove:
             self.on_remove_timer += delta_time
             if self.on_remove_timer > 0.4:
@@ -415,7 +425,8 @@ class Game(arcade.View):
         self.engine.time_text.draw()
 
         max_lives = self.config.get("lives", 3)
-        lives_remaining = max_lives - self.engine.pacman.death_count
+        lives_remaining = min(10, max_lives - self.engine.pacman.death_count)
+        bonus = (max_lives - self.engine.pacman.death_count) - 10
         for i in range(lives_remaining):
             arcade.draw_arc_filled(
                 sidebar_x + 20 + (i * 45),
@@ -426,6 +437,10 @@ class Game(arcade.View):
                 30,
                 330,
             )
+        if bonus > 0:
+            self.bonus_text.text = f"+ {bonus}"
+            self.bonus_text.draw()
+
 
         # Draw State Overlays (Pause / Died / Won)
         if self.engine.pause:
