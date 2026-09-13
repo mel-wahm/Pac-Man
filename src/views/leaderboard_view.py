@@ -1,6 +1,7 @@
-from typing import Any, Dict, Optional
-import arcade
 import json
+from typing import Any
+
+import arcade
 
 
 class Board(arcade.View):
@@ -10,7 +11,7 @@ class Board(arcade.View):
         self,
         previous_view: arcade.View,
         theme: str = "dark",
-        config: Optional[Dict[str, Any]] = None,
+        config: dict[str, Any] | None = None,
     ) -> None:
         super().__init__()
         self.previous_view = previous_view

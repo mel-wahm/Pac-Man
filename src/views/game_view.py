@@ -1,20 +1,21 @@
-from typing import Any, Dict
 import json
+import sys
+from typing import Any
 
 import arcade
+from mazegenerator import MazeGenerator
 
 from ..config import THEMES, keys
 from ..core import Directions
 from ..engine import AudioEngine, GameEngine
 from .ingame_settings_view import InGameSettings
 from .leaderboard_view import Board
-from mazegenerator import MazeGenerator
 
 
 class Text:
     """Manages player name entry text input and submission for highscores."""
 
-    def __init__(self, cx: float, cy: float, config: Dict[str, Any]) -> None:
+    def __init__(self, cx: float, cy: float, config: dict[str, Any]) -> None:
         self.cx = cx
         self.cy = cy
         self.name = ""
@@ -62,7 +63,7 @@ class Text:
 class Game(arcade.View):
     """Main gameplay view handling rendering, levels, and user inputs."""
 
-    def __init__(self, screen_view: Any, config: Dict[str, Any]) -> None:
+    def __init__(self, screen_view: Any, config: dict[str, Any]) -> None:
         super().__init__()
         self.config = config
         self.audio_engine = AudioEngine()
@@ -298,7 +299,7 @@ class Game(arcade.View):
             return
 
         if symbol == arcade.key.C and modifiers & arcade.key.MOD_CTRL:
-            exit()
+            sys.exit()
         if symbol == arcade.key.S and modifiers & arcade.key.MOD_CTRL:
             self.next_level()
         if symbol in (keys.get("UP", arcade.key.UP), arcade.key.W):

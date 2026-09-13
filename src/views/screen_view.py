@@ -1,4 +1,5 @@
-from typing import Any, Dict
+from typing import Any
+
 import arcade
 
 from ..ui import Menu, Selection
@@ -11,7 +12,7 @@ from .settings_view import Settings
 class Screen(arcade.View):
     """Main start menu view providing game navigation and sub-menus."""
 
-    def __init__(self, config: Dict[str, Any]) -> None:
+    def __init__(self, config: dict[str, Any]) -> None:
         super().__init__()
         self.config = config
         self.wallpapers = {

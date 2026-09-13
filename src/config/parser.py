@@ -1,14 +1,15 @@
-import arcade
 import json
 import sys
-from typing import Any, Dict
+from typing import Any
+
+import arcade
 
 MAZE_SIZE = (9, 11)
 pacman_inv = False
 ghost_freeze = False
 
 
-def load_keys() -> Dict[str, int]:
+def load_keys() -> dict[str, int]:
     """Load key binding configurations from JSON file.
 
     Returns:
@@ -24,7 +25,7 @@ def load_keys() -> Dict[str, int]:
         keys = {
             key: getattr(arcade.key, value.split(".")[2])
             for key, value in keys.items()
-            }
+        }
         allow_list = ["UP", "DOWN", "LEFT", "RIGHT"]
 
         if len(keys) != len(allow_list):
@@ -46,7 +47,7 @@ def load_keys() -> Dict[str, int]:
 keys = load_keys()
 
 
-SAFE_DEFAULTS: Dict[str, Any] = {
+SAFE_DEFAULTS: dict[str, Any] = {
     "seed": 42,
     "lives": 3,
     "level_max_time": 90,
@@ -69,8 +70,8 @@ SAFE_DEFAULTS: Dict[str, Any] = {
         {"level": 7, "width": 17, "height": 19},
         {"level": 8, "width": 19, "height": 21},
         {"level": 9, "width": 19, "height": 21},
-        {"level": 10, "width": 21, "height": 23}
-    ]
+        {"level": 10, "width": 21, "height": 23},
+    ],
 }
 
 
@@ -78,7 +79,7 @@ class ConfigParser:
     """Parser and validator for Pac-Man game configuration files."""
 
     @classmethod
-    def load(cls) -> Dict[str, Any]:
+    def load(cls) -> dict[str, Any]:
         """Parse, validate, and return game configuration settings.
 
         Reads the JSON configuration file specified in command-line arguments,
@@ -139,7 +140,7 @@ class ConfigParser:
                 )
                 return SAFE_DEFAULTS.copy()
 
-            config: Dict[str, Any] = SAFE_DEFAULTS.copy()
+            config: dict[str, Any] = SAFE_DEFAULTS.copy()
 
             def clamped_message(key: str, invalid: bool) -> str:
                 if invalid:
@@ -153,7 +154,7 @@ class ConfigParser:
                         f"Using default value: {config.get(key)}."
                     )
 
-            numeric_rules: Dict[str, tuple[Any, float]] = {
+            numeric_rules: dict[str, tuple[Any, float]] = {
                 "lives": (int, 1),
                 "level_max_time": ((int, float), 1),
                 "pacgum": (int, 1),

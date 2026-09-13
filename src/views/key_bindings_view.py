@@ -1,10 +1,11 @@
+import json
 from typing import Any
+
 import arcade
 import pyglet
 
 from ..config import keys
 from ..ui import Menu, Selection
-import json
 
 
 class Control(arcade.View):
@@ -103,10 +104,7 @@ class Control(arcade.View):
                     arcade.key.S,
                     arcade.key.D,
                 }
-                if (
-                    symbol in used_keys
-                    and symbol != keys[self.current_action]
-                ):
+                if symbol in used_keys and symbol != keys[self.current_action]:
                     self.error_timer = 1.0
                     self.error_key_text.text = "Key Already Used"
                     return
@@ -133,8 +131,7 @@ class Control(arcade.View):
             self.menu.move_up()
         if symbol == arcade.key.DOWN and not self.is_listening:
             self.menu.move_down()
-        if symbol == arcade.key.ENTER:
-            if not self.is_listening:
+        if symbol == arcade.key.ENTER and not self.is_listening:
                 self.menu.action()
 
     def start_listening(self, action_key: str) -> None:

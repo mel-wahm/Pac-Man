@@ -1,7 +1,9 @@
 from typing import Any
+
 import arcade
-from ..ui.menu import Menu, Selection
+
 from ..config import parser
+from ..ui.menu import Menu, Selection
 
 
 class CheatMode(arcade.View):

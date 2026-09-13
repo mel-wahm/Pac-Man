@@ -1,7 +1,8 @@
 from typing import Any
+
 import arcade
 
-from ..ui import Menu, Selection, AudioControl, ThemeToggle
+from ..ui import AudioControl, Menu, Selection, ThemeToggle
 from .cheat_mode_view import CheatMode
 from .key_bindings_view import Control
 

@@ -1,6 +1,6 @@
 from math import hypot
 from random import sample
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 import arcade
 
@@ -18,7 +18,7 @@ class GameEngine:
         center_func: Any,
         cell_size: float,
         theme: str = "dark",
-        game_config: Optional[Dict[str, Any]] = None,
+        game_config: Optional[dict[str, Any]] = None,
     ) -> None:
         """Initialize game state, actors, dots, and configuration.
 
@@ -29,7 +29,7 @@ class GameEngine:
             theme: Active color theme name.
             game_config: Optional dictionary containing gameplay settings.
         """
-        self.config: Dict[str, Any] = game_config or {}
+        self.config: dict[str, Any] = game_config or {}
         self.center = center_func
         self.cell_size = cell_size
         self.theme = theme if theme in THEMES else "dark"

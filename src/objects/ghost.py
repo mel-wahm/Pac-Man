@@ -1,9 +1,8 @@
 import math
 import random
+from typing import Any
 
 import arcade
-
-from typing import Any
 
 from ..core import (
     DIR_DATA,
